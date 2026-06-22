@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import MathRefresher from './MathRefresher'
 import PopulationVsSample from './PopulationVsSample'
+import DataTypeIdentifier from './DataTypeIdentifier'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -25,8 +26,7 @@ const tools = [
   {
     id: "data-type-identifier", title: "Data Type Identifier", group: "Foundation",
     description: "Variable types → right summary statistic → right hypothesis test. The chain that organizes the entire course.",
-    accent: C.amber, accentSoft: C.amberSoft, component: null,
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/></svg>,
+    accent: C.amber, accentSoft: C.amberSoft, component: DataTypeIdentifier,
   },
   {
     id: "summary-statistics", title: "Summary Statistics Explorer", group: "Foundation",
