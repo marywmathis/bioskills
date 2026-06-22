@@ -147,32 +147,92 @@ export default function MathRefresher() {
         <Quiz q="A dataset has variance = 25. What is the standard deviation?" options={["625", "12.5", "5", "√25%"]} answer={2} explain="SD = √variance = √25 = 5. The SD is always in the same units as the original variable." />
       </Section>
 
-      <Section icon="ln" iconBg={C.purpleSoft} title="Logarithms & the Natural Log">
-        <Concept title="What a logarithm is">
+      <Section icon="ln" iconBg={C.purpleSoft} title="Why Biostatistics Uses Logarithms">
+        <Concept title="Reason 1: Ratios multiply, but models add">
           <p style={s.prose}>
-            Think of a logarithm as the <strong style={{ color: C.text }}>reverse of an exponent</strong>.
-            If 10² = 100, then log(100) = 2. You're asking: "what exponent gets me to this number?"
-          </p>
-          <p style={s.prose}>
-            In public health you'll mostly see the <strong style={{ color: C.text }}>natural log (ln)</strong>, which uses the base <em>e</em> ≈ 2.718 instead of 10. Same idea, different base.
+            Most measures in epidemiology are <strong style={{ color: C.text }}>ratios</strong>: Risk Ratio (RR), Odds Ratio (OR), Hazard Ratio (HR).
+            Ratios combine by multiplying, not adding.
           </p>
           <div style={s.example}>
-            <div style={s.exampleLabel}>Concrete example</div>
-            e² ≈ 7.39, so ln(7.39) = 2. You put in 7.39, you get back the exponent 2.
-            The natural log just tells you "what power of e gives me this number?"
+            <div style={s.exampleLabel}>Example</div>
+            Smoking doubles risk: RR = 2. Occupational exposure triples risk: RR = 3.<br/>
+            Combined effect: RR = 2 × 3 = 6 — they multiply.
           </div>
-          <div style={s.formula}>{"ln(1) = 0     (e⁰ = 1)\nln(e) = 1     (e¹ = e)\nln(7.39) ≈ 2  (e² ≈ 7.39)"}</div>
-          <div style={s.example}>
-            <div style={s.exampleLabel}>Where you'll see this</div>
-            Logistic regression, Cox regression, and odds ratios all use ln under the hood.
-            The computer stores ln(OR), then converts back to OR with e^result. You won't calculate this by hand — but knowing what it means helps you read output.
+          <p style={s.prose} style={{...s.prose, marginTop: 10}}>
+            Statistical models are built around addition, not multiplication. The natural log converts multiplication into addition:
+          </p>
+          <div style={s.formula}>{"ln(2 × 3) = ln(2) + ln(3)\n0.693 + 1.099 = 1.792\ne^1.792 ≈ 6  ← convert back at the end"}</div>
+          <p style={s.prose}>
+            That's why logistic regression, Poisson regression, and Cox regression all model ln(ratio) rather than the ratio itself.
+            When the analysis is done, the computer converts back using e.
+          </p>
+
+          {/* Pipeline visual */}
+          <div style={{ margin: '14px 0', padding: '16px', background: C.alt, borderRadius: 10, border: `1px solid ${C.border}` }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>How the computer thinks</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 0, flexWrap: 'wrap', rowGap: 8 }}>
+              {[
+                { label: 'Your RRs', values: ['1.5', '2', '4', '8'], color: C.coral },
+                { label: 'Take ln', values: ['0.41', '0.69', '1.39', '2.08'], color: C.purple, arrow: true },
+                { label: 'Model adds', values: ['effects add here'], color: C.teal, arrow: true },
+                { label: 'Take eˣ', values: ['back to RR/OR/HR'], color: C.green, arrow: true },
+              ].map((step, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                  {step.arrow && <div style={{ fontSize: 18, color: C.muted, margin: '0 6px' }}>→</div>}
+                  <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '8px 12px', minWidth: 90 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: step.color, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{step.label}</div>
+                    {step.values.map((v, j) => (
+                      <div key={j} style={{ fontSize: 12, color: C.dim, fontFamily: "'JetBrains Mono', monospace" }}>{v}</div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </Concept>
-        <Concept title="Key log rules you'll actually use">
-          <p style={s.prose}>Logs turn multiplication into addition and division into subtraction — which is why they show up in ratio-based measures like OR and RR.</p>
-          <div style={s.formula}>{"ln(a × b) = ln(a) + ln(b)   ← multiplication becomes addition\nln(a / b) = ln(a) − ln(b)   ← division becomes subtraction\ne^(ln x)  = x               ← e undoes the ln"}</div>
+
+        <Concept title="Reason 2: Ratio scales are asymmetric — logs fix that">
+          <p style={s.prose}>
+            Look at an odds ratio scale. OR = 0.5 and OR = 2 are conceptually symmetric — one halves the odds, the other doubles it.
+            But numerically they're not:
+          </p>
+          <div style={s.formula}>{"OR scale:  0.25  0.5  1  2  4\n           ←0.75→  ←1→  ←3→\n           (unequal gaps from 1)"}</div>
+          <p style={s.prose}>Take the natural log and the scale becomes perfectly symmetric around zero:</p>
+          <div style={s.formula}>{"ln(0.25) = -1.39    ln(0.5) = -0.69\nln(1)    =  0\nln(2)    = +0.69    ln(4)   = +1.39"}</div>
+
+          {/* Symmetry visual */}
+          <div style={{ margin: '12px 0', padding: '14px', background: C.purpleSoft, borderRadius: 8, border: `1px solid rgba(107,63,204,0.15)` }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.purple, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>On the log scale</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, position: 'relative' }}>
+              {[
+                { or: '0.25', ln: '-1.39', label: '¼× odds' },
+                { or: '0.5', ln: '-0.69', label: '½× odds' },
+                { or: '1', ln: '0', label: 'no effect', highlight: true },
+                { or: '2', ln: '+0.69', label: '2× odds' },
+                { or: '4', ln: '+1.39', label: '4× odds' },
+              ].map((item, i) => (
+                <div key={i} style={{ flex: 1, textAlign: 'center', padding: '6px 2px', background: item.highlight ? C.surface : 'transparent', borderRadius: 6, border: item.highlight ? `1px solid ${C.border}` : 'none' }}>
+                  <div style={{ fontSize: 11, color: C.purple, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{item.ln}</div>
+                  <div style={{ fontSize: 10, color: C.muted, marginTop: 2 }}>OR={item.or}</div>
+                  <div style={{ fontSize: 10, color: C.dim, marginTop: 2 }}>{item.label}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 10, fontSize: 12, color: C.dim }}>
+              Harmful effects → positive &nbsp;|&nbsp; No effect = 0 &nbsp;|&nbsp; Protective effects → negative
+            </div>
+          </div>
         </Concept>
-        <Quiz q="If ln(OR) = 0.693, what is OR?" options={["0.693", "2.0", "1.96", "e"]} answer={1} explain="Raise e to the power 0.693: e^0.693 ≈ 2.0. The ln and e cancel each other out — e undoes the log. ln(2) ≈ 0.693 is worth memorizing." />
+
+        <Concept title="Reason 3: Models need an unrestricted scale">
+          <p style={s.prose}>
+            Regression models need an outcome that can range from −∞ to +∞. An OR or RR can't go below zero — that breaks the math.
+            But ln(OR) can be any number: negative, zero, or positive. That's what makes it work as a regression outcome.
+          </p>
+          <div style={s.formula}>{"OR range:    0 to +∞  (can't go negative)\nln(OR) range: -∞ to +∞  (unrestricted — works in regression)"}</div>
+        </Concept>
+
+        <Quiz q="A logistic regression output shows ln(OR) = -0.693. What does this mean?" options={["The OR is negative — a protective effect", "The OR ≈ 0.5 — the exposure halves the odds", "The OR ≈ 2 — the exposure doubles the odds", "The result is not statistically significant"]} answer={1} explain="e^(-0.693) ≈ 0.5. A negative ln(OR) means OR < 1, which is a protective association. ln(0.5) = -0.693 is the mirror of ln(2) = +0.693." />
       </Section>
 
       <Section icon="Σ" iconBg={C.tealSoft} title="Summation Notation (Σ)">
