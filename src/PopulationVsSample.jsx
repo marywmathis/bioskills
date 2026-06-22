@@ -376,7 +376,7 @@ export default function PopulationVsSample() {
             {[
               { reason: 'Cost', icon: '$', example: 'Measuring blood lead levels in every child in the United States would cost billions of dollars.', color: C.coral },
               { reason: 'Time', icon: '⏱', example: 'Interviewing every adult about vaccine attitudes would take years — too slow to be useful.', color: C.teal },
-              { reason: 'Destructive testing', icon: '⚗', example: 'Testing every blood sample until it is exhausted leaves nothing for the patient.', color: C.purple },
+              { reason: 'Feasibility', icon: '🌐', example: 'The population is simply too large or difficult to reach completely. A national health survey cannot locate and measure every eligible adult.', color: C.purple },
             ].map(item => (
               <div key={item.reason} style={{ display: 'flex', gap: 12, padding: '12px 14px', background: C.alt, borderRadius: 8, border: `1px solid ${C.border}` }}>
                 <div style={{ fontSize: 20, width: 28, flexShrink: 0 }}>{item.icon}</div>
@@ -388,6 +388,10 @@ export default function PopulationVsSample() {
             ))}
           </div>
         </Concept>
+
+        <p style={{ ...s.prose, padding: '10px 14px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 8, color: C.dim }}>
+          Because we cannot usually measure the entire population, we collect a sample and use it to estimate the population parameter. That's what the rest of this course is about.
+        </p>
 
         <Concept title="Big enough is not the same as representative">
           <p style={s.prose}>
