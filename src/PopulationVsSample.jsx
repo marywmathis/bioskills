@@ -292,10 +292,11 @@ export default function PopulationVsSample() {
             <div style={{ background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 10, padding: '14px 16px' }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Population</div>
               <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-                What we <em>want</em> to know about.<br/>
-                Usually too large to measure fully.<br/>
-                Described by <strong style={{ color: C.text }}>parameters</strong>.<br/>
-                Parameters are <strong style={{ color: C.text }}>fixed</strong> — they don't change.
+                What we <em>want</em> to know.<br/>
+                Usually too large to measure completely.<br/>
+                Described by <strong style={{ color: C.text }}>parameters</strong> (μ, σ, p).<br/>
+                <strong style={{ color: C.text }}>One true value exists.</strong><br/>
+                The challenge: we usually don't know what it is.
               </div>
             </div>
             <div style={{ background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 10, padding: '14px 16px' }}>
@@ -303,15 +304,55 @@ export default function PopulationVsSample() {
               <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
                 What we <em>actually</em> measure.<br/>
                 A subset drawn from the population.<br/>
-                Described by <strong style={{ color: C.text }}>statistics</strong>.<br/>
-                Statistics <strong style={{ color: C.text }}>vary</strong> from sample to sample.
+                Described by <strong style={{ color: C.text }}>statistics</strong> (x̄, s, p̂).<br/>
+                <strong style={{ color: C.text }}>Many possible values</strong> could be observed.<br/>
+                We use statistics to estimate parameters.
               </div>
             </div>
           </div>
+
+          {/* Hidden μ visual */}
+          <div style={{ margin: '16px 0', padding: '16px', background: C.alt, borderRadius: 10, border: `1px solid ${C.border}` }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 14 }}>What this looks like in practice</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+              {/* Population box */}
+              <div style={{ background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.25)`, borderRadius: 10, padding: '12px 24px', textAlign: 'center', width: '100%', maxWidth: 320 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Population</div>
+                <div style={{ fontSize: 13, color: C.dim, marginBottom: 6 }}>True average cholesterol of all U.S. adults</div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 22, fontWeight: 700, color: C.purple }}>μ = <span style={{ background: C.purpleSoft, border: `2px solid ${C.purple}`, borderRadius: 6, padding: '2px 10px' }}>?</span></div>
+                <div style={{ fontSize: 11, color: C.muted, marginTop: 6 }}>One true value exists — but we can't measure everyone.</div>
+              </div>
+
+              <div style={{ fontSize: 12, color: C.muted, margin: '8px 0', fontWeight: 600 }}>↓ draw different samples</div>
+
+              {/* Three samples */}
+              <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {[
+                  { n: 1, xbar: '194.2' },
+                  { n: 2, xbar: '198.7' },
+                  { n: 3, xbar: '191.5' },
+                ].map(s => (
+                  <div key={s.n} style={{ background: C.tealSoft, border: `1px solid rgba(0,153,168,0.25)`, borderRadius: 8, padding: '10px 16px', textAlign: 'center', flex: '1 1 80px' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: C.teal, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Sample {s.n}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: C.teal }}>x̄ = {s.xbar}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ marginTop: 12, padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6, width: '100%', textAlign: 'center' }}>
+                The population mean didn't change. Our <em>estimate</em> changed because we drew different samples.<br/>
+                <strong style={{ color: C.amber }}>This is the entire motivation for statistical inference.</strong>
+              </div>
+            </div>
+          </div>
+
           <div style={s.example}>
             <div style={s.exampleLabel}>Public health example</div>
             Population: all adults in the United States with hypertension.<br/>
-            Sample: 850 adults with hypertension enrolled in a clinical trial at three sites.
+            Sample: 850 adults with hypertension enrolled in a clinical trial at three sites.<br/>
+            <span style={{ marginTop: 6, display: 'block', color: C.teal, fontStyle: 'italic' }}>
+              If we want to know μ (the true mean blood pressure), we estimate it with x̄ from our sample — and acknowledge we could be off.
+            </span>
           </div>
         </Concept>
 
