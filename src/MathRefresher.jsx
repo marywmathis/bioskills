@@ -248,15 +248,81 @@ export default function MathRefresher() {
       </Section>
 
       <Section icon="≥" iconBg={C.greenSoft} title="Inequalities & Number Lines">
-        <Concept title="Reading inequality symbols">
-          <p style={s.prose}>These appear in hypothesis testing decision rules and confidence intervals.</p>
-          <div style={s.formula}>{"p < 0.05   → p is less than 0.05 (reject H₀)\np ≥ 0.05   → p is 0.05 or greater (fail to reject H₀)\n|z| > 1.96 → the absolute value of z exceeds 1.96"}</div>
-          <div style={s.example}>
-            <div style={s.exampleLabel}>Common confusion</div>
-            p &lt; 0.05 means the p-value is small. A p-value of 0.001 is smaller than 0.05, which is stronger evidence against H₀.
+        <Concept title="The cutoff rule">
+          <p style={s.prose}>
+            Think of α = 0.05 as a <strong style={{ color: C.text }}>cutoff on a number line</strong>.
+            Your p-value is a number between 0 and 1. Where it falls relative to the cutoff determines your decision.
+          </p>
+
+          {/* Number line visual */}
+          <div style={{ margin: '14px 0', padding: '16px 20px', background: C.alt, borderRadius: 10, border: `1px solid ${C.border}` }}>
+            <div style={{ position: 'relative', margin: '24px 0 32px' }}>
+              {/* Line */}
+              <div style={{ height: 3, background: C.border, borderRadius: 2, position: 'relative' }}>
+                {/* Reject zone */}
+                <div style={{ position: 'absolute', left: 0, width: '10%', height: '100%', background: C.coral, borderRadius: '2px 0 0 2px', opacity: 0.7 }} />
+                {/* Fail to reject zone */}
+                <div style={{ position: 'absolute', left: '10%', right: 0, height: '100%', background: C.teal, borderRadius: '0 2px 2px 0', opacity: 0.3 }} />
+                {/* Cutoff marker */}
+                <div style={{ position: 'absolute', left: '10%', top: -10, width: 3, height: 23, background: C.amber, borderRadius: 2 }} />
+              </div>
+              {/* Labels below line */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, fontSize: 12 }}>
+                <span style={{ color: C.text, fontWeight: 600 }}>0</span>
+                <span style={{ color: C.amber, fontWeight: 700, marginLeft: '-2%' }}>α = 0.05 ↑</span>
+                <span style={{ color: C.text, fontWeight: 600 }}>1</span>
+              </div>
+              {/* Zone labels */}
+              <div style={{ display: 'flex', marginTop: 6, fontSize: 12 }}>
+                <div style={{ width: '10%', color: C.coral, fontWeight: 600, fontSize: 11 }}>Reject H₀</div>
+                <div style={{ flex: 1, color: C.teal, fontWeight: 600, fontSize: 11, paddingLeft: 8 }}>Fail to reject H₀</div>
+              </div>
+              <div style={{ display: 'flex', marginTop: 2, fontSize: 11 }}>
+                <div style={{ width: '10%', color: C.dim }}>p &lt; 0.05</div>
+                <div style={{ flex: 1, color: C.dim, paddingLeft: 8 }}>p ≥ 0.05</div>
+              </div>
+            </div>
+
+            {/* Examples */}
+            <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 12, marginTop: 4 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Examples</div>
+              {[
+                { p: 'p = 0.03', decision: 'Reject H₀', note: 'below the cutoff', color: C.coral },
+                { p: 'p = 0.05', decision: 'Fail to reject H₀', note: 'exactly at the cutoff — not below it', color: C.teal },
+                { p: 'p = 0.12', decision: 'Fail to reject H₀', note: 'above the cutoff', color: C.teal },
+              ].map((ex, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 0', borderBottom: i < 2 ? `1px solid ${C.border}` : 'none' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.text, minWidth: 70 }}>{ex.p}</span>
+                  <span style={{ fontSize: 13, color: ex.color, fontWeight: 600, minWidth: 160 }}>{ex.decision}</span>
+                  <span style={{ fontSize: 12, color: C.dim }}>{ex.note}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ ...s.example, background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)` }}>
+            <div style={{ ...s.exampleLabel, color: C.coral }}>Common mistake</div>
+            p = 0.05 is <strong>not</strong> less than 0.05 — it is equal to 0.05. The rule is p &lt; α, so p = 0.05 does not cross the threshold. Many students assume 0.05 counts as significant. It doesn't.
           </div>
         </Concept>
-        <Quiz q="Your test gives p = 0.03. Using α = 0.05, which is correct?" options={["Fail to reject H₀ because 0.03 < 0.05", "Reject H₀ because 0.03 < 0.05", "Reject H₀ because 0.03 > 0.05", "Cannot determine without sample size"]} answer={1} explain="When p < α, reject H₀. Here 0.03 < 0.05, so we reject. The p-value being small means the data are unlikely under H₀." />
+
+        <Concept title="Reading the symbols">
+          <p style={s.prose}>These four symbols appear throughout hypothesis testing and confidence intervals. They're worth knowing cold.</p>
+          <div style={s.formula}>{"<   strictly less than       (0.03 < 0.05 ✓)\n>   strictly greater than    (0.08 > 0.05 ✓)\n≤   less than or equal to    (0.05 ≤ 0.05 ✓)\n≥   greater than or equal to (0.05 ≥ 0.05 ✓)"}</div>
+        </Concept>
+
+        <Quiz
+          q="Your test gives p = 0.03 and α = 0.05. Where does the p-value fall on the number line?"
+          options={["Above the cutoff", "Exactly at the cutoff", "Below the cutoff"]}
+          answer={2}
+          explain="0.03 is less than 0.05, so it falls below the cutoff. Because p < α, reject H₀."
+        />
+        <Quiz
+          q="If p = 0.08 and α = 0.05, which statement is true?"
+          options={["0.08 < 0.05", "0.08 = 0.05", "0.08 > 0.05"]}
+          answer={2}
+          explain="0.08 is greater than 0.05. Because p > α, fail to reject H₀. Students often reverse this — a larger p-value means less evidence against H₀, not more."
+        />
       </Section>
     </div>
   )
