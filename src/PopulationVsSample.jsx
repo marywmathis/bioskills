@@ -136,32 +136,36 @@ function Simulator() {
     setDots(d => [...d, mean])
   }
 
-  // Plot config
-  const plotMin = 70, plotMax = 130, plotW = 560, plotH = 140
+  // Dynamic axis: scale based on expected SE
+  const se = SIGMA / Math.sqrt(n)
+  const span = Math.max(6, Math.ceil(se * 4))
+  const plotMin = MU - span
+  const plotMax = MU + span
+
+  const plotW = 560, plotH = 140
   const toX = v => ((v - plotMin) / (plotMax - plotMin)) * plotW
   const muX = toX(MU)
 
-  // Jitter dots vertically by index so they don't stack
+  // Running average
+  const runningAvg = dots.length > 0 ? (dots.reduce((a, b) => a + b, 0) / dots.length).toFixed(1) : null
+
+  // Jitter dots vertically
   const DOT_R = 5
-  const rows = []
-  dots.forEach((v, i) => {
-    const x = toX(v)
-    let row = 0
-    while (rows[row] && rows[row].some(rx => Math.abs(rx - x) < DOT_R * 2.4)) row++
-    if (!rows[row]) rows[row] = []
-    rows[row].push(x)
-  })
   const dotPositions = []
-  let ri = 0
   dots.forEach((v, i) => {
-    const x = toX(v)
+    const x = toX(Math.max(plotMin, Math.min(plotMax, v)))
     let row = 0
-    while (dotPositions.filter((_, j) => j < i).some((dp, j) => dp.row === row && Math.abs(dp.x - x) < DOT_R * 2.4)) row++
+    while (dotPositions.filter((_, j) => j < i).some((dp) => dp.row === row && Math.abs(dp.x - x) < DOT_R * 2.4)) row++
     dotPositions.push({ x, row, v })
   })
-  const maxRow = dotPositions.reduce((m, d) => Math.max(m, d.row), 0)
   const baseY = plotH - 20
+  const maxRow = dotPositions.reduce((m, d) => Math.max(m, d.row), 0)
   const rowH = Math.min(DOT_R * 2.4, maxRow > 0 ? (baseY - 10) / (maxRow + 1) : DOT_R * 2.4)
+
+  // Axis ticks
+  const tickStep = span <= 8 ? 2 : span <= 15 ? 5 : 10
+  const ticks = []
+  for (let v = Math.ceil(plotMin / tickStep) * tickStep; v <= plotMax; v += tickStep) ticks.push(v)
 
   return (
     <div style={{ marginTop: 8 }}>
@@ -170,17 +174,17 @@ function Simulator() {
         <div style={{ flex: 1, minWidth: 130, background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8, padding: '10px 14px' }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Population mean (μ)</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>{MU}</div>
-          <div style={{ fontSize: 11, color: C.dim, marginTop: 2 }}>Fixed. Always 100.</div>
+          <div style={{ fontSize: 11, color: C.dim, marginTop: 2 }}>True value (known only in this simulation).</div>
         </div>
         <div style={{ flex: 1, minWidth: 130, background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8, padding: '10px 14px' }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Current sample mean (x̄)</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: C.coral, fontFamily: "'JetBrains Mono', monospace" }}>{lastMean !== null ? lastMean : '—'}</div>
           <div style={{ fontSize: 11, color: C.dim, marginTop: 2 }}>Changes every draw.</div>
         </div>
-        <div style={{ flex: 1, minWidth: 130, background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, padding: '10px 14px' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Samples drawn</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: C.text, fontFamily: "'JetBrains Mono', monospace" }}>{dots.length}</div>
-          <div style={{ fontSize: 11, color: C.dim, marginTop: 2 }}>n = {n} per sample</div>
+        <div style={{ flex: 1, minWidth: 130, background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 8, padding: '10px 14px' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: C.teal, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Avg of all sample means</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: C.teal, fontFamily: "'JetBrains Mono', monospace" }}>{runningAvg !== null ? runningAvg : '—'}</div>
+          <div style={{ fontSize: 11, color: C.dim, marginTop: 2 }}>{dots.length} sample{dots.length !== 1 ? 's' : ''} drawn.</div>
         </div>
       </div>
 
@@ -208,36 +212,30 @@ function Simulator() {
       {/* Dot plot */}
       <div style={{ background: C.alt, borderRadius: 10, border: `1px solid ${C.border}`, padding: '12px 12px 8px', marginBottom: 14, overflowX: 'auto' }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-          Sample means (x̄) — each dot is one sample
+          Sample means (x̄) — each dot is one sample {dots.length === 0 && '· draw your first sample below'}
         </div>
         <svg width={plotW} height={plotH} style={{ display: 'block', maxWidth: '100%' }}>
-          {/* Background zones */}
           <rect x={0} y={0} width={plotW} height={plotH - 20} fill={C.surface} rx={6} />
-
           {/* μ line */}
           <line x1={muX} y1={0} x2={muX} y2={plotH - 20} stroke={C.purple} strokeWidth={2} strokeDasharray="4 3" />
           <text x={muX + 4} y={13} fontSize={11} fill={C.purple} fontWeight="600">μ = {MU}</text>
-
           {/* Dots */}
           {dotPositions.map((dp, i) => {
             const y = baseY - dp.row * rowH - DOT_R
             const isLast = i === dots.length - 1
             return (
               <circle key={i} cx={dp.x} cy={Math.max(DOT_R + 2, y)} r={DOT_R}
-                fill={isLast ? C.coral : C.teal}
-                fillOpacity={isLast ? 1 : 0.6}
-                stroke={isLast ? C.coral : 'none'}
-                strokeWidth={isLast ? 1.5 : 0}
+                fill={isLast ? C.coral : C.teal} fillOpacity={isLast ? 1 : 0.6}
+                stroke={isLast ? C.coral : 'none'} strokeWidth={isLast ? 1.5 : 0}
               />
             )
           })}
-
           {/* Axis */}
           <line x1={0} y1={plotH - 20} x2={plotW} y2={plotH - 20} stroke={C.border} strokeWidth={1.5} />
-          {[70, 80, 90, 100, 110, 120, 130].map(v => (
+          {ticks.map(v => (
             <g key={v}>
               <line x1={toX(v)} y1={plotH - 20} x2={toX(v)} y2={plotH - 14} stroke={C.muted} strokeWidth={1} />
-              <text x={toX(v)} y={plotH - 4} textAnchor="middle" fontSize={10} fill={C.muted}>{v}</text>
+              <text x={toX(v)} y={plotH - 4} textAnchor="middle" fontSize={10} fill={v === MU ? C.purple : C.muted} fontWeight={v === MU ? '700' : '400'}>{v}</text>
             </g>
           ))}
         </svg>
@@ -248,7 +246,7 @@ function Simulator() {
         <button onClick={handleDraw} style={{
           flex: 1, padding: '11px 0', background: C.teal, color: '#fff',
           border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
-          cursor: 'pointer', fontFamily: 'inherit', transition: 'opacity 0.15s'
+          cursor: 'pointer', fontFamily: 'inherit'
         }}>
           Draw Sample (n = {n})
         </button>
@@ -257,16 +255,15 @@ function Simulator() {
             padding: '11px 18px', background: 'none', color: C.dim,
             border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13,
             cursor: 'pointer', fontFamily: 'inherit'
-          }}>
-            Clear
-          </button>
+          }}>Clear</button>
         )}
       </div>
 
       {dots.length >= 5 && (
         <div style={{ marginTop: 14, padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
-          <strong style={{ color: C.amber }}>Notice:</strong> The population hasn't changed — μ is still {MU}. But every sample gives a different x̄. This is <strong style={{ color: C.text }}>sampling variability</strong>, and it's the reason every estimate in statistics comes with uncertainty.
-          {dots.length >= 15 && n <= 30 && <span> Now try increasing n to 100 or more and draw again — watch what happens to the spread.</span>}
+          <strong style={{ color: C.amber }}>Notice:</strong> The population mean stayed at {MU} — but each sample gave a different x̄. Sample means vary, but they tend to center around the true population mean.
+          {dots.length >= 10 && runningAvg && <span> Watch the average of all sample means (currently {runningAvg}) — it keeps settling toward {MU}.</span>}
+          {dots.length >= 10 && n <= 30 && <span> Now try moving n to 100 or 150 and draw again — watch the dots tighten.</span>}
         </div>
       )}
     </div>
