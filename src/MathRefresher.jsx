@@ -149,17 +149,30 @@ export default function MathRefresher() {
 
       <Section icon="ln" iconBg={C.purpleSoft} title="Logarithms & the Natural Log">
         <Concept title="What a logarithm is">
-          <p style={s.prose}>A logarithm answers: "what power do I raise the base to in order to get this number?" In public health, you'll mostly see the <strong style={{ color: C.text }}>natural log (ln)</strong>, which uses base <em>e</em> ≈ 2.718.</p>
-          <div style={s.formula}>{"ln(x) asks: e^? = x\nln(1) = 0   ln(e) = 1   ln(10) ≈ 2.30"}</div>
+          <p style={s.prose}>
+            Think of a logarithm as the <strong style={{ color: C.text }}>reverse of an exponent</strong>.
+            If 10² = 100, then log(100) = 2. You're asking: "what exponent gets me to this number?"
+          </p>
+          <p style={s.prose}>
+            In public health you'll mostly see the <strong style={{ color: C.text }}>natural log (ln)</strong>, which uses the base <em>e</em> ≈ 2.718 instead of 10. Same idea, different base.
+          </p>
+          <div style={s.example}>
+            <div style={s.exampleLabel}>Concrete example</div>
+            e² ≈ 7.39, so ln(7.39) = 2. You put in 7.39, you get back the exponent 2.
+            The natural log just tells you "what power of e gives me this number?"
+          </div>
+          <div style={s.formula}>{"ln(1) = 0     (e⁰ = 1)\nln(e) = 1     (e¹ = e)\nln(7.39) ≈ 2  (e² ≈ 7.39)"}</div>
           <div style={s.example}>
             <div style={s.exampleLabel}>Where you'll see this</div>
-            Logistic regression, Cox regression, odds ratios, and relative risk all use the natural log under the hood. ln(OR) is how the computer stores the result before converting it back.
+            Logistic regression, Cox regression, and odds ratios all use ln under the hood.
+            The computer stores ln(OR), then converts back to OR with e^result. You won't calculate this by hand — but knowing what it means helps you read output.
           </div>
         </Concept>
         <Concept title="Key log rules you'll actually use">
-          <div style={s.formula}>{"ln(a × b) = ln(a) + ln(b)\nln(a / b) = ln(a) − ln(b)\ne^(ln x) = x  ← undoes the log"}</div>
+          <p style={s.prose}>Logs turn multiplication into addition and division into subtraction — which is why they show up in ratio-based measures like OR and RR.</p>
+          <div style={s.formula}>{"ln(a × b) = ln(a) + ln(b)   ← multiplication becomes addition\nln(a / b) = ln(a) − ln(b)   ← division becomes subtraction\ne^(ln x)  = x               ← e undoes the ln"}</div>
         </Concept>
-        <Quiz q="If ln(OR) = 0.693, what is OR?" options={["0.693", "2.0", "1.96", "e"]} answer={1} explain="e^0.693 ≈ 2.0. To convert from ln(OR) back to OR, raise e to that power. ln(2) ≈ 0.693 is worth memorizing." />
+        <Quiz q="If ln(OR) = 0.693, what is OR?" options={["0.693", "2.0", "1.96", "e"]} answer={1} explain="Raise e to the power 0.693: e^0.693 ≈ 2.0. The ln and e cancel each other out — e undoes the log. ln(2) ≈ 0.693 is worth memorizing." />
       </Section>
 
       <Section icon="Σ" iconBg={C.tealSoft} title="Summation Notation (Σ)">
