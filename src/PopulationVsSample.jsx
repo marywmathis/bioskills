@@ -1,5 +1,19 @@
 import { useState, useRef } from 'react'
 
+// Stat notation helpers — unicode combining diacritics render inconsistently across browsers
+const XBar = ({ style }) => (
+  <span style={{ display: 'inline-block', position: 'relative', ...style }}>
+    <span style={{ position: 'absolute', top: '-0.45em', left: 0, right: 0, textAlign: 'center', fontSize: '0.7em', lineHeight: 1 }}>—</span>
+    x
+  </span>
+)
+const PHat = ({ style }) => (
+  <span style={{ display: 'inline-block', position: 'relative', ...style }}>
+    <span style={{ position: 'absolute', top: '-0.5em', left: 0, right: 0, textAlign: 'center', fontSize: '0.75em', lineHeight: 1 }}>^</span>
+    p
+  </span>
+)
+
 const C = {
   bg: "#f8f9fc",
   surface: "#ffffff",
@@ -184,7 +198,7 @@ function Simulator() {
           <div style={{ fontSize: 11, color: C.dim, marginTop: 2 }}>True value (known only in this simulation).</div>
         </div>
         <div style={{ flex: 1, minWidth: 130, background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8, padding: '10px 14px' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Current sample mean (x̄)</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Current sample mean (<XBar />)</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: C.coral, fontFamily: "'JetBrains Mono', monospace" }}>{lastMean !== null ? lastMean : '—'}</div>
           <div style={{ fontSize: 11, color: C.dim, marginTop: 2 }}>Changes every draw.</div>
         </div>
@@ -219,7 +233,7 @@ function Simulator() {
       {/* Dot plot */}
       <div style={{ background: C.alt, borderRadius: 10, border: `1px solid ${C.border}`, padding: '12px 12px 8px', marginBottom: 14, overflowX: 'auto' }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-          Sample means (x̄) — each dot is one sample {dots.length === 0 && '· draw your first sample below'}
+          Sample means (<XBar />) — each dot is one sample {dots.length === 0 && '· draw your first sample below'}
         </div>
         <svg width={plotW} height={plotH} style={{ display: 'block', maxWidth: '100%' }}>
           <rect x={0} y={0} width={plotW} height={plotH - 20} fill={C.surface} rx={6} />
@@ -268,7 +282,7 @@ function Simulator() {
 
       {dots.length >= 5 && (
         <div style={{ marginTop: 14, padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
-          <strong style={{ color: C.amber }}>Notice:</strong> The population mean stayed at {MU} — but each sample gave a different x̄. Sample means vary, but they tend to center around the true population mean.
+          <strong style={{ color: C.amber }}>Notice:</strong> The population mean stayed at {MU} — but each sample gave a different <XBar />. Sample means vary, but they tend to center around the true population mean.
           {dots.length >= 10 && runningAvg && <span> Watch the average of all sample means (currently {runningAvg}) — it keeps settling toward {MU}.</span>}
           {dots.length >= 10 && n <= 30 && <span> Now try moving n to 100 or 150 and draw again — watch the dots tighten.</span>}
         </div>
@@ -308,7 +322,7 @@ export default function PopulationVsSample() {
               <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
                 What we <em>actually</em> measure.<br/>
                 A subset drawn from the population.<br/>
-                Described by <strong style={{ color: C.text }}>statistics</strong> (x̄, s, p̂).<br/>
+                Described by <strong style={{ color: C.text }}>statistics</strong> (<XBar />, s, <PHat />).<br/>
                 <strong style={{ color: C.text }}>Many possible values</strong> could be observed.<br/>
                 We use statistics to estimate parameters.
               </div>
@@ -338,7 +352,7 @@ export default function PopulationVsSample() {
                 ].map(s => (
                   <div key={s.n} style={{ background: C.tealSoft, border: `1px solid rgba(0,153,168,0.25)`, borderRadius: 8, padding: '10px 16px', textAlign: 'center', flex: '1 1 80px' }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: C.teal, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Sample {s.n}</div>
-                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: C.teal }}>x̄ = {s.xbar}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: C.teal }}><XBar /> = {s.xbar}</div>
                   </div>
                 ))}
               </div>
@@ -355,7 +369,7 @@ export default function PopulationVsSample() {
             Population: all adults in the United States with hypertension.<br/>
             Sample: 850 adults with hypertension enrolled in a clinical trial at three sites.<br/>
             <span style={{ marginTop: 6, display: 'block', color: C.teal, fontStyle: 'italic' }}>
-              If we want to know μ (the true mean blood pressure), we estimate it with x̄ from our sample — and acknowledge we could be off.
+              If we want to know μ (the true mean blood pressure), we estimate it with <XBar /> from our sample — and acknowledge we could be off.
             </span>
           </div>
         </Concept>
@@ -427,7 +441,7 @@ export default function PopulationVsSample() {
             Each time you draw a sample, you get a different estimate. Watch what happens.
           </p>
           <p style={{ ...s.prose, marginBottom: 16 }}>
-            <strong style={{ color: C.text }}>The key question:</strong> Why does x̄ keep changing if the population hasn't changed?
+            <strong style={{ color: C.text }}>The key question:</strong> Why does <XBar /> keep changing if the population hasn't changed?
           </p>
           <Simulator />
         </div>
@@ -470,7 +484,7 @@ export default function PopulationVsSample() {
         </Concept>
 
         <Quiz
-          q="You calculate x̄ = 142 mg/dL from a sample of 200 patients. Is this a parameter or a statistic?"
+          q={<span>You calculate <XBar /> = 142 mg/dL from a sample of 200 patients. Is this a parameter or a statistic?</span>}
           options={[
             "Parameter — it describes the population",
             "Statistic — it was calculated from a sample",
@@ -478,11 +492,11 @@ export default function PopulationVsSample() {
             "Neither — it is just a number"
           ]}
           answer={1}
-          explain="Correct. x̄ is a statistic because it was calculated from a sample of 200 patients, not from the entire population. We use it to estimate the unknown population parameter μ — but estimating μ does not make it μ."
+          explain={<span>Correct. <XBar /> is a statistic because it was calculated from a sample of 200 patients, not from the entire population. We use it to estimate the <strong>unknown</strong> population parameter μ — but estimating μ does not make it μ.</span>}
           wrongExplain={{
-            0: "Not quite. A parameter describes the entire population, while a statistic is calculated from a sample. The value 142 mg/dL came from 200 patients — not everyone. We hope it is close to the population mean (μ), but it is not μ itself.",
-            2: "Close, but not quite. x̄ is a statistic because it was calculated from a sample. You're right that it estimates μ — but estimating a parameter does not make it a parameter. The distinction is where the number came from: a sample gives a statistic, the full population gives a parameter.",
-            3: "Any number calculated from a sample is a statistic. Since 142 mg/dL came from a sample of 200 patients, it is a sample statistic (x̄). Statistics are how we estimate population parameters when we can't measure everyone."
+            0: <span>Not quite. A parameter describes the entire population, while a statistic is calculated from a sample. The value 142 mg/dL came from 200 patients — not everyone. We hope it is close to the population mean (μ), but it is not μ itself.</span>,
+            2: <span>Close, but not quite. <XBar /> is a statistic because it was calculated from a sample. You're right that it estimates μ — but estimating a parameter does not make it a parameter. The distinction is where the number came from: a sample gives a statistic, the full population gives a parameter.</span>,
+            3: <span>Any number calculated from a sample is a statistic. Since 142 mg/dL came from a sample of 200 patients, it is a sample statistic (<XBar />). Statistics are how we estimate population parameters when we can't measure everyone.</span>
           }}
         />
       </Section>
@@ -499,7 +513,7 @@ export default function PopulationVsSample() {
             {[
               { label: 'Population', sub: 'Unknown parameter (μ, σ, p)', color: C.purple, bg: C.purpleSoft, border: 'rgba(107,63,204,0.2)' },
               { label: 'Random Sample', sub: 'Subset drawn from population', color: C.teal, bg: C.tealSoft, border: 'rgba(0,153,168,0.2)', arrow: '↓ draw' },
-              { label: 'Calculate Statistic', sub: 'x̄, s, p̂ from sample data', color: C.amber, bg: C.amberSoft, border: 'rgba(184,112,0,0.2)', arrow: '↓ compute' },
+              { label: 'Calculate Statistic', sub: (<span><XBar />, s, <PHat /> from sample data</span>), color: C.amber, bg: C.amberSoft, border: 'rgba(184,112,0,0.2)', arrow: '↓ compute' },
               { label: 'Inference', sub: 'CI, hypothesis test, p-value', color: C.coral, bg: C.coralSoft, border: 'rgba(232,69,42,0.2)', arrow: '↓ apply' },
               { label: 'Estimate Parameter', sub: 'Best guess at μ, σ, p', color: C.green, bg: C.greenSoft, border: 'rgba(26,122,62,0.2)', arrow: '↓ conclude' },
             ].map((step, i) => (
