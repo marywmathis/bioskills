@@ -2,25 +2,23 @@ import { useState } from 'react'
 import MathRefresher from './MathRefresher'
 
 const C = {
-  bg: "#0e1117",
-  surface: "#1a1f2e",
-  alt: "#222736",
-  border: "#2d3348",
-  teal: "#00d4c8",
-  tealSoft: "#0a3330",
-  tealDim: "rgba(0,212,200,0.12)",
-  coral: "#ff6b6b",
-  coralSoft: "#3a1a1a",
-  coralDim: "rgba(255,107,107,0.12)",
-  amber: "#ffd93d",
-  amberSoft: "#3a2e0a",
-  green: "#51cf66",
-  greenSoft: "#1a3327",
-  purple: "#cc5de8",
-  purpleSoft: "#2a1040",
-  text: "#f1f3f5",
-  dim: "#8a9ab5",
-  muted: "#4a5568",
+  bg: "#f8f9fc",
+  surface: "#ffffff",
+  alt: "#f0f2f7",
+  border: "#e2e6ef",
+  teal: "#0099a8",
+  tealSoft: "#e0f5f7",
+  coral: "#e8452a",
+  coralSoft: "#fdecea",
+  amber: "#b87000",
+  amberSoft: "#fef3e0",
+  green: "#1a7a3e",
+  greenSoft: "#e6f4ec",
+  purple: "#6b3fcc",
+  purpleSoft: "#f0ebfa",
+  text: "#0f1117",
+  dim: "#4a5268",
+  muted: "#9aa0b4",
 }
 
 const tools = [
@@ -220,7 +218,6 @@ export default function App() {
     const Tool = current.component
     return (
       <div style={{ minHeight: '100vh', background: C.bg }}>
-        {/* Back bar */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 50,
           background: C.surface,
@@ -228,6 +225,7 @@ export default function App() {
           padding: '0 1.5rem',
           display: 'flex', alignItems: 'center', gap: 16,
           height: 52,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
         }}>
           <button
             onClick={() => setActiveTool(null)}
@@ -259,11 +257,12 @@ export default function App() {
         borderBottom: `1px solid ${C.border}`,
         padding: '2rem 1.5rem 1.5rem',
         background: C.surface,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{
             fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 11, fontWeight: 600, letterSpacing: '0.1em',
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.12em',
             textTransform: 'uppercase', color: C.teal, marginBottom: 8,
           }}>
             BioSkills
@@ -332,31 +331,31 @@ export default function App() {
                 textAlign: 'left',
                 cursor: tool.component ? 'pointer' : 'default',
                 transition: 'all 0.15s',
-                opacity: tool.component ? 1 : 0.5,
+                opacity: tool.component ? 1 : 0.6,
                 fontFamily: 'inherit',
                 position: 'relative',
                 overflow: 'hidden',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
               }}
               onMouseEnter={e => {
                 if (tool.component) {
                   e.currentTarget.style.borderColor = tool.accent
-                  e.currentTarget.style.background = C.alt
+                  e.currentTarget.style.boxShadow = `0 4px 12px rgba(0,0,0,0.08)`
+                  e.currentTarget.style.transform = 'translateY(-1px)'
                 }
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.borderColor = C.border
-                e.currentTarget.style.background = C.surface
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'
+                e.currentTarget.style.transform = 'none'
               }}
             >
-              {/* Group label */}
               <div style={{
                 fontSize: 10, fontWeight: 600, letterSpacing: '0.08em',
                 textTransform: 'uppercase', color: C.muted, marginBottom: 12,
               }}>
                 {tool.group}
               </div>
-
-              {/* Icon */}
               <div style={{
                 width: 40, height: 40, borderRadius: 10,
                 background: tool.accentSoft,
@@ -366,8 +365,6 @@ export default function App() {
               }}>
                 {tool.icon}
               </div>
-
-              {/* Title */}
               <div style={{
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontSize: 15, fontWeight: 600, color: C.text,
@@ -375,15 +372,9 @@ export default function App() {
               }}>
                 {tool.title}
               </div>
-
-              {/* Description */}
-              <div style={{
-                fontSize: 13, color: C.dim, lineHeight: 1.6,
-              }}>
+              <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
                 {tool.description}
               </div>
-
-              {/* Coming soon badge */}
               {!tool.component && (
                 <div style={{
                   position: 'absolute', top: 16, right: 16,
