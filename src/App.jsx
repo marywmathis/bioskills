@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import MathRefresher from './MathRefresher'
+import PopulationVsSample from './PopulationVsSample'
 
 const C = {
   bg: "#f8f9fc",
@@ -48,11 +49,7 @@ const tools = [
     ),
     accent: C.coral,
     accentSoft: C.coralSoft,
-    component: null,
-    group: "Foundation",
-  },
-  {
-    id: "data-type-identifier",
+    component: PopulationVsSample,
     title: "Data Type Identifier",
     description: "Variable types → right summary statistic → right hypothesis test. The chain that organizes the entire course.",
     icon: (
