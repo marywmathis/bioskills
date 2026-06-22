@@ -444,11 +444,23 @@ export default function PopulationVsSample() {
               <span>What we want</span><span>What we calculate</span><span>Purpose</span>
             </div>
             {[
-              { param: 'μ  (population mean)', stat: 'x̄  (sample mean)', purpose: 'Estimate average value' },
-              { param: 'σ  (population SD)', stat: 's   (sample SD)', purpose: 'Estimate spread' },
-              { param: 'p  (population proportion)', stat: 'p̂  (sample proportion)', purpose: 'Estimate prevalence' },
+              {
+                param: <span>μ &nbsp;<span style={{color: C.muted, fontWeight:400}}>(population mean)</span></span>,
+                stat: <span style={{display:'inline-flex',alignItems:'baseline',gap:2}}><span style={{position:'relative',display:'inline-block'}}><span style={{position:'absolute',top:-6,left:'50%',transform:'translateX(-50%)',fontSize:10,lineHeight:1}}>—</span>x</span><span style={{color:C.muted,fontWeight:400}}>&nbsp;(sample mean)</span></span>,
+                purpose: 'Estimate average value'
+              },
+              {
+                param: <span>σ &nbsp;<span style={{color: C.muted, fontWeight:400}}>(population SD)</span></span>,
+                stat: <span>s &nbsp;<span style={{color:C.muted,fontWeight:400}}>(sample SD)</span></span>,
+                purpose: 'Estimate spread'
+              },
+              {
+                param: <span>p &nbsp;<span style={{color: C.muted, fontWeight:400}}>(population proportion)</span></span>,
+                stat: <span style={{display:'inline-flex',alignItems:'baseline',gap:2}}><span style={{position:'relative',display:'inline-block'}}><span style={{position:'absolute',top:-7,left:'50%',transform:'translateX(-50%)',fontSize:11,lineHeight:1}}>^</span>p</span><span style={{color:C.muted,fontWeight:400}}>&nbsp;(sample proportion)</span></span>,
+                purpose: 'Estimate prevalence'
+              },
             ].map((row, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '10px 14px', borderTop: `1px solid ${C.border}`, fontSize: 13, background: i % 2 === 0 ? C.surface : C.alt }}>
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '10px 14px', borderTop: `1px solid ${C.border}`, fontSize: 13, background: i % 2 === 0 ? C.surface : C.alt, alignItems: 'center' }}>
                 <span style={{ color: C.purple, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{row.param}</span>
                 <span style={{ color: C.teal, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{row.stat}</span>
                 <span style={{ color: C.dim }}>{row.purpose}</span>
