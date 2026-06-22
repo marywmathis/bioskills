@@ -43,9 +43,12 @@ const s = {
   tag: { display: 'inline-block', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, marginLeft: 8 },
 }
 
-function Quiz({ q, options, answer, explain }) {
+function Quiz({ q, options, answer, explain, wrongExplain }) {
   const [picked, setPicked] = useState(null)
   const done = picked !== null
+  const correct = picked === answer
+  const feedback = done ? (correct ? explain : (wrongExplain && wrongExplain[picked]) || explain) : null
+
   return (
     <div style={s.quizWrap}>
       <div style={s.quizTitle}>Quick check</div>
@@ -60,11 +63,15 @@ function Quiz({ q, options, answer, explain }) {
           <button key={i} style={{ ...s.optionBtn, background: bg, border: `1px solid ${border}`, color }} onClick={() => !done && setPicked(i)} disabled={done}>
             {opt}
             {done && i === answer && <span style={{ ...s.tag, background: C.greenSoft, color: C.green }}>✓ correct</span>}
-            {done && i === picked && i !== answer && <span style={{ ...s.tag, background: C.coralSoft, color: C.coral }}>✗ wrong</span>}
+            {done && i === picked && i !== answer && <span style={{ ...s.tag, background: C.coralSoft, color: C.coral }}>✗ not quite</span>}
           </button>
         )
       })}
-      {done && <div style={{ marginTop: 10, fontSize: 13, color: C.dim, lineHeight: 1.7, padding: '10px 12px', background: C.tealSoft, borderRadius: 7, border: `1px solid rgba(0,153,168,0.2)` }}>{explain}</div>}
+      {done && (
+        <div style={{ marginTop: 10, fontSize: 13, color: C.dim, lineHeight: 1.7, padding: '10px 12px', background: correct ? C.tealSoft : C.coralSoft, borderRadius: 7, border: `1px solid ${correct ? 'rgba(0,153,168,0.2)' : 'rgba(232,69,42,0.2)'}` }}>
+          {feedback}
+        </div>
+      )}
       {done && <button style={{ ...s.optionBtn, marginTop: 8, marginBottom: 0, textAlign: 'center', color: C.teal, border: `1px solid rgba(0,153,168,0.3)` }} onClick={() => setPicked(null)}>Try again</button>}
     </div>
   )
@@ -437,9 +444,9 @@ export default function PopulationVsSample() {
               <span>What we want</span><span>What we calculate</span><span>Purpose</span>
             </div>
             {[
-              { param: 'μ (population mean)', stat: 'x̄ (sample mean)', purpose: 'Estimate average value' },
-              { param: 'σ (population SD)', stat: 's (sample SD)', purpose: 'Estimate spread' },
-              { param: 'p (population proportion)', stat: 'p̂ (sample proportion)', purpose: 'Estimate prevalence' },
+              { param: 'μ  (population mean)', stat: 'x̄  (sample mean)', purpose: 'Estimate average value' },
+              { param: 'σ  (population SD)', stat: 's   (sample SD)', purpose: 'Estimate spread' },
+              { param: 'p  (population proportion)', stat: 'p̂  (sample proportion)', purpose: 'Estimate prevalence' },
             ].map((row, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '10px 14px', borderTop: `1px solid ${C.border}`, fontSize: 13, background: i % 2 === 0 ? C.surface : C.alt }}>
                 <span style={{ color: C.purple, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{row.param}</span>
@@ -454,12 +461,17 @@ export default function PopulationVsSample() {
           q="You calculate x̄ = 142 mg/dL from a sample of 200 patients. Is this a parameter or a statistic?"
           options={[
             "Parameter — it describes the population",
-            "Statistic — it describes the sample",
+            "Statistic — it was calculated from a sample",
             "Both — it estimates the population mean",
             "Neither — it is just a number"
           ]}
           answer={1}
-          explain="x̄ is a statistic. It was calculated from a sample of 200 patients, not from the entire population. We use it to estimate the unknown population parameter μ."
+          explain="Correct. x̄ is a statistic because it was calculated from a sample of 200 patients, not from the entire population. We use it to estimate the unknown population parameter μ — but estimating μ does not make it μ."
+          wrongExplain={{
+            0: "Not quite. A parameter describes the entire population, while a statistic is calculated from a sample. The value 142 mg/dL came from 200 patients — not everyone. We hope it is close to the population mean (μ), but it is not μ itself.",
+            2: "Close, but not quite. x̄ is a statistic because it was calculated from a sample. You're right that it estimates μ — but estimating a parameter does not make it a parameter. The distinction is where the number came from: a sample gives a statistic, the full population gives a parameter.",
+            3: "Any number calculated from a sample is a statistic. Since 142 mg/dL came from a sample of 200 patients, it is a sample statistic (x̄). Statistics are how we estimate population parameters when we can't measure everyone."
+          }}
         />
       </Section>
 

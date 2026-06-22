@@ -43,9 +43,11 @@ const s = {
   tag: { display: 'inline-block', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, marginLeft: 8 },
 }
 
-function Quiz({ q, options, answer, explain }) {
+function Quiz({ q, options, answer, explain, wrongExplain }) {
   const [picked, setPicked] = useState(null)
   const done = picked !== null
+  const correct = picked === answer
+  const feedback = done ? (correct ? explain : (wrongExplain && wrongExplain[picked]) || explain) : null
   return (
     <div style={s.quizWrap}>
       <div style={s.quizTitle}>Quick check</div>
@@ -60,11 +62,11 @@ function Quiz({ q, options, answer, explain }) {
           <button key={i} style={{ ...s.optionBtn, background: bg, border: `1px solid ${border}`, color }} onClick={() => !done && setPicked(i)} disabled={done}>
             {opt}
             {done && i === answer && <span style={{ ...s.tag, background: C.greenSoft, color: C.green }}>✓ correct</span>}
-            {done && i === picked && i !== answer && <span style={{ ...s.tag, background: C.coralSoft, color: C.coral }}>✗ wrong</span>}
+            {done && i === picked && i !== answer && <span style={{ ...s.tag, background: C.coralSoft, color: C.coral }}>✗ not quite</span>}
           </button>
         )
       })}
-      {done && <div style={{ marginTop: 10, fontSize: 13, color: C.dim, lineHeight: 1.7, padding: '10px 12px', background: C.tealSoft, borderRadius: 7, border: `1px solid rgba(0,153,168,0.2)` }}>{explain}</div>}
+      {done && <div style={{ marginTop: 10, fontSize: 13, color: C.dim, lineHeight: 1.7, padding: '10px 12px', background: correct ? C.tealSoft : C.coralSoft, borderRadius: 7, border: `1px solid ${correct ? 'rgba(0,153,168,0.2)' : 'rgba(232,69,42,0.2)'}` }}>{feedback}</div>}
       {done && <button style={{ ...s.optionBtn, marginTop: 8, marginBottom: 0, textAlign: 'center', color: C.teal, border: `1px solid rgba(0,153,168,0.3)` }} onClick={() => setPicked(null)}>Try again</button>}
     </div>
   )
