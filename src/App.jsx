@@ -3,6 +3,7 @@ import MathRefresher from './MathRefresher'
 import PopulationVsSample from './PopulationVsSample'
 import DataTypeIdentifier from './DataTypeIdentifier'
 import SummaryStatistics from './SummaryStatistics'
+import DistributionsExplorer from './DistributionsExplorer'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -37,8 +38,7 @@ const tools = [
   {
     id: "distributions", title: "Distributions Explorer", group: "Probability",
     description: "Binomial, normal, and Poisson distributions with live sliders and public health contexts for each shape.",
-    accent: C.purple, accentSoft: C.purpleSoft, component: null,
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M2 20 Q6 4 12 4 Q18 4 22 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="2" y1="20" x2="22" y2="20" stroke="currentColor" strokeWidth="2"/></svg>,
+    accent: C.purple, accentSoft: C.purpleSoft, component: DistributionsExplorer,
   },
   {
     id: "probability", title: "Probability Rules", group: "Probability",
