@@ -2,6 +2,7 @@ import { useState } from 'react'
 import MathRefresher from './MathRefresher'
 import PopulationVsSample from './PopulationVsSample'
 import DataTypeIdentifier from './DataTypeIdentifier'
+import SummaryStatistics from './SummaryStatistics'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -31,8 +32,7 @@ const tools = [
   {
     id: "summary-statistics", title: "Summary Statistics Explorer", group: "Foundation",
     description: "Mean, median, SD, IQR — what each one tells you, when to use which, and why you describe before you test.",
-    accent: C.teal, accentSoft: C.tealSoft, component: null,
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+    accent: C.teal, accentSoft: C.tealSoft, component: SummaryStatistics,
   },
   {
     id: "distributions", title: "Distributions Explorer", group: "Probability",
