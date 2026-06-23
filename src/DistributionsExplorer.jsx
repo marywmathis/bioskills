@@ -143,9 +143,9 @@ function NormalCurve({ mu, sigma }) {
 
 // ── TABS ──
 const TABS = [
-  { id: 'normal', label: 'Normal', color: C.teal },
-  { id: 'binomial', label: 'Binomial', color: C.purple },
-  { id: 'poisson', label: 'Poisson', color: C.coral },
+  { id: 'normal', label: 'Normal Distribution', color: C.teal },
+  { id: 'binomial', label: 'Binomial Distribution', color: C.purple },
+  { id: 'poisson', label: 'Poisson Distribution', color: C.coral },
 ]
 
 function NormalTab() {
@@ -158,41 +158,56 @@ function NormalTab() {
   return (
     <div>
       <div style={{ padding: '14px 16px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 8, marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: C.teal, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>What problem does it model?</div>
-        <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-          Many biological measurements — blood pressure, cholesterol, height — fall into a symmetric bell shape in large populations.
-          The normal distribution models <strong style={{ color: C.text }}>continuous measurements where values cluster around a center and tail off symmetrically.</strong>
+        <div style={{ fontSize: 12, fontWeight: 700, color: C.teal, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>What is the Normal Distribution?</div>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 10 }}>
+          Imagine measuring systolic blood pressure in 10,000 adults. Most people cluster around some middle value — say, 120 mmHg. A few have lower readings, a few have higher readings, and the further you move from the center, the fewer people you find. That pattern — symmetric, bell-shaped, tapering at the tails — is the <strong style={{ color: C.text }}>normal distribution</strong>.
+        </p>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 10 }}>
+          The normal distribution is defined by two numbers:
+        </p>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+          <div style={{ flex: 1, padding: '8px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 6 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: C.teal, marginBottom: 3 }}>μ (mu) — the mean</div>
+            <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>Where the center of the distribution sits. Changing μ slides the whole curve left or right.</div>
+          </div>
+          <div style={{ flex: 1, padding: '8px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 6 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: C.teal, marginBottom: 3 }}>σ (sigma) — the standard deviation</div>
+            <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>How spread out values are. A larger σ makes the curve wider and flatter. A smaller σ makes it taller and narrower.</div>
+          </div>
         </div>
-        <div style={{ marginTop: 10, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-          <strong style={{ color: C.text }}>Why it matters beyond the bell shape:</strong> Many statistical tests (t-tests, ANOVA) assume the data are approximately normal. And by the Central Limit Theorem, sample means become approximately normal as sample size grows — which is why normal-based inference works even when individual measurements aren't perfectly normal.
-        </div>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75 }}>
+          <strong style={{ color: C.text }}>Why does it matter beyond the bell shape?</strong> Many statistical tests — t-tests, ANOVA, linear regression — assume data are approximately normally distributed. Even when individual measurements aren't perfectly normal, sample means tend to become approximately normal as sample size grows. That's why so much of statistics works in practice.
+        </p>
       </div>
 
       <div style={{ background: C.alt, borderRadius: 10, padding: '14px', marginBottom: 14, border: `1px solid ${C.border}` }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-          Systolic blood pressure in a population — adjust μ and σ
+          Systolic blood pressure in a population — adjust μ and σ to see what changes
         </div>
         <NormalCurve mu={mu} sigma={sigma} />
+        <div style={{ fontSize: 12, color: C.dim, margin: '8px 0 10px', lineHeight: 1.6 }}>
+          The shaded bands show what fraction of the population falls within 1, 2, and 3 standard deviations of the mean. This is the <strong style={{ color: C.text }}>68–95–99.7 rule</strong> — a useful shortcut for interpreting any normal distribution.
+        </div>
         <div style={{ display: 'flex', gap: 10, margin: '10px 0', flexWrap: 'wrap' }}>
           {[
-            { label: '±1σ ≈ 68%', val: p68, color: C.teal, opacity: '0.6' },
-            { label: '±2σ ≈ 95%', val: p95, color: C.teal, opacity: '0.4' },
-            { label: '±3σ ≈ 99.7%', val: p997, color: C.teal, opacity: '0.25' },
+            { label: '±1σ', pct: p68, desc: 'within 1 SD' },
+            { label: '±2σ', pct: p95, desc: 'within 2 SDs' },
+            { label: '±3σ', pct: p997, desc: 'within 3 SDs' },
           ].map(b => (
-            <div key={b.label} style={{ flex: 1, minWidth: 100, padding: '6px 10px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 6, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: C.teal, fontWeight: 600, marginBottom: 2 }}>{b.label}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: C.teal, fontFamily: "'JetBrains Mono', monospace" }}>{b.val}%</div>
+            <div key={b.label} style={{ flex: 1, minWidth: 100, padding: '8px 10px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 6, textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: C.teal, fontWeight: 600, marginBottom: 2 }}>{b.label} ({b.desc})</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: C.teal, fontFamily: "'JetBrains Mono', monospace" }}>{b.pct}%</div>
             </div>
           ))}
         </div>
-        <Slider label="Mean (μ)" value={mu} min={80} max={160} step={1} onChange={setMu} />
-        <Slider label="Standard deviation (σ)" value={sigma} min={5} max={40} step={1} onChange={setSigma} />
+        <Slider label="Mean (μ) — moves the center" value={mu} min={80} max={160} step={1} onChange={setMu} />
+        <Slider label="Standard deviation (σ) — controls the spread" value={sigma} min={5} max={40} step={1} onChange={setSigma} />
       </div>
 
       <div style={{ ...s.example }}>
-        <div style={s.exampleLabel}>Interpretation</div>
-        With μ = {mu} and σ = {sigma}: about 95% of adults in this population have systolic BP between {mu - 2 * sigma} and {mu + 2 * sigma} mmHg.
-        Values outside ±2σ occur in roughly 5% of people — which is why clinical labs flag values beyond 2 SDs as "abnormal," even though some healthy people fall there by chance.
+        <div style={s.exampleLabel}>Reading the result</div>
+        With μ = {mu} mmHg and σ = {sigma} mmHg: about 95% of adults in this population have systolic blood pressure between <strong style={{ color: C.text }}>{mu - 2 * sigma}</strong> and <strong style={{ color: C.text }}>{mu + 2 * sigma}</strong> mmHg.
+        The remaining 5% fall outside that range. This is why clinical laboratories often flag values beyond ±2 SDs as "abnormal" — not because something is necessarily wrong, but because fewer than 5% of healthy people fall there by chance.
       </div>
     </div>
   )
@@ -216,31 +231,47 @@ function BinomialTab() {
   return (
     <div>
       <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8, marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>What problem does it model?</div>
-        <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-          You have a <strong style={{ color: C.text }}>fixed number of opportunities (n)</strong>, each with the same probability of success (p).
-          You want to know how many successes to expect.
+        <div style={{ fontSize: 12, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>What is the Binomial Distribution?</div>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 10 }}>
+          Imagine enrolling 50 patients in a clinical trial. Each patient either responds to the treatment or they don't. At the end of the study, you count how many responded. That count — out of a fixed number of patients — follows a <strong style={{ color: C.text }}>binomial distribution</strong>.
+        </p>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 10 }}>
+          The binomial distribution requires two things to be true:
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+          {[
+            { num: '1', text: 'A fixed number of trials (n). You know exactly how many opportunities there are.', color: C.purple },
+            { num: '2', text: 'Each trial has exactly two outcomes — success or failure — with the same probability (p) each time.', color: C.purple },
+          ].map(item => (
+            <div key={item.num} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: C.purple, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{item.num}</div>
+              <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.65 }}>{item.text}</div>
+            </div>
+          ))}
         </div>
-        <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(255,255,255,0.5)', borderRadius: 6, fontSize: 13, color: C.dim }}>
-          <strong style={{ color: C.purple }}>Key signal:</strong> "Out of 50 patients, how many responded?" → Fixed n, count successes → Binomial.
+        <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.5)', borderRadius: 6, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
+          <strong style={{ color: C.purple }}>The key question to ask:</strong> "Out of how many?" — if you can give a specific fixed number, you probably have a Binomial situation.
         </div>
       </div>
 
       <div style={{ background: C.alt, borderRadius: 10, padding: '14px', marginBottom: 14, border: `1px solid ${C.border}` }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-          Treatment response: {n} patients, {(p * 100).toFixed(0)}% response rate
+        <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+          Clinical trial: {n} patients, {(p * 100).toFixed(0)}% probability of response
+        </div>
+        <div style={{ fontSize: 12, color: C.dim, marginBottom: 10, lineHeight: 1.6 }}>
+          Each bar shows the probability of getting exactly that many responders. The distribution shows you all possible outcomes and how likely each one is.
         </div>
         <BarChart data={trimmed} color={C.purple} xLabel="Number of patients who respond" />
         <div style={{ display: 'flex', gap: 10, margin: '10px 0' }}>
           <div style={{ flex: 1, padding: '8px 12px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 6, textAlign: 'center' }}>
-            <div style={{ fontSize: 10, color: C.purple, fontWeight: 600, marginBottom: 2 }}>Expected (mean)</div>
+            <div style={{ fontSize: 10, color: C.purple, fontWeight: 600, marginBottom: 2 }}>Expected number (mean)</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>{mu}</div>
-            <div style={{ fontSize: 10, color: C.muted }}>patients</div>
+            <div style={{ fontSize: 10, color: C.muted }}>patients respond on average</div>
           </div>
           <div style={{ flex: 1, padding: '8px 12px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 6, textAlign: 'center' }}>
-            <div style={{ fontSize: 10, color: C.purple, fontWeight: 600, marginBottom: 2 }}>Std deviation</div>
+            <div style={{ fontSize: 10, color: C.purple, fontWeight: 600, marginBottom: 2 }}>Standard deviation</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>{sigma}</div>
-            <div style={{ fontSize: 10, color: C.muted }}>patients</div>
+            <div style={{ fontSize: 10, color: C.muted }}>typical variation</div>
           </div>
         </div>
         <Slider label="Number of patients (n)" value={n} min={10} max={100} step={5} onChange={setN} fmt={v => v} />
@@ -248,8 +279,8 @@ function BinomialTab() {
       </div>
 
       <div style={s.example}>
-        <div style={s.exampleLabel}>Interpretation</div>
-        With {n} patients and a {(p * 100).toFixed(0)}% response rate, you expect about {mu} patients to respond on average. The distribution shows all the possible outcomes and how likely each is.
+        <div style={s.exampleLabel}>Reading the result</div>
+        With {n} patients and a {(p * 100).toFixed(0)}% response rate, you expect about <strong style={{ color: C.text }}>{mu} patients</strong> to respond on average. Some trials will have more responders, some fewer — the distribution shows you how much natural variation to expect. Try increasing n and notice how the distribution becomes more bell-shaped: this is the binomial distribution approaching the normal distribution at large sample sizes.
       </div>
     </div>
   )
@@ -265,37 +296,47 @@ function PoissonTab() {
   return (
     <div>
       <div style={{ padding: '14px 16px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8, marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>What problem does it model?</div>
-        <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-          Events occur randomly in a fixed interval of time or space, with <strong style={{ color: C.text }}>no fixed maximum</strong>.
-          You want to model how many events happen per interval.
+        <div style={{ fontSize: 12, fontWeight: 700, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>What is the Poisson Distribution?</div>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 10 }}>
+          Imagine you're working in an emergency department. Patients arrive throughout the day, but not on a schedule — some hours are quiet, some are hectic. You want to model how many patients arrive in any given hour. There's no fixed maximum — in theory, any number could arrive. That kind of situation, where events occur randomly in a time interval with no fixed ceiling, is modeled by the <strong style={{ color: C.text }}>Poisson distribution</strong>.
+        </p>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 10 }}>
+          The Poisson distribution is defined by a single parameter:
+        </p>
+        <div style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.5)', borderRadius: 6, marginBottom: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.coral, marginBottom: 4 }}>λ (lambda) — the average rate</div>
+          <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.6 }}>The average number of events per interval. If the ER averages 3 arrivals per hour, then λ = 3. One remarkable property: the mean and the variance both equal λ.</div>
         </div>
-        <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(255,255,255,0.5)', borderRadius: 6, fontSize: 13, color: C.dim }}>
-          <strong style={{ color: C.coral }}>Key signal:</strong> "How many patients arrived in the last hour?" → No fixed maximum, events in an interval → Poisson.
+        <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.5)', borderRadius: 6, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
+          <strong style={{ color: C.coral }}>The key question to ask:</strong> "Per hour? Per day? Per mile?" — if you're counting events in an interval with no fixed maximum, it's probably Poisson.
         </div>
       </div>
 
       <div style={{ background: C.alt, borderRadius: 10, padding: '14px', marginBottom: 14, border: `1px solid ${C.border}` }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
           ER arrivals per hour — average rate λ = {lam}
+        </div>
+        <div style={{ fontSize: 12, color: C.dim, marginBottom: 10, lineHeight: 1.6 }}>
+          Each bar shows the probability of exactly that many arrivals in one hour. Notice that the distribution is right-skewed at low λ and becomes more symmetric as λ increases.
         </div>
         <BarChart data={trimmed} color={C.coral} xLabel="Arrivals per hour" />
         <div style={{ display: 'flex', gap: 10, margin: '10px 0' }}>
           <div style={{ flex: 1, padding: '8px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 6, textAlign: 'center' }}>
-            <div style={{ fontSize: 10, color: C.coral, fontWeight: 600, marginBottom: 2 }}>Mean = Variance</div>
+            <div style={{ fontSize: 10, color: C.coral, fontWeight: 600, marginBottom: 2 }}>Mean arrivals per hour</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: C.coral, fontFamily: "'JetBrains Mono', monospace" }}>λ = {lam}</div>
           </div>
           <div style={{ flex: 1, padding: '8px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 6, textAlign: 'center' }}>
-            <div style={{ fontSize: 10, color: C.coral, fontWeight: 600, marginBottom: 2 }}>Std deviation</div>
+            <div style={{ fontSize: 10, color: C.coral, fontWeight: 600, marginBottom: 2 }}>Standard deviation</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: C.coral, fontFamily: "'JetBrains Mono', monospace" }}>{Math.sqrt(lam).toFixed(2)}</div>
+            <div style={{ fontSize: 10, color: C.muted }}>= √λ</div>
           </div>
         </div>
-        <Slider label="Average rate (λ)" value={lam} min={0.5} max={15} step={0.5} onChange={setLam} fmt={v => v.toFixed(1)} />
+        <Slider label="Average rate per hour (λ)" value={lam} min={0.5} max={15} step={0.5} onChange={setLam} fmt={v => v.toFixed(1)} />
       </div>
 
       <div style={s.example}>
-        <div style={s.exampleLabel}>Interpretation</div>
-        With λ = {lam} arrivals per hour on average, some hours will have fewer and some more. The distribution shows the probability of each count. Notice: the mean and variance both equal λ — a unique property of the Poisson.
+        <div style={s.exampleLabel}>Reading the result</div>
+        With λ = {lam} arrivals per hour, the most likely outcome is {Math.round(lam)} arrivals — but there's meaningful probability of getting anywhere from 0 to {Math.round(lam * 2.5)}. Try increasing λ to 10 or 15 and notice how the distribution widens and becomes more symmetric — at large rates, the Poisson approaches the normal distribution.
       </div>
     </div>
   )
@@ -351,10 +392,28 @@ const SCENARIOS = [
   {
     q: "A lab measures serum cholesterol levels (mg/dL) in a random sample of 500 adults.",
     answer: 'normal',
-    whyCorrect: "Cholesterol is a continuous measurement that is approximately normally distributed in the general population → Normal.",
+    whyCorrect: "Cholesterol is a continuous measurement that is approximately normally distributed in the general population → Normal Distribution.",
     wrongFeedback: {
       binomial: "Cholesterol is a continuous measurement on a scale (mg/dL), not a count of successes out of a fixed number of trials.",
-      poisson: "Cholesterol is a continuous biological measurement, not a count of events per interval → Normal.",
+      poisson: "Cholesterol is a continuous biological measurement, not a count of events per interval → Normal Distribution.",
+    }
+  },
+  {
+    q: "A researcher counts the number of needle-stick injuries reported at a hospital per month.",
+    answer: 'poisson',
+    whyCorrect: "Needle-stick injuries occur randomly over time with no fixed maximum per month. This is a count of rare events in a fixed time interval → Poisson Distribution.",
+    wrongFeedback: {
+      normal: "Injury counts are discrete whole numbers and there's no fixed maximum per month. Normal doesn't fit discrete count data well here → Poisson Distribution.",
+      binomial: "There's no fixed number of 'opportunities' for needle-stick injuries in a month — any number could theoretically occur → Poisson Distribution.",
+    }
+  },
+  {
+    q: "A screening program tests 300 adults for hypertension and records how many test positive.",
+    answer: 'binomial',
+    whyCorrect: "There are exactly 300 adults being tested (fixed n), and each person either tests positive or doesn't. Fixed number of trials, binary outcome → Binomial Distribution.",
+    wrongFeedback: {
+      normal: "The outcome here is binary (positive or negative per person), not a continuous measurement. With a fixed group of 300 people → Binomial Distribution.",
+      poisson: "Poisson applies when there's no fixed maximum. Here there are exactly 300 people being screened, so Binomial is correct.",
     }
   },
 ]
@@ -496,9 +555,9 @@ export default function DistributionsExplorer() {
         <div style={{ fontSize: 12, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>What are you measuring?</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[
-            { label: 'A biological measurement (blood pressure, cholesterol, height)', type: 'normal', color: C.teal },
-            { label: 'Number of successes out of a fixed number of patients or trials', type: 'binomial', color: C.purple },
-            { label: 'Number of events occurring in a period of time or space', type: 'poisson', color: C.coral },
+            { label: 'A biological measurement (blood pressure, cholesterol, height)', type: 'normal', color: C.teal, dist: 'Normal Distribution' },
+            { label: 'Number of successes out of a fixed number of patients or trials', type: 'binomial', color: C.purple, dist: 'Binomial Distribution' },
+            { label: 'Number of events occurring in a period of time or space', type: 'poisson', color: C.coral, dist: 'Poisson Distribution' },
           ].map(opt => (
             <button key={opt.type} onClick={() => handlePreselect(opt.type)}
               style={{
@@ -508,7 +567,7 @@ export default function DistributionsExplorer() {
                 fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', fontWeight: preselect === opt.type ? 600 : 400,
                 transition: 'all 0.15s',
               }}>
-              {opt.label} → <strong>{opt.type.charAt(0).toUpperCase() + opt.type.slice(1)}</strong>
+              {opt.label} → <strong>{opt.dist}</strong>
             </button>
           ))}
         </div>
