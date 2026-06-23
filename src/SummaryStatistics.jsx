@@ -250,6 +250,16 @@ function Simulator() {
               Try again
             </button>
           )}
+          {reportDone && (
+            <div style={{ marginTop: 14, padding: '12px 14px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>What would happen if we skipped description?</div>
+              <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+                <div style={{ marginBottom: 6 }}><strong style={{ color: C.text }}>Reported result:</strong> Average hospital stay = {mean([...BASE_DATA, OUTLIER]).toFixed(1)} days</div>
+                <div style={{ marginBottom: 6 }}><strong style={{ color: C.text }}>Reality:</strong> {BASE_DATA.length} of {BASE_DATA.length + 1} patients stayed {Math.max(...BASE_DATA)} days or fewer. One extreme stay pulled the mean upward.</div>
+                <div style={{ fontStyle: 'italic', color: C.purple }}>The summary statistics revealed a story the average alone would miss.</div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -275,8 +285,9 @@ export default function SummaryStatistics() {
             {[
               { step: '1', label: 'Describe', sub: 'Mean, median, SD, IQR, counts', color: C.teal, bg: C.tealSoft, border: 'rgba(0,153,168,0.2)' },
               { step: '2', label: 'Visualize', sub: 'Histogram, boxplot, bar chart', color: C.purple, bg: C.purpleSoft, border: 'rgba(107,63,204,0.2)' },
-              { step: '3', label: 'Ask a research question', sub: 'Is there a difference? An association?', color: C.amber, bg: C.amberSoft, border: 'rgba(184,112,0,0.2)' },
-              { step: '4', label: 'Choose a test', sub: 't-test, chi-square, Mann-Whitney...', color: C.coral, bg: C.coralSoft, border: 'rgba(232,69,42,0.2)' },
+              { step: '3', label: 'Understand your data', sub: 'Shape, outliers, missing patterns', color: C.green, bg: C.greenSoft, border: 'rgba(26,122,62,0.2)' },
+              { step: '4', label: 'Ask a research question', sub: 'Is there a difference? An association?', color: C.amber, bg: C.amberSoft, border: 'rgba(184,112,0,0.2)' },
+              { step: '5', label: 'Choose a test', sub: 't-test, chi-square, Mann-Whitney...', color: C.coral, bg: C.coralSoft, border: 'rgba(232,69,42,0.2)' },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {i > 0 && <div style={{ fontSize: 18, color: C.muted, margin: '2px 0' }}>↓</div>}
@@ -290,9 +301,24 @@ export default function SummaryStatistics() {
               </div>
             ))}
           </div>
-          <div style={{ ...s.example, marginTop: 14 }}>
-            <div style={s.exampleLabel}>Why this matters</div>
-            A hypothesis test tells you whether a difference is statistically significant. A summary statistic tells you whether the difference is meaningful. You need both — and description always comes first.
+          <div style={{ padding: '14px 16px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8, marginTop: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>If you skip summary statistics, you may:</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              {[
+                'Miss extreme outliers that distort your results',
+                'Choose the wrong statistical test for your data',
+                'Report a misleading average that hides the real story',
+                'Draw the wrong conclusion from your analysis',
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: C.dim, lineHeight: 1.5 }}>
+                  <span style={{ color: C.coral, fontWeight: 700, flexShrink: 0 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 10, fontSize: 13, fontWeight: 600, color: C.coral }}>
+              Statistical tests answer questions about data. Summary statistics help you understand what data you actually have.
+            </div>
           </div>
         </div>
       </Section>
@@ -300,8 +326,15 @@ export default function SummaryStatistics() {
       {/* 2. Simulator */}
       <Section icon="~" iconBg={C.tealSoft} title="Mean vs. Median: Watch What Happens" defaultOpen={true}>
         <div style={{ paddingTop: 20 }}>
+          <div style={{ padding: '14px 16px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, marginBottom: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: C.amber, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Imagine a researcher reports:</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.text, fontFamily: "'Space Grotesk', sans-serif", marginBottom: 6 }}>Average hospital stay = 8.1 days</div>
+            <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.65 }}>
+              That sounds like patients typically stay about a week. But what if most patients stayed 3–4 days and one patient stayed 45 days? Without looking at the distribution, you would never know the average is hiding that story.
+            </div>
+          </div>
           <p style={s.prose}>
-            Below is a dataset of hospital length of stay for 9 patients. The mean and median are close — the distribution is fairly symmetric. Now add a patient who stayed 45 days and watch what happens.
+            Below is the actual dataset. The mean and median start close together — the distribution is fairly symmetric. Add the 45-day patient and watch what happens.
           </p>
           <Simulator />
         </div>
