@@ -58,28 +58,56 @@ function ComplementSim() {
 
 // ── Venn Diagram SVG ──
 function VennDiagram({ pA, pB, pAB, mutExcl }) {
-  const W = 320, H = 160
-  const overlap = mutExcl ? 0 : pAB
-  const union = pA + pB - overlap
-  const separation = mutExcl ? 0.05 : Math.max(0, 0.3 - pAB * 2)
-  const cx1 = W * (0.35 - separation * 0.5)
-  const cx2 = W * (0.65 + separation * 0.5)
-  const cy = H / 2
-  const r = 55
+  const W = 320, H = 170
+  const cy = H / 2 - 10
+
+  // Scale radii to probabilities
+  const rA = 28 + pA * 45
+  const rB = 28 + pB * 45
+
+  // Separation: when mutually exclusive circles don't touch
+  // When overlapping, push circles together based on pAB
+  const maxR = Math.max(rA, rB)
+  const minTouchDist = rA + rB  // circles just touching
+  const maxOverlapDist = Math.abs(rA - rB) + 4  // almost fully inside
+
+  let dist
+  if (mutExcl) {
+    dist = rA + rB + 12  // separated, not touching
+  } else {
+    // More overlap = closer together
+    const overlapFraction = pAB / Math.min(pA, pB)
+    dist = minTouchDist - overlapFraction * (minTouchDist - maxOverlapDist - 10)
+    dist = Math.max(maxOverlapDist + 4, Math.min(minTouchDist - 2, dist))
+  }
+
+  const cx1 = W / 2 - dist / 2
+  const cx2 = W / 2 + dist / 2
+
+  const union = +(pA + pB - (mutExcl ? 0 : pAB)).toFixed(2)
 
   return (
     <svg width={W} height={H} style={{ display: 'block', margin: '0 auto' }}>
       <rect width={W} height={H} fill={C.alt} rx={8} />
       <text x={W / 2} y={H - 6} textAnchor="middle" fontSize={10} fill={C.muted}>Sample Space</text>
-      <circle cx={cx1} cy={cy} r={r} fill={C.teal} fillOpacity={0.2} stroke={C.teal} strokeWidth={2} />
-      <circle cx={cx2} cy={cy} r={r} fill={C.purple} fillOpacity={0.2} stroke={C.purple} strokeWidth={2} />
-      <text x={cx1 - 20} y={cy + 4} textAnchor="middle" fontSize={13} fill={C.teal} fontWeight="700">A</text>
-      <text x={cx2 + 20} y={cy + 4} textAnchor="middle" fontSize={13} fill={C.purple} fontWeight="700">B</text>
-      {!mutExcl && pAB > 0 && (
-        <text x={(cx1 + cx2) / 2} y={cy + 4} textAnchor="middle" fontSize={10} fill={C.dim} fontWeight="600">A∩B</text>
+
+      {/* Circle A */}
+      <circle cx={cx1} cy={cy} r={rA} fill={C.teal} fillOpacity={0.22} stroke={C.teal} strokeWidth={2} />
+      {/* Circle B */}
+      <circle cx={cx2} cy={cy} r={rB} fill={C.purple} fillOpacity={0.22} stroke={C.purple} strokeWidth={2} />
+
+      {/* Labels */}
+      <text x={cx1 - rA * 0.45} y={cy + 4} textAnchor="middle" fontSize={13} fill={C.teal} fontWeight="700">A</text>
+      <text x={cx2 + rB * 0.45} y={cy + 4} textAnchor="middle" fontSize={13} fill={C.purple} fontWeight="700">B</text>
+
+      {/* Intersection label */}
+      {!mutExcl && pAB > 0.02 && (
+        <text x={(cx1 + cx2) / 2} y={cy + 4} textAnchor="middle" fontSize={9} fill={C.dim} fontWeight="600">A∩B</text>
       )}
-      <text x={W / 2} y={H - 20} textAnchor="middle" fontSize={11} fill={C.amber} fontWeight="600">
-        P(A∪B) = {union.toFixed(2)}
+
+      {/* Result */}
+      <text x={W / 2} y={H - 20} textAnchor="middle" fontSize={12} fill={C.amber} fontWeight="700">
+        P(A∪B) = {union}
       </text>
     </svg>
   )
