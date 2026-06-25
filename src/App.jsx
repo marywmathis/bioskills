@@ -4,6 +4,7 @@ import PopulationVsSample from './PopulationVsSample'
 import DataTypeIdentifier from './DataTypeIdentifier'
 import SummaryStatistics from './SummaryStatistics'
 import DistributionsExplorer from './DistributionsExplorer'
+import ProbabilityRules from './ProbabilityRules'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -43,8 +44,7 @@ const tools = [
   {
     id: "probability", title: "Probability Rules", group: "Probability",
     description: "Addition rule, multiplication rule, conditional probability — with Venn diagrams that update as you adjust the numbers.",
-    accent: C.coral, accentSoft: C.coralSoft, component: null,
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="12" r="6" stroke="currentColor" strokeWidth="2" fillOpacity="0.15" fill="currentColor"/><circle cx="15" cy="12" r="6" stroke="currentColor" strokeWidth="2" fillOpacity="0.15" fill="currentColor"/></svg>,
+    accent: C.coral, accentSoft: C.coralSoft, component: ProbabilityRules,
   },
   {
     id: "diagnostic-test", title: "Diagnostic Test Interpreter", group: "Probability",
