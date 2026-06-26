@@ -58,58 +58,80 @@ function ComplementSim() {
 
 // ── Venn Diagram SVG ──
 function VennDiagram({ pA, pB, pAB, mutExcl }) {
-  const W = 320, H = 170
-  const cy = H / 2 - 10
+  const W = 340, H = 190
+  const cy = H / 2 - 8
+  const PAD = 16
 
-  // Scale radii to probabilities
-  const rA = 28 + pA * 45
-  const rB = 28 + pB * 45
-
-  // Separation: when mutually exclusive circles don't touch
-  // When overlapping, push circles together based on pAB
-  const maxR = Math.max(rA, rB)
-  const minTouchDist = rA + rB  // circles just touching
-  const maxOverlapDist = Math.abs(rA - rB) + 4  // almost fully inside
+  const rA = 30 + pA * 42
+  const rB = 30 + pB * 42
+  const minTouchDist = rA + rB
+  const maxOverlapDist = Math.abs(rA - rB) + 4
 
   let dist
   if (mutExcl) {
-    dist = rA + rB + 12  // separated, not touching
+    dist = rA + rB + 18
   } else {
-    // More overlap = closer together
-    const overlapFraction = pAB / Math.min(pA, pB)
-    dist = minTouchDist - overlapFraction * (minTouchDist - maxOverlapDist - 10)
-    dist = Math.max(maxOverlapDist + 4, Math.min(minTouchDist - 2, dist))
+    const overlapFraction = Math.min(pAB / Math.max(Math.min(pA, pB), 0.01), 1)
+    dist = minTouchDist - overlapFraction * (minTouchDist - maxOverlapDist - 8)
+    dist = Math.max(maxOverlapDist + 4, Math.min(minTouchDist - 1, dist))
   }
 
   const cx1 = W / 2 - dist / 2
   const cx2 = W / 2 + dist / 2
-
   const union = +(pA + pB - (mutExcl ? 0 : pAB)).toFixed(2)
 
+  // Clip paths for intersection shading
+  const clipId1 = "venn-clip-a"
+  const clipId2 = "venn-clip-b"
+
   return (
-    <svg width={W} height={H} style={{ display: 'block', margin: '0 auto' }}>
-      <rect width={W} height={H} fill={C.alt} rx={8} />
-      <text x={W / 2} y={H - 6} textAnchor="middle" fontSize={10} fill={C.muted}>Sample Space</text>
+    <div>
+      <div style={{ fontSize: 10, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.07em', textAlign: 'center', marginBottom: 4 }}>
+        Conceptual Venn Diagram
+      </div>
+      <svg width={W} height={H} style={{ display: 'block', margin: '0 auto', transition: 'all 0.4s ease' }}>
+        {/* Sample space rectangle */}
+        <rect x={PAD} y={PAD} width={W - PAD * 2} height={H - PAD * 2 - 24} fill={C.alt} rx={8} stroke={C.border} strokeWidth={1.5} strokeDasharray="4 3" />
+        <text x={W - PAD - 6} y={PAD + 13} textAnchor="end" fontSize={9} fill={C.muted} fontWeight="600">Sample Space (all patients)</text>
 
-      {/* Circle A */}
-      <circle cx={cx1} cy={cy} r={rA} fill={C.teal} fillOpacity={0.22} stroke={C.teal} strokeWidth={2} />
-      {/* Circle B */}
-      <circle cx={cx2} cy={cy} r={rB} fill={C.purple} fillOpacity={0.22} stroke={C.purple} strokeWidth={2} />
+        {/* Clip path for B — used to shade intersection */}
+        <defs>
+          <clipPath id={clipId1}>
+            <circle cx={cx1} cy={cy} r={rA} />
+          </clipPath>
+          <clipPath id={clipId2}>
+            <circle cx={cx2} cy={cy} r={rB} />
+          </clipPath>
+        </defs>
 
-      {/* Labels */}
-      <text x={cx1 - rA * 0.45} y={cy + 4} textAnchor="middle" fontSize={13} fill={C.teal} fontWeight="700">A</text>
-      <text x={cx2 + rB * 0.45} y={cy + 4} textAnchor="middle" fontSize={13} fill={C.purple} fontWeight="700">B</text>
+        {/* Circle A fill */}
+        <circle cx={cx1} cy={cy} r={rA} fill={C.teal} fillOpacity={0.18} stroke={C.teal} strokeWidth={2}
+          style={{ transition: 'cx 0.4s ease, r 0.4s ease' }} />
+        {/* Circle B fill */}
+        <circle cx={cx2} cy={cy} r={rB} fill={C.purple} fillOpacity={0.18} stroke={C.purple} strokeWidth={2}
+          style={{ transition: 'cx 0.4s ease, r 0.4s ease' }} />
 
-      {/* Intersection label */}
-      {!mutExcl && pAB > 0.02 && (
-        <text x={(cx1 + cx2) / 2} y={cy + 4} textAnchor="middle" fontSize={9} fill={C.dim} fontWeight="600">A∩B</text>
-      )}
+        {/* Intersection — circle B clipped to circle A's region = darker overlap */}
+        {!mutExcl && pAB > 0.01 && (
+          <circle cx={cx2} cy={cy} r={rB} fill={C.teal} fillOpacity={0.35}
+            clipPath={`url(#${clipId1})`}
+            style={{ transition: 'cx 0.4s ease' }} />
+        )}
 
-      {/* Result */}
-      <text x={W / 2} y={H - 20} textAnchor="middle" fontSize={12} fill={C.amber} fontWeight="700">
-        P(A∪B) = {union}
-      </text>
-    </svg>
+        {/* Labels */}
+        <text x={Math.max(PAD + 14, cx1 - rA * 0.5)} y={cy + 4} textAnchor="middle" fontSize={14} fill={C.teal} fontWeight="700">A</text>
+        <text x={Math.min(W - PAD - 14, cx2 + rB * 0.5)} y={cy + 4} textAnchor="middle" fontSize={14} fill={C.purple} fontWeight="700">B</text>
+
+        {!mutExcl && pAB > 0.03 && (
+          <text x={(cx1 + cx2) / 2} y={cy + 4} textAnchor="middle" fontSize={9} fill={C.dim} fontWeight="600">A∩B</text>
+        )}
+
+        {/* Result */}
+        <text x={W / 2} y={H - 10} textAnchor="middle" fontSize={12} fill={C.amber} fontWeight="700">
+          P(A∪B) = {union}
+        </text>
+      </svg>
+    </div>
   )
 }
 
@@ -123,6 +145,8 @@ function AdditionSim() {
   const overlap = mutExcl ? 0 : Math.min(pAB, pA, pB)
   const union = +(pA + pB - overlap).toFixed(2)
   const maxOverlap = +Math.min(pA, pB).toFixed(2)
+  const unionInvalid = union > 1
+  const overlapInvalid = !mutExcl && pAB > Math.min(pA, pB) + 0.001
 
   return (
     <div>
@@ -132,6 +156,7 @@ function AdditionSim() {
           background: mutExcl ? C.coralSoft : C.surface,
           border: `1px solid ${mutExcl ? C.coral : C.border}`,
           color: mutExcl ? C.coral : C.dim, fontWeight: 600,
+          transition: 'all 0.2s',
         }}>
           Mutually Exclusive: {mutExcl ? 'ON' : 'OFF'}
         </button>
@@ -139,7 +164,7 @@ function AdditionSim() {
 
       <VennDiagram pA={pA} pB={pB} pAB={pAB} mutExcl={mutExcl} />
 
-      <div style={{ margin: '14px 0 10px', padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.amber, textAlign: 'center' }}>
+      <div style={{ margin: '14px 0 10px', padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.amber, textAlign: 'center', transition: 'all 0.3s' }}>
         {mutExcl
           ? `P(A ∪ B) = P(A) + P(B) = ${pA.toFixed(2)} + ${pB.toFixed(2)} = ${(pA + pB).toFixed(2)}`
           : `P(A ∪ B) = P(A) + P(B) − P(A ∩ B) = ${pA.toFixed(2)} + ${pB.toFixed(2)} − ${overlap.toFixed(2)} = ${union}`
@@ -148,7 +173,19 @@ function AdditionSim() {
 
       {mutExcl && (
         <div style={{ padding: '8px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 7, fontSize: 12, color: C.coral, marginBottom: 10 }}>
-          When events are mutually exclusive, they cannot both occur — the circles don't overlap. No double-counting, so we don't subtract.
+          When events are mutually exclusive, they cannot both occur — the circles separate completely. No overlap means no double-counting, so we don't subtract anything.
+        </div>
+      )}
+
+      {overlapInvalid && (
+        <div style={{ padding: '8px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 7, fontSize: 12, color: C.coral, marginBottom: 10 }}>
+          ⚠ P(A ∩ B) cannot exceed either P(A) or P(B). The overlap is being capped at {maxOverlap.toFixed(2)}.
+        </div>
+      )}
+
+      {unionInvalid && (
+        <div style={{ padding: '8px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 7, fontSize: 12, color: C.coral, marginBottom: 10 }}>
+          ⚠ P(A ∪ B) = {union} exceeds 1.0 — an impossible probability. Reduce P(A), P(B), or increase P(A ∩ B).
         </div>
       )}
 
@@ -160,9 +197,8 @@ function AdditionSim() {
 
       <div style={{ ...s.example, marginTop: 12 }}>
         <div style={s.exampleLabel}>Public health reading</div>
-        In a screened population: {(pA * 100).toFixed(0)}% have hypertension, {(pB * 100).toFixed(0)}% have diabetes
-        {!mutExcl ? `, and ${(overlap * 100).toFixed(0)}% have both` : ', and these conditions cannot occur together (mutually exclusive)'}.
-        The probability a randomly selected patient has hypertension or diabetes is <strong style={{ color: C.text }}>{(union * 100).toFixed(0)}%</strong>.
+        In this screened population, {(pA * 100).toFixed(0)}% of patients have hypertension, {(pB * 100).toFixed(0)}% have diabetes
+        {!mutExcl ? `, and ${(overlap * 100).toFixed(0)}% have both — so those patients would be counted twice if we simply added the percentages` : ', and these conditions cannot occur in the same patient (mutually exclusive)'}. Therefore, the probability that a randomly selected patient has hypertension or diabetes is <strong style={{ color: C.text }}>{(union * 100).toFixed(0)}%</strong>.
       </div>
     </div>
   )
@@ -695,7 +731,7 @@ export default function ProbabilityRules() {
       {/* Addition */}
       <Section icon="∪" iconBg={C.tealSoft} title="The Addition Rule">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>When you want the probability that <em>at least one</em> of two events occurs, use the addition rule. The key: if events overlap, you've counted the overlap twice — so subtract it once.</p>
+          <p style={s.prose}>When you want the probability that <em>at least one</em> of two events occurs, use the addition rule. When events overlap, simply adding P(A) and P(B) counts the shared patients twice. Subtract the overlap once to count each patient only once.</p>
           <div style={{ padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.amber, textAlign: 'center', marginBottom: 16 }}>
             P(A ∪ B) = P(A) + P(B) − P(A ∩ B)
           </div>
