@@ -167,20 +167,20 @@ const MEASURES = [
   {
     id: 'sens',
     name: 'Sensitivity',
-    question: 'Among people who HAVE disease, what fraction test positive?',
+    question: 'Among patients confirmed to have disease during validation, what fraction test positive?',
     formula: 'TP / (TP + FN)',
-    denomGroup: 'Disease+ column',
-    note: 'Denominator = all people with disease. Changing prevalence changes how many disease patients there are, but TP and FN grow proportionally — so sensitivity stays the same.',
+    denomGroup: 'Disease+ column (confirmed during validation)',
+    note: 'During test validation, researchers already know which patients have disease. Sensitivity is simply the percentage of those patients who receive a positive test result. As prevalence changes in clinical use, TP and FN grow proportionally — so sensitivity stays the same.',
     changesWithPrev: false,
     color: '#e8452a',
   },
   {
     id: 'spec',
     name: 'Specificity',
-    question: 'Among people who do NOT have disease, what fraction test negative?',
+    question: 'Among patients confirmed to be disease-free during validation, what fraction test negative?',
     formula: 'TN / (TN + FP)',
-    denomGroup: 'Disease− column',
-    note: 'Denominator = all healthy people. Same logic as sensitivity — healthy patients grow proportionally with prevalence, so specificity is unchanged.',
+    denomGroup: 'Disease− column (confirmed during validation)',
+    note: 'During test validation, researchers already know which patients do not have disease. Specificity is the percentage of those patients who receive a negative test result. TN and FP grow proportionally with the healthy pool — so specificity stays the same.',
     changesWithPrev: false,
     color: '#94a3b8',
   },
@@ -332,10 +332,24 @@ export default function DiagnosticTest() {
         Four measures. One idea: sensitivity and specificity describe the test. PPV and NPV describe what the test means in this population. Prevalence is the difference.
       </div>
 
+      {/* Validation callout */}
+      <div style={{ padding: '14px 18px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 10, marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: C.amber, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>How do we know who really has the disease?</div>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 8 }}>
+          Before a new diagnostic test is released for clinical use, researchers compare it against the best available method for determining whether patients truly have the disease — called the <strong style={{ color: C.text }}>reference standard</strong> (or gold standard). Because researchers already know each patient's true disease status from the reference standard, they can calculate how often the new test agrees.
+        </p>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 8 }}>
+          That's where sensitivity and specificity come from. They are measured once during validation — and then become fixed characteristics of the test.
+        </p>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75 }}>
+          <strong style={{ color: C.text }}>When the test is used in real patients, we no longer know who has the disease</strong> — that's exactly why we're using the test. At that point, the question shifts: not "How well does the test detect disease?" but "What does this positive (or negative) result mean for this patient?" That's where PPV and NPV come in.
+        </p>
+      </div>
+
       {/* Section 1: Four questions */}
       <Section icon="?" iconBg={C.tealSoft} title="Start With the Question, Not the Formula" defaultOpen={true}>
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>Click each measure to see which group becomes the denominator.</p>
+          <p style={s.prose}>Click each measure to see which group becomes the reference group.</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
             {MEASURES.map(m => (
               <button key={m.id} onClick={() => setHighlight(highlight === m.id ? null : m.id)}
@@ -506,16 +520,16 @@ export default function DiagnosticTest() {
             {[
               {
                 name: 'Sensitivity', color: '#e8452a',
-                against: 'Everyone who truly has disease',
+                against: 'Patients confirmed to have disease during test validation',
                 changes: 'No',
-                why: 'Measures how well the test detects disease among people who truly have it. As prevalence changes, true positives and false negatives increase or decrease together — so the percentage stays the same.',
+                why: 'Researchers already knew which patients had disease. Sensitivity is the percentage of those patients who tested positive. TP and FN grow proportionally with prevalence — the ratio stays fixed.',
                 tree: { root: 'Disease +', items: ['TP ← numerator', 'FN'] },
               },
               {
                 name: 'Specificity', color: '#94a3b8',
-                against: 'Everyone who truly does not have disease',
+                against: 'Patients confirmed to be disease-free during test validation',
                 changes: 'No',
-                why: 'Measures how well the test identifies healthy people. As prevalence changes, true negatives and false positives change together — so the percentage stays the same.',
+                why: 'Researchers already knew which patients were healthy. Specificity is the percentage who tested negative. TN and FP grow proportionally — the ratio stays fixed.',
                 tree: { root: 'Disease −', items: ['TN ← numerator', 'FP'] },
               },
               {
