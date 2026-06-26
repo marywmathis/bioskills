@@ -284,22 +284,17 @@ const GRID_ROWS = 25
 const TOTAL = 1000
 const N_DISEASE = 100
 const N_HEALTHY = 900
-const N_TP = 80   // disease + positive
-const N_FP = 60   // healthy + positive
+const N_TP = 80
+const N_FP = 60
 const N_TOTAL_POS = N_TP + N_FP  // 140
 
 function buildPatients() {
-  // First 100 = disease, next 900 = healthy
-  // Within disease: first 80 = positive, last 20 = negative
-  // Within healthy: first 60 = positive, last 840 = negative
   const pts = []
   for (let i = 0; i < TOTAL; i++) {
     const disease = i < N_DISEASE
     const positive = disease ? i < N_TP : (i >= N_DISEASE && i < N_DISEASE + N_FP)
     pts.push({ id: i, disease, positive })
   }
-  // Shuffle so disease/positive aren't all top-left
-  // Use seeded shuffle for reproducibility
   const shuffled = [...pts]
   let seed = 42
   function rand() { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return (seed >>> 0) / 0xffffffff }
@@ -311,96 +306,102 @@ function buildPatients() {
 }
 
 const PATIENTS = buildPatients()
-
-// Rearranged: positives only in compact 14×10 grid
-function buildRearranged() {
-  const pos = PATIENTS.filter(p => p.positive)
-  return pos
-}
-const POS_PATIENTS = buildRearranged()
+const POS_PATIENTS = PATIENTS.filter(p => p.positive)
 
 function ConditionalSim() {
   const [stage, setStage] = useState(0)
   const [rearranged, setRearranged] = useState(false)
+  const [reflectPick, setReflectPick] = useState(null)
 
   const DOT = 7, GAP = 2
   const fullW = GRID_COLS * (DOT + GAP)
   const fullH = GRID_ROWS * (DOT + GAP)
-
-  // Rearranged grid: 14 cols × 10 rows
   const R_COLS = 14, R_ROWS = 10
   const rW = R_COLS * (DOT + GAP)
   const rH = R_ROWS * (DOT + GAP)
 
-  function dotColor(p) {
-    if (rearranged) {
-      // In rearranged view, only positives shown
-      if (stage >= 4 && p.disease) return C.coral
-      return C.teal
+  // Auto-compress when reaching stage 3
+  const handleStage = (i) => {
+    setStage(i)
+    setRearranged(false)
+    setReflectPick(null)
+    if (i === 3) {
+      setTimeout(() => setRearranged(true), 1000)
     }
-    if (stage === 0) return C.muted
-    if (stage === 1) return p.disease ? C.coral : '#cbd5e1'
-    if (stage === 2) return p.positive ? C.teal : '#cbd5e1'
-    if (stage === 3) return p.positive ? (p.disease ? C.coral : C.teal) : C.muted
-    if (stage >= 4) return p.positive ? (p.disease ? C.coral : C.teal) : C.muted
-    return C.muted
+  }
+
+  function dotFill(p) {
+    // red = disease, gray = healthy
+    return p.disease ? '#e8452a' : '#94a3b8'
   }
 
   function dotOpacity(p) {
-    if (rearranged) return 1
-    if (stage >= 3 && !p.positive) return 0.12
+    if (stage >= 3 && !p.positive) return 0.10
+    if (stage === 1) return p.disease ? 1 : 0.25
+    if (stage === 2) return p.positive ? 1 : 0.25
     return 1
   }
 
   function dotStroke(p) {
-    if (stage >= 2 && p.positive) return { stroke: C.teal, strokeWidth: 1.5 }
+    // blue ring = positive test
+    if (stage >= 2 && p.positive) return { stroke: '#3b82f6', strokeWidth: 1.8 }
     return {}
   }
 
   const stages = [
-    { label: 'All 1,000 patients', q: null },
-    { label: 'Show disease status', q: 'What is P(Disease)?' },
-    { label: 'Show test results', q: 'What is P(Positive Test)?' },
-    { label: 'Focus on positive tests', q: 'Among positive tests — who has disease?' },
-    { label: 'Conditional probability', q: 'P(Disease | Positive Test) = ?' },
+    { id: 0, label: '1. All 1,000 patients', short: 'All patients' },
+    { id: 1, label: '2. Show disease status', short: 'Disease status' },
+    { id: 2, label: '3. Show test results', short: 'Test results' },
+    { id: 3, label: '4. Among Patients Who Tested Positive', short: 'Focus on positives' },
+    { id: 4, label: '5. Conditional probability', short: 'P(Disease | Positive)' },
   ]
-
-  const answers = [null, `${N_DISEASE}/${TOTAL} = 0.10`, `${N_TOTAL_POS}/${TOTAL} = 0.14`, null, `${N_TP}/${N_TOTAL_POS} = ${(N_TP / N_TOTAL_POS).toFixed(3)}`]
 
   return (
     <div>
       {/* Stage buttons */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
-        {stages.map((st, i) => (
-          <button key={i} onClick={() => { setStage(i); if (i < 3) setRearranged(false) }}
+        {stages.map((st) => (
+          <button key={st.id} onClick={() => handleStage(st.id)}
             style={{
               padding: '5px 10px', borderRadius: 6, fontSize: 11, fontFamily: 'inherit', cursor: 'pointer',
-              background: stage === i ? C.teal : C.surface,
-              border: `1px solid ${stage === i ? C.teal : C.border}`,
-              color: stage === i ? '#fff' : C.dim, fontWeight: stage === i ? 600 : 400,
+              background: stage === st.id ? C.teal : C.surface,
+              border: `1px solid ${stage === st.id ? C.teal : C.border}`,
+              color: stage === st.id ? '#fff' : C.dim, fontWeight: stage === st.id ? 600 : 400,
             }}>
-            {i + 1}. {st.label}
+            {st.short}
           </button>
         ))}
       </div>
 
+      {/* Stage heading */}
+      <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 15, fontWeight: 700, color: C.teal, marginBottom: 8 }}>
+        {stages[stage].label}
+        {stage === 3 && <span style={{ display: 'block', fontSize: 12, color: C.dim, fontWeight: 400, fontFamily: 'inherit', marginTop: 2 }}>Conditional probability — restricting to a subgroup</span>}
+      </div>
+
       {/* Question banner */}
-      {stages[stage].q && (
+      {stage === 1 && (
         <div style={{ padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, marginBottom: 12, fontSize: 14, color: C.amber, fontWeight: 600 }}>
-          {stages[stage].q}
-          {answers[stage] && <span style={{ marginLeft: 12, color: C.text, fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }}>→ {answers[stage]}</span>}
+          What is P(Disease)?
+          <span style={{ marginLeft: 12, color: C.text, fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }}>→ {N_DISEASE}/{TOTAL} = 0.10</span>
+        </div>
+      )}
+      {stage === 2 && (
+        <div style={{ padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, marginBottom: 12, fontSize: 14, color: C.amber, fontWeight: 600 }}>
+          What is P(Positive Test)?
+          <span style={{ marginLeft: 12, color: C.text, fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }}>→ {N_TOTAL_POS}/{TOTAL} = 0.14</span>
         </div>
       )}
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, marginBottom: 10, fontSize: 12, color: C.dim, flexWrap: 'wrap' }}>
-        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: C.coral, marginRight: 4, verticalAlign: 'middle' }} />Disease</span>
-        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#cbd5e1', border: `1.5px solid ${C.teal}`, marginRight: 4, verticalAlign: 'middle' }} />Healthy + Positive Test</span>
-        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#cbd5e1', marginRight: 4, verticalAlign: 'middle' }} />Healthy + Negative Test</span>
+        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#e8452a', marginRight: 4, verticalAlign: 'middle' }} />Disease</span>
+        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#94a3b8', marginRight: 4, verticalAlign: 'middle' }} />Healthy</span>
+        {stage >= 2 && <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: 'transparent', border: '2px solid #3b82f6', marginRight: 4, verticalAlign: 'middle' }} />Positive test (blue ring)</span>}
       </div>
 
       {/* Dot grid */}
-      <div style={{ background: C.alt, borderRadius: 10, padding: 12, border: `1px solid ${C.border}`, overflowX: 'auto', marginBottom: 12 }}>
+      <div style={{ background: C.alt, borderRadius: 10, padding: 12, border: `1px solid ${C.border}`, overflowX: 'auto', marginBottom: 12, transition: 'all 0.4s' }}>
         {!rearranged ? (
           <svg width={fullW} height={fullH} style={{ display: 'block' }}>
             {PATIENTS.map((p, i) => {
@@ -411,7 +412,7 @@ function ConditionalSim() {
               const stroke = dotStroke(p)
               return (
                 <circle key={p.id} cx={x} cy={y} r={DOT / 2}
-                  fill={dotColor(p)} fillOpacity={dotOpacity(p)}
+                  fill={dotFill(p)} fillOpacity={dotOpacity(p)}
                   stroke={stroke.stroke || 'none'} strokeWidth={stroke.strokeWidth || 0}
                 />
               )
@@ -419,8 +420,8 @@ function ConditionalSim() {
           </svg>
         ) : (
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-              140 positive tests only — {N_TP} with disease (red), {N_FP} without (teal)
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.teal, marginBottom: 8 }}>
+              140 patients who tested positive — {N_TP} with disease (red), {N_FP} healthy (gray)
             </div>
             <svg width={rW} height={rH} style={{ display: 'block' }}>
               {POS_PATIENTS.map((p, i) => {
@@ -430,11 +431,15 @@ function ConditionalSim() {
                 const y = row * (DOT + GAP) + DOT / 2
                 return (
                   <circle key={p.id} cx={x} cy={y} r={DOT / 2}
-                    fill={stage >= 4 && p.disease ? C.coral : C.teal}
+                    fill={stage >= 4 && p.disease ? '#e8452a' : p.disease ? '#e8452a' : '#94a3b8'}
+                    stroke="#3b82f6" strokeWidth={1.5}
                   />
                 )
               })}
             </svg>
+            <div style={{ marginTop: 10, padding: '10px 12px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 7, fontSize: 13, color: C.dim, lineHeight: 1.65, fontStyle: 'italic' }}>
+              We are no longer asking about all 1,000 patients. We are now asking about only the <strong style={{ color: C.purple }}>140 patients who tested positive</strong>.
+            </div>
           </div>
         )}
       </div>
@@ -447,20 +452,24 @@ function ConditionalSim() {
           border: `1px solid ${rearranged ? C.teal : C.border}`,
           color: rearranged ? C.teal : C.dim, fontWeight: 600, marginBottom: 14,
         }}>
-          {rearranged ? '← Show full population' : 'Rearrange: show only positive tests →'}
+          {rearranged ? '← Show full population' : 'Compress to positive tests only →'}
         </button>
       )}
 
       {/* Stage 4: formula reveal */}
       {stage >= 4 && (
-        <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Now the formula makes sense</div>
-          <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, marginBottom: 10 }}>
-            You didn't change the numerator — you changed the <strong style={{ color: C.text }}>denominator</strong>. Instead of asking "out of 1,000 patients," you asked "out of the 140 who tested positive." That's what conditional probability does: it restricts the reference group.
+        <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8, marginBottom: 14 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>What just happened?</div>
+          <div style={{ fontSize: 14, color: C.text, lineHeight: 1.7, marginBottom: 10 }}>
+            Among the <strong>140 patients</strong> with positive tests, <strong style={{ color: '#e8452a' }}>80 truly have disease</strong>.
+            <br />Probability = 80 ÷ 140 = <strong style={{ color: C.purple }}>57.1%</strong>
           </div>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.purple, background: 'rgba(255,255,255,0.6)', padding: '8px 12px', borderRadius: 6 }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.purple, background: 'rgba(255,255,255,0.6)', padding: '8px 12px', borderRadius: 6, marginBottom: 10 }}>
             P(Disease | Positive) = P(Disease ∩ Positive) / P(Positive){'\n'}
-            = ({N_TP}/1000) / ({N_TOTAL_POS}/1000) = {N_TP}/{N_TOTAL_POS} = {(N_TP / N_TOTAL_POS).toFixed(3)}
+            = (80/1000) / (140/1000) = 80/140 = 0.571
+          </div>
+          <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+            <strong style={{ color: C.text }}>You didn't change the numerator — you changed the denominator.</strong> Instead of dividing by 1,000 (all patients), you divided by 140 (only positive tests). That's what conditional probability does: it restricts the reference group.
           </div>
         </div>
       )}
@@ -468,21 +477,74 @@ function ConditionalSim() {
       {/* Summary table */}
       <div style={{ marginTop: 14, borderRadius: 8, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', background: C.alt, padding: '8px 12px', fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          <span></span><span style={{ color: C.coral }}>Disease +</span><span style={{ color: C.teal }}>Disease −</span><span>Total</span>
+          <span></span><span style={{ color: '#e8452a' }}>Disease +</span><span style={{ color: '#94a3b8' }}>Disease −</span><span>Total</span>
         </div>
         {[
-          { label: 'Test +', d: N_TP, h: N_FP, t: N_TOTAL_POS, bg: C.surface },
-          { label: 'Test −', d: N_DISEASE - N_TP, h: N_HEALTHY - N_FP, t: TOTAL - N_TOTAL_POS, bg: C.alt },
-          { label: 'Total', d: N_DISEASE, h: N_HEALTHY, t: TOTAL, bg: C.surface, bold: true },
+          { label: 'Test +', d: N_TP, h: N_FP, t: N_TOTAL_POS, highlight: stage >= 3 },
+          { label: 'Test −', d: N_DISEASE - N_TP, h: N_HEALTHY - N_FP, t: TOTAL - N_TOTAL_POS, highlight: false },
+          { label: 'Total', d: N_DISEASE, h: N_HEALTHY, t: TOTAL, bold: true, highlight: false },
         ].map((row, i) => (
-          <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '8px 12px', borderTop: `1px solid ${C.border}`, fontSize: 13, background: row.bg, fontWeight: row.bold ? 700 : 400 }}>
-            <span style={{ color: C.dim }}>{row.label}</span>
-            <span style={{ color: C.coral }}>{row.d}</span>
-            <span style={{ color: C.teal }}>{row.h}</span>
+          <div key={i} style={{
+            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr',
+            padding: '8px 12px', borderTop: `1px solid ${C.border}`,
+            fontSize: 13, fontWeight: row.bold ? 700 : 400,
+            background: row.highlight ? 'rgba(107,63,204,0.08)' : (i % 2 === 0 ? C.surface : C.alt),
+            borderLeft: row.highlight ? `3px solid ${C.purple}` : 'none',
+          }}>
+            <span style={{ color: C.dim }}>{row.label}{row.highlight && <span style={{ marginLeft: 6, fontSize: 10, color: C.purple, fontWeight: 700 }}>← denominator</span>}</span>
+            <span style={{ color: '#e8452a' }}>{row.d}</span>
+            <span style={{ color: '#94a3b8' }}>{row.h}</span>
             <span style={{ color: C.text }}>{row.t}</span>
           </div>
         ))}
       </div>
+
+      {/* Reflection question */}
+      {stage >= 4 && (
+        <div style={{ marginTop: 20, padding: '16px', background: C.alt, borderRadius: 10, border: `1px solid ${C.border}` }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.amber, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Reflection</div>
+          <div style={{ fontSize: 14, color: C.text, marginBottom: 12, lineHeight: 1.6 }}>
+            When we calculated P(Disease | Positive Test) instead of P(Disease), what changed?
+          </div>
+          {[
+            { label: 'The numerator changed.', val: 0 },
+            { label: 'The denominator changed.', val: 1 },
+            { label: 'Both changed.', val: 2 },
+            { label: 'Nothing changed.', val: 3 },
+          ].map(opt => {
+            const isCorrect = opt.val === 1
+            let bg = C.surface, border = C.border, color = C.dim
+            if (reflectPick !== null) {
+              if (isCorrect) { bg = C.greenSoft; border = C.green; color = C.green }
+              else if (opt.val === reflectPick) { bg = C.coralSoft; border = C.coral; color = C.coral }
+            }
+            return (
+              <button key={opt.val} onClick={() => reflectPick === null && setReflectPick(opt.val)}
+                disabled={reflectPick !== null}
+                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 13px', marginBottom: 6, background: bg, border: `1px solid ${border}`, borderRadius: 7, color, fontSize: 13, cursor: reflectPick !== null ? 'default' : 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>
+                {opt.label}
+                {reflectPick !== null && isCorrect && <span style={{ float: 'right', fontSize: 11, fontWeight: 700, background: C.greenSoft, color: C.green, padding: '1px 7px', borderRadius: 4 }}>✓ correct</span>}
+                {reflectPick !== null && opt.val === reflectPick && !isCorrect && <span style={{ float: 'right', fontSize: 11, fontWeight: 700, background: C.coralSoft, color: C.coral, padding: '1px 7px', borderRadius: 4 }}>✗</span>}
+              </button>
+            )
+          })}
+          {reflectPick !== null && (
+            <div style={{ marginTop: 10, padding: '10px 12px', background: reflectPick === 1 ? C.tealSoft : C.coralSoft, borderRadius: 7, border: `1px solid ${reflectPick === 1 ? 'rgba(0,153,168,0.2)' : 'rgba(232,69,42,0.2)'}`, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+              {reflectPick === 1
+                ? <><strong style={{ color: C.teal }}>Correct.</strong> The numerator stayed 80 (patients with disease who tested positive). The denominator changed from 1,000 (all patients) to 140 (only positive tests). Restricting the denominator to a subgroup is the essence of conditional probability.</>
+                : reflectPick === 0
+                ? <><strong style={{ color: C.coral }}>Not quite.</strong> The numerator — 80 patients with disease who tested positive — didn't change. What changed was the denominator: from 1,000 patients total to 140 patients who tested positive.</>
+                : reflectPick === 2
+                ? <><strong style={{ color: C.coral }}>Not quite.</strong> The numerator stayed 80. Only the denominator changed — from 1,000 (all patients) to 140 (positive tests only). That's the key move in conditional probability.</>
+                : <><strong style={{ color: C.coral }}>Not quite.</strong> Something did change — the denominator. When we condition on a positive test, we restrict our reference group from all 1,000 patients to only the 140 who tested positive.</>
+              }
+            </div>
+          )}
+          {reflectPick !== null && (
+            <button onClick={() => setReflectPick(null)} style={{ marginTop: 8, width: '100%', padding: '7px 0', background: 'none', border: `1px solid rgba(0,153,168,0.3)`, borderRadius: 7, color: C.teal, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>Try again</button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
