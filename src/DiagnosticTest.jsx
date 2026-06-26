@@ -496,27 +496,76 @@ export default function DiagnosticTest() {
       {/* Section 3: Why two stay constant */}
       <Section icon="=" iconBg={C.amberSoft} title="Why Two Measures Stay Constant and Two Don't">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>The answer is entirely in the denominator.</p>
+          <p style={s.prose}>
+            The key difference is <strong style={{ color: C.text }}>who you're comparing the patient to</strong>. That determines the reference group — and whether prevalence changes the result.
+          </p>
           <div style={{ borderRadius: 8, border: `1px solid ${C.border}`, overflow: 'hidden', marginBottom: 14 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 80px 1fr', background: C.alt, padding: '9px 12px', fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              <span>Measure</span><span>Denominator</span><span>Changes?</span><span>Why</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 70px 1.2fr 90px', background: C.alt, padding: '9px 12px', fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <span>Measure</span><span>Compared against</span><span>Changes?</span><span>Why</span><span>Reference group</span>
             </div>
             {[
-              { name: 'Sensitivity', denom: 'People with disease', changes: 'No', why: 'Measures the test only among diseased patients. As prevalence changes, TP and FN grow proportionally.', color: '#e8452a' },
-              { name: 'Specificity', denom: 'People without disease', changes: 'No', why: 'Measures the test only among healthy patients. TN and FP grow proportionally with the healthy pool.', color: '#94a3b8' },
-              { name: 'PPV', denom: 'Positive test results', changes: 'Yes', why: 'Mix of TP and FP in the denominator shifts dramatically with prevalence.', color: C.purple },
-              { name: 'NPV', denom: 'Negative test results', changes: 'Yes', why: 'Mix of TN and FN in the denominator changes as disease burden changes.', color: C.teal },
+              {
+                name: 'Sensitivity', color: '#e8452a',
+                against: 'Everyone who truly has disease',
+                changes: 'No',
+                why: 'Measures how well the test detects disease among people who truly have it. As prevalence changes, true positives and false negatives increase or decrease together — so the percentage stays the same.',
+                tree: { root: 'Disease +', items: ['TP ← numerator', 'FN'] },
+              },
+              {
+                name: 'Specificity', color: '#94a3b8',
+                against: 'Everyone who truly does not have disease',
+                changes: 'No',
+                why: 'Measures how well the test identifies healthy people. As prevalence changes, true negatives and false positives change together — so the percentage stays the same.',
+                tree: { root: 'Disease −', items: ['TN ← numerator', 'FP'] },
+              },
+              {
+                name: 'PPV', color: C.purple,
+                against: 'Everyone who tested positive',
+                changes: 'Yes',
+                why: 'Among positive results, the proportion that are true positives changes because false positives become more or less dominant as prevalence changes.',
+                tree: { root: 'Test +', items: ['TP ← numerator', 'FP'] },
+              },
+              {
+                name: 'NPV', color: C.teal,
+                against: 'Everyone who tested negative',
+                changes: 'Yes',
+                why: 'Among negative results, the balance between true negatives and false negatives shifts as disease burden in the population changes.',
+                tree: { root: 'Test −', items: ['TN ← numerator', 'FN'] },
+              },
             ].map((row, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 80px 1fr', padding: '10px 12px', borderTop: `1px solid ${C.border}`, fontSize: 13, background: i % 2 === 0 ? C.surface : C.alt, alignItems: 'start' }}>
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 70px 1.2fr 90px', padding: '12px 12px', borderTop: `1px solid ${C.border}`, fontSize: 13, background: i % 2 === 0 ? C.surface : C.alt, alignItems: 'start', gap: 8 }}>
                 <span style={{ color: row.color, fontWeight: 700 }}>{row.name}</span>
-                <span style={{ color: C.dim }}>{row.denom}</span>
+                <span style={{ color: C.dim, lineHeight: 1.5, fontSize: 12 }}>{row.against}</span>
                 <span style={{ color: row.changes === 'No' ? C.green : C.coral, fontWeight: 700 }}>{row.changes}</span>
-                <span style={{ color: C.dim, fontSize: 12, lineHeight: 1.5 }}>{row.why}</span>
+                <span style={{ color: C.dim, fontSize: 12, lineHeight: 1.55 }}>{row.why}</span>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: C.dim, lineHeight: 1.9 }}>
+                  <div style={{ color: row.color, fontWeight: 700 }}>{row.tree.root}</div>
+                  {row.tree.items.map((leaf, j) => (
+                    <div key={j} style={{ paddingLeft: 4, color: leaf.includes('numerator') ? row.color : C.muted }}>
+                      {j === row.tree.items.length - 1 ? '└─ ' : '├─ '}{leaf}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
-          <div style={{ padding: '12px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-            <strong style={{ color: C.amber }}>The core distinction:</strong> Sensitivity and specificity describe the test — they condition on disease status, which is a fixed property of each patient. PPV and NPV describe what the test means in this population — they condition on test result, whose composition changes as prevalence changes.
+
+          <div style={{ padding: '12px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7, marginBottom: 12 }}>
+            <strong style={{ color: C.amber }}>The core distinction:</strong>
+            <div style={{ marginTop: 6 }}><strong style={{ color: C.text }}>Sensitivity and specificity are properties of the test.</strong> They compare the test result with the patient's true disease status — a fixed relationship that doesn't depend on who you're testing.</div>
+            <div style={{ marginTop: 6 }}><strong style={{ color: C.text }}>PPV and NPV are properties of the testing situation.</strong> They tell you what a positive or negative result means in this particular population. Change the population, and they change — even if the test itself hasn't changed at all.</div>
+          </div>
+
+          <div style={{ padding: '12px 14px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+            <strong style={{ color: C.purple }}>Decision rule for exams:</strong> Ask yourself one question before choosing a measure:
+            <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ padding: '7px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 6 }}>
+                Am I starting with what I know about the patient's <strong style={{ color: '#e8452a' }}>true disease status</strong>? → Sensitivity or Specificity
+              </div>
+              <div style={{ padding: '7px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 6 }}>
+                Am I starting with the <strong style={{ color: C.purple }}>test result</strong>? → PPV or NPV
+              </div>
+            </div>
           </div>
         </div>
       </Section>
