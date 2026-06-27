@@ -306,7 +306,7 @@ function SimSection() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: C.dim, marginBottom: 4 }}>
                     <span>Sample size (n)</span><span style={{ fontWeight: 600, color: C.text }}>{simN}</span>
                   </div>
-                  <input type="range" min={20} max={500} step={10} value={simN} onChange={e => { setSimN(parseInt(e.target.value)); reset() }} style={{ width: '100%', accentColor: C.teal }} />
+                  <input type="range" min={20} max={500} step={10} value={simN} onChange={e => setSimN(parseInt(e.target.value))} style={{ width: '100%', accentColor: C.teal }} />
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
                   {[0.90, 0.95, 0.99].map(c => (
