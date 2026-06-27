@@ -65,22 +65,19 @@ function SimSection() {
   const [phase, setPhase] = useState('intro') // intro | revealed | running | paused | done
   const [autoRunning, setAutoRunning] = useState(false)
   const [reflectPick, setReflectPick] = useState(null)
-  const [advanced, setAdvanced] = useState(false)
-  const [simN, setSimN] = useState(DEFAULT_N)
-  const [simConf, setSimConf] = useState(DEFAULT_CONF)
   const intervalRef = useRef(null)
 
   const addSamples = useCallback((count) => {
     setIntervals(prev => {
       const next = [...prev]
       for (let i = 0; i < count; i++) {
-        const x = drawSample(simN, TRUE_P)
-        const ci = calcCI(simN, x, simConf)
-        next.push({ ...ci, x, n: simN, covers: coversTrue(ci.lo, ci.hi, TRUE_P) })
+        const x = drawSample(DEFAULT_N, TRUE_P)
+        const ci = calcCI(DEFAULT_N, x, DEFAULT_CONF)
+        next.push({ ...ci, x, n: DEFAULT_N, covers: coversTrue(ci.lo, ci.hi, TRUE_P) })
       }
       return next
     })
-  }, [simN, simConf])
+  }, [DEFAULT_N, DEFAULT_CONF])
 
   // Auto-draw 10 after reveal
   useEffect(() => {
@@ -103,14 +100,14 @@ function SimSection() {
     if (autoRunning) {
       intervalRef.current = setInterval(() => {
         setIntervals(prev => {
-          const x = drawSample(simN, TRUE_P)
-          const ci = calcCI(simN, x, simConf)
-          return [...prev, { ...ci, x, n: simN, covers: coversTrue(ci.lo, ci.hi, TRUE_P) }]
+          const x = drawSample(DEFAULT_N, TRUE_P)
+          const ci = calcCI(DEFAULT_N, x, DEFAULT_CONF)
+          return [...prev, { ...ci, x, n: DEFAULT_N, covers: coversTrue(ci.lo, ci.hi, TRUE_P) }]
         })
       }, 60)
       return () => clearInterval(intervalRef.current)
     }
-  }, [autoRunning, simN, simConf])
+  }, [autoRunning, DEFAULT_N, DEFAULT_CONF])
 
   function reset() {
     setIntervals([])
@@ -186,17 +183,17 @@ function SimSection() {
           {/* Stats */}
           {intervals.length > 0 && (
             <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
-              <div style={{ flex: 1, minWidth: 100, padding: '10px 12px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.green, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Contained p = 0.40</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: C.green, fontFamily: "'JetBrains Mono', monospace" }}>{covered}</div>
+              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: C.green, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>🟢 Captured the true population proportion</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.green, fontFamily: "'JetBrains Mono', monospace" }}>{covered} <span style={{ fontSize: 13, fontWeight: 400 }}>confidence intervals</span></div>
               </div>
-              <div style={{ flex: 1, minWidth: 100, padding: '10px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Missed p = 0.40</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: C.coral, fontFamily: "'JetBrains Mono', monospace" }}>{missed}</div>
+              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>🔴 Did not capture the true population proportion</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.coral, fontFamily: "'JetBrains Mono', monospace" }}>{missed} <span style={{ fontSize: 13, fontWeight: 400 }}>confidence intervals</span></div>
               </div>
-              <div style={{ flex: 1, minWidth: 100, padding: '10px 12px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Coverage rate</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>{intervals.length > 0 ? (covered / intervals.length * 100).toFixed(0) : '—'}%</div>
+              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>🟣 Coverage</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>{covered} of {intervals.length} <span style={{ fontSize: 13, fontWeight: 400 }}>({intervals.length > 0 ? (covered / intervals.length * 100).toFixed(0) : 0}%)</span></div>
               </div>
             </div>
           )}
@@ -204,10 +201,10 @@ function SimSection() {
           {/* Stack plot */}
           <div style={{ background: C.alt, borderRadius: 10, padding: '12px', border: `1px solid ${C.border}`, marginBottom: 12, overflowX: 'auto' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>
-              Each row = one 95% CI from one sample (n={simN}) &nbsp;|&nbsp;
-              <span style={{ color: C.green }}>■ contains p=0.40</span> &nbsp;
-              <span style={{ color: C.coral }}>■ misses p=0.40</span> &nbsp;
-              <span style={{ color: C.purple }}>| p=0.40</span>
+              Each horizontal line is a 95% confidence interval from one random sample (n={DEFAULT_N}) &nbsp;|&nbsp;
+              <span style={{ color: C.green }}>■ captured p=0.40</span> &nbsp;
+              <span style={{ color: C.coral }}>■ missed p=0.40</span> &nbsp;
+              <span style={{ color: C.purple }}>| p=0.40 (true value)</span>
             </div>
             <svg width={PLOT_W} height={Math.max(60, stackH)} style={{ display: 'block' }}>
               {/* True p line */}
@@ -295,30 +292,7 @@ function SimSection() {
             </div>
           )}
 
-          {/* Advanced mode */}
-          <div style={{ marginTop: 8, paddingTop: 12, borderTop: `1px solid ${C.border}` }}>
-            <button onClick={() => setAdvanced(a => !a)} style={{ fontSize: 12, color: C.dim, background: 'none', border: `1px solid ${C.border}`, borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontFamily: 'inherit' }}>
-              {advanced ? 'Hide' : 'Advanced: adjust simulation parameters'}
-            </button>
-            {advanced && (
-              <div style={{ marginTop: 10, padding: '12px', background: C.alt, borderRadius: 8, border: `1px solid ${C.border}` }}>
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: C.dim, marginBottom: 4 }}>
-                    <span>Sample size (n)</span><span style={{ fontWeight: 600, color: C.text }}>{simN}</span>
-                  </div>
-                  <input type="range" min={20} max={500} step={10} value={simN} onChange={e => setSimN(parseInt(e.target.value))} style={{ width: '100%', accentColor: C.teal }} />
-                </div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  {[0.90, 0.95, 0.99].map(c => (
-                    <button key={c} onClick={() => { setSimConf(c); reset() }}
-                      style={{ flex: 1, padding: '6px 0', borderRadius: 6, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', background: simConf === c ? C.tealSoft : C.surface, border: `1px solid ${simConf === c ? C.teal : C.border}`, color: simConf === c ? C.teal : C.dim, fontWeight: simConf === c ? 700 : 400 }}>
-                      {(c * 100).toFixed(0)}%
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+
         </div>
       )}
     </div>
@@ -558,10 +532,30 @@ export default function CIBuilder() {
                 color: C.amber,
               },
               {
-                step: 'How much should we extend the interval for 95% confidence?',
-                content: "If we extend too narrowly, we'll miss the true value too often. If we extend too widely, the interval becomes uninformative. For 95% confidence, we extend 1.96 standard errors in each direction — this width captures the true value in about 95% of repeated samples.",
+                step: 'How far should we extend the interval?',
+                content: <span>Remember the repeated sampling simulation? Most confidence intervals captured the true population proportion — but a few missed it. The value 1.96 is what makes 95% coverage happen. It tells us to extend the interval 1.96 standard errors on each side of our estimate, so that about 95% of confidence intervals will capture the true population value when repeated across many samples. This multiplier is called the <strong style={{ color: C.text }}>critical value (z*)</strong>.</span>,
                 formula: 'z* = 1.96  (for 95% confidence)',
-                extra: null,
+                extra: (
+                  <div style={{ marginTop: 10 }}>
+                    <div style={{ borderRadius: 8, border: `1px solid ${C.border}`, overflow: 'hidden', fontSize: 13 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', background: C.alt, padding: '7px 12px', fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        <span>Confidence level</span><span>Critical value (z*)</span><span>Effect</span>
+                      </div>
+                      {[
+                        { conf: '90%', z: '1.645', effect: 'Narrower interval', color: C.teal },
+                        { conf: '95%', z: '1.96', effect: 'Standard balance', color: C.purple, bold: true },
+                        { conf: '99%', z: '2.576', effect: 'Wider interval', color: C.coral },
+                      ].map((row, i) => (
+                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '8px 12px', borderTop: `1px solid ${C.border}`, background: row.bold ? C.purpleSoft : (i % 2 === 0 ? C.surface : C.alt), fontWeight: row.bold ? 700 : 400 }}>
+                          <span style={{ color: row.color }}>{row.conf}</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", color: row.color }}>{row.z}</span>
+                          <span style={{ color: C.dim }}>{row.effect}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ marginTop: 8, fontSize: 12, color: C.dim, fontStyle: 'italic' }}>Higher confidence = extending farther from the estimate = wider interval.</div>
+                  </div>
+                ),
                 color: C.purple,
               },
               {
