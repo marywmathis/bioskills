@@ -116,8 +116,8 @@ const SCENARIOS = [
   },
   {
     id: 2,
-    q: 'A researcher measures pain scores (0–10 scale) before and after a new physical therapy protocol in 30 patients.',
-    q2example: 'e.g., before physical therapy vs. after physical therapy',
+    q: 'A researcher measures pain scores (0–10 scale) before and after a new physical therapy protocol in 30 male and female patients.',
+    q2example: 'e.g., before physical therapy vs. after physical therapy (same patients measured twice)',
     outcome: 'ordinal',
     groups: 'two',
     design: 'paired',
