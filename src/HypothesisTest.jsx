@@ -24,7 +24,7 @@ const Q1_OPTS = [
 // ── Q2 options ──
 const Q2_OPTS = [
   { val: 'one', label: 'One group', sub: 'Comparing a single group to a known or historical value' },
-  { val: 'two', label: 'Two groups (or one group measured twice)', sub: 'e.g., treatment vs. control, men vs. women, before vs. after' },
+  { val: 'two', label: 'Two sets of measurements', sub: 'e.g., treatment vs. control, men vs. women, before vs. after' },
   { val: 'many', label: 'More than two groups', sub: 'e.g., three treatment arms, four age groups' },
 ]
 
@@ -117,7 +117,7 @@ const SCENARIOS = [
     outcome: 'ordinal',
     groups: 'two',
     design: 'paired',
-    test: 'pairedT',
+    test: 'wilcoxon',
     context: { outcome: 'Pain scores use a 0–10 rating scale — the gaps between values are not guaranteed to be equal.', groups: 'Two measurements: before and after treatment.', design: 'The same 30 patients are measured twice — before and after.' },
     q1why: { ordinal: 'Pain scores are ratings on a 0–10 scale. A change from 2 to 3 may not equal a change from 8 to 9. Unequal spacing → ordinal.' },
     testExplain: 'Pain scores are ordinal, and the same patients are measured twice (paired). The Wilcoxon signed-rank test is the paired nonparametric equivalent of the paired t-test.',
@@ -175,7 +175,7 @@ const SCENARIOS = [
     groups: 'two',
     design: 'independent',
     test: 'chiSquare',
-    context: { outcome: 'HIV status and homelessness are both categorical (yes/no).', groups: 'Two categories for each variable.', design: 'Different adults — independent observations.' },
+    context: { outcome: 'HIV status and homelessness are both categorical (yes/no).', groups: 'Both variables are categorical (yes/no) — we are testing whether they are associated.', design: 'Different adults — independent observations.' },
     testExplain: 'Both variables are categorical. A chi-square test of independence assesses whether HIV status and homelessness status are associated in the population.',
     scaffold: 'independent',
   },
@@ -237,7 +237,18 @@ function PairedVisual() {
             </div>
           ))}
         </div>
-        <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>Same person measured twice. Each before measurement is linked to an after measurement. Also applies to matched pairs (twins, siblings).</div>
+        <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>Same person measured twice. Each before measurement is linked to an after measurement.</div>
+        <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid rgba(184,112,0,0.15)` }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Also paired: matched pairs</div>
+          {['Pair 1', 'Pair 2', 'Pair 3'].map((p, i) => (
+            <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4 }}>
+              <div style={{ padding: '4px 8px', background: C.tealSoft, borderRadius: 5, fontSize: 12, color: C.teal, fontWeight: 600, flex: 1 }}>👤 {p}: Twin A</div>
+              <div style={{ fontSize: 14, color: C.amber }}>↔</div>
+              <div style={{ padding: '4px 8px', background: C.coralSoft, borderRadius: 5, fontSize: 12, color: C.coral, fontWeight: 600, flex: 1 }}>👤 {p}: Twin B</div>
+            </div>
+          ))}
+          <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6, marginTop: 6 }}>Pairing is about a one-to-one relationship — not just repeated measurements. Matched siblings, matched cases/controls, and matched recruits all qualify.</div>
+        </div>
       </div>
     </div>
   )
@@ -604,7 +615,7 @@ export default function HypothesisTest() {
               ],
             },
             {
-              group: 'Comparing rankings (ordinal outcome)',
+              group: 'Comparing an ordinal outcome between groups',
               color: C.purple,
               rows: [
                 { situation: 'Two independent groups', test: 'Mann-Whitney U test' },
@@ -617,7 +628,7 @@ export default function HypothesisTest() {
               color: C.coral,
               rows: [
                 { situation: 'Two independent groups', test: 'Two-proportion z-test' },
-                { situation: 'Two or more groups, or testing independence', test: 'Chi-square test' },
+                { situation: 'Testing whether two categorical variables are associated (or comparing proportions across groups)', test: 'Chi-square test' },
                 { situation: 'Very small expected cell counts', test: 'Fisher\'s exact test (special case of chi-square)' },
               ],
             },
@@ -657,7 +668,7 @@ export default function HypothesisTest() {
             {
               title: 't-test vs. Mann-Whitney',
               wrong: 'Always use a t-test for numerical data.',
-              right: 'The t-test assumes the outcome is approximately normally distributed (or the sample is large enough for the Central Limit Theorem to apply). For ordinal data, or for small samples with clearly non-normal distributions, the Mann-Whitney U test is more appropriate. In practice, with large samples (n > 30 per group), the t-test is often robust — but ordinal data should always use nonparametric methods.',
+              right: 'The t-test works best when the continuous outcome is approximately normally distributed within each group (or when samples are large enough for the Central Limit Theorem to apply). For ordinal data, or for small samples with clearly non-normal distributions, the Mann-Whitney U test is more appropriate. Ordinal data should always use nonparametric methods.',
             },
           ].map((item, i) => (
             <div key={i} style={{ marginBottom: 14, padding: '14px 16px', background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10 }}>
