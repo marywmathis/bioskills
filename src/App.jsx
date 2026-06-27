@@ -6,6 +6,7 @@ import SummaryStatistics from './SummaryStatistics'
 import DistributionsExplorer from './DistributionsExplorer'
 import ProbabilityRules from './ProbabilityRules'
 import DiagnosticTest from './DiagnosticTest'
+import StudyDesign from './StudyDesign'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -55,8 +56,7 @@ const tools = [
   {
     id: "study-design", title: "Study Design Selector", group: "Design & Inference",
     description: "Scenario-based: read a research question and choose the right design. Explains why each design fits or fails.",
-    accent: C.amber, accentSoft: C.amberSoft, component: null,
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2"/><polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" strokeWidth="2"/><line x1="8" y1="17" x2="16" y2="17" stroke="currentColor" strokeWidth="2"/></svg>,
+    accent: C.amber, accentSoft: C.amberSoft, component: StudyDesign,
   },
   {
     id: "confidence-intervals", title: "CI Builder", group: "Design & Inference",
