@@ -325,7 +325,7 @@ export default function SampleSizeEffect() {
       <Section icon="↘" iconBg={C.tealSoft} title="Diminishing Returns">
         <div style={{ paddingTop: 20 }}>
           <p style={s.prose}>Every additional participant improves precision — but each one improves it a little less than the one before. Watch what happens as n quadruples each time.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
             {[25, 100, 400, 1600].map(pn => <SnapshotCard key={pn} n={pn} highlight={pn === 100} />)}
           </div>
           <div style={{ padding: '12px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7, marginBottom: 14 }}>
