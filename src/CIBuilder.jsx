@@ -181,30 +181,26 @@ function SimSection() {
           </div>
 
           {/* Stats */}
-          {intervals.length > 0 && (
-            <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
-              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 8 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.green, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>🟢 Captured the true population proportion</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: C.green, fontFamily: "'JetBrains Mono', monospace" }}>{covered} <span style={{ fontSize: 13, fontWeight: 400 }}>confidence intervals</span></div>
-              </div>
-              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>🔴 Did not capture the true population proportion</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: C.coral, fontFamily: "'JetBrains Mono', monospace" }}>{missed} <span style={{ fontSize: 13, fontWeight: 400 }}>confidence intervals</span></div>
-              </div>
-              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>🟣 Coverage</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>{covered} of {intervals.length} <span style={{ fontSize: 13, fontWeight: 400 }}>({intervals.length > 0 ? (covered / intervals.length * 100).toFixed(0) : 0}%)</span></div>
-              </div>
+
+
+          {/* Framing sentences */}
+          <div style={{ marginBottom: 12 }}>
+            <p style={{ fontSize: 14, color: C.dim, lineHeight: 1.7, marginBottom: 6 }}>
+              Each horizontal line below is one 95% confidence interval calculated from one random sample of {DEFAULT_N} people.
+            </p>
+            <p style={{ fontSize: 14, color: C.dim, lineHeight: 1.7, marginBottom: 10 }}>
+              If the horizontal line <strong style={{ color: C.text }}>crosses the purple vertical line</strong>, it successfully estimated the true population proportion. If it misses, it didn't.
+            </p>
+            <div style={{ display: 'flex', gap: 16, padding: '8px 12px', background: C.alt, borderRadius: 7, border: `1px solid ${C.border}`, fontSize: 13, flexWrap: 'wrap' }}>
+              <span><span style={{ color: C.green, fontWeight: 700 }}>✔ Green</span> <span style={{ color: C.dim }}>interval crosses the purple line → Success</span></span>
+              <span><span style={{ color: C.coral, fontWeight: 700 }}>✗ Red</span> <span style={{ color: C.dim }}>interval misses the purple line → Miss</span></span>
             </div>
-          )}
+          </div>
 
           {/* Stack plot */}
           <div style={{ background: C.alt, borderRadius: 10, padding: '12px', border: `1px solid ${C.border}`, marginBottom: 12, overflowX: 'auto' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>
-              Each horizontal line is a 95% confidence interval from one random sample (n={DEFAULT_N}) &nbsp;|&nbsp;
-              <span style={{ color: C.green }}>■ captured p=0.40</span> &nbsp;
-              <span style={{ color: C.coral }}>■ missed p=0.40</span> &nbsp;
-              <span style={{ color: C.purple }}>| p=0.40 (true value)</span>
+              {intervals.length === 0 ? 'Samples will appear here once you draw them below.' : `${intervals.length} confidence interval${intervals.length !== 1 ? 's' : ''} drawn so far`}
             </div>
             <svg width={PLOT_W} height={Math.max(60, stackH)} style={{ display: 'block' }}>
               {/* True p line */}
@@ -235,12 +231,30 @@ function SimSection() {
             </svg>
           </div>
 
+          {/* Stat cards — below graph */}
+          {intervals.length > 0 && (
+            <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: C.green, marginBottom: 4 }}>🟢 Confidence intervals crossing the true value</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.green, fontFamily: "'JetBrains Mono', monospace" }}>{covered}</div>
+              </div>
+              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: C.coral, marginBottom: 4 }}>🔴 Confidence intervals missing the true value</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.coral, fontFamily: "'JetBrains Mono', monospace" }}>{missed}</div>
+              </div>
+              <div style={{ flex: 1, minWidth: 130, padding: '10px 12px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, marginBottom: 4 }}>🟣 So far</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: C.purple }}>{covered} of {intervals.length} intervals crossed the true value ({intervals.length > 0 ? (covered / intervals.length * 100).toFixed(0) : 0}%)</div>
+              </div>
+            </div>
+          )}
+
           {/* Pause prompt */}
           {phase === 'paused' && intervals.length > 0 && (
             <div style={{ padding: '14px 16px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 8, marginBottom: 12 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: C.amber, marginBottom: 8 }}>What do you notice?</div>
               <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-                Most intervals contain the true population proportion (p = 0.40) — but not all. Each interval was calculated from a different random sample of the same population. The population itself never changed. The confidence intervals changed because the <em>samples</em> changed. That's sampling variability in action.
+                Look at the purple vertical line. Most confidence intervals cross it — those successfully estimated the true population proportion. The red intervals missed it. The population never changed. The samples changed, which is why different intervals were produced each time.
               </div>
             </div>
           )}
@@ -286,8 +300,8 @@ function SimSection() {
           {reflectPick !== null && (
             <div style={{ padding: '12px 14px', background: reflectPick === 1 ? C.tealSoft : C.coralSoft, border: `1px solid ${reflectPick === 1 ? 'rgba(0,153,168,0.2)' : 'rgba(232,69,42,0.2)'}`, borderRadius: 8, marginBottom: 12, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
               {reflectPick === 1
-                ? <><strong style={{ color: C.teal }}>Correct.</strong> Look at the red intervals — they do not contain the true population proportion (p = 0.40), even though each was built correctly from its sample. The population never changed. The samples changed, producing different intervals. The 95% describes the long-run success rate of the procedure, not the probability for any one interval.</>
-                : <><strong style={{ color: C.coral }}>Not quite.</strong> Look at the red intervals. They miss the true population proportion (p = 0.40) — yet they were built using exactly the same procedure as the green ones. Once an interval is computed from a sample, the true value is either inside it or it isn't. The 95% describes how often the procedure succeeds across many repeated samples, not the probability for any individual interval.</>
+                ? <><strong style={{ color: C.teal }}>Correct.</strong> Look at the red intervals in the plot — they don't cross the purple line, even though each was built correctly from its sample. The population never changed. The samples changed, producing different intervals. The 95% is the long-run success rate of the procedure: if you drew samples forever, about 95% of confidence intervals would cross the true value.</>
+                : <><strong style={{ color: C.coral }}>Not quite.</strong> Look at the red intervals in the plot. They don't cross the purple line, yet they were built the exact same way as the green ones. Once a confidence interval is calculated from a sample, it either crosses the true value or it doesn't. The 95% refers to how often the procedure succeeds across many repeated samples — not the probability for any single interval.</>
               }
             </div>
           )}
@@ -444,7 +458,7 @@ export default function CIBuilder() {
       </div>
 
       {/* 1. Simulation first */}
-      <Section icon="~" iconBg={C.purpleSoft} title="Watch 95% Confidence in Action" defaultOpen={true}>
+      <Section icon="~" iconBg={C.purpleSoft} title="Will This Confidence Interval Find the True Population Value?" defaultOpen={true}>
         <div style={{ paddingTop: 20 }}>
           <SimSection />
         </div>
