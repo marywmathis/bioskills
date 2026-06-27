@@ -153,17 +153,33 @@ function SimSection() {
       {phase !== 'intro' && (
         <div>
           {/* True p callout */}
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 16px', background: C.purpleSoft, border: `2px solid ${C.purple}`, borderRadius: 10, marginBottom: 14, flexWrap: 'wrap' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3 }}>Population truth (hidden in real studies)</div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 24, fontWeight: 700, color: C.purple }}>p = {TRUE_P}</div>
-              <div style={{ fontSize: 12, color: C.dim, marginTop: 2 }}>We know this only because it's a simulation. In a real study, you would never know the true value — that's why we need confidence intervals.</div>
+          <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `2px solid ${C.purple}`, borderRadius: 10, marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+              True population proportion (hidden in real studies)
             </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ width: 50, height: 50, borderRadius: '50%', background: C.purple, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 4px' }}>
-                <span style={{ color: '#fff', fontSize: 22, fontWeight: 700 }}>?</span>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+              {/* Mini dot grid: 100 dots, 40 purple, 60 gray */}
+              <div style={{ flexShrink: 0 }}>
+                <svg width={110} height={55} style={{ display: 'block' }}>
+                  {Array.from({ length: 100 }, (_, i) => {
+                    const col = i % 10, row = Math.floor(i / 10)
+                    return (
+                      <circle key={i} cx={6 + col * 10} cy={6 + row * 10} r={4}
+                        fill={i < 40 ? C.purple : C.muted} fillOpacity={i < 40 ? 0.8 : 0.3} />
+                    )
+                  })}
+                </svg>
+                <div style={{ fontSize: 10, color: C.purple, fontWeight: 600, textAlign: 'center', marginTop: 2 }}>40 of 100 = 40%</div>
               </div>
-              <div style={{ fontSize: 10, color: C.purple, fontWeight: 600 }}>Unknown in practice</div>
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 22, fontWeight: 700, color: C.purple, marginBottom: 6 }}>p = 0.40</div>
+                <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+                  40% of the entire population has the characteristic we're studying (e.g., 40% are vaccinated).
+                </div>
+                <div style={{ fontSize: 12, color: C.purple, marginTop: 6, fontStyle: 'italic' }}>
+                  We know p only because we created this simulation. In a real study, p is unknown — that's exactly why we collect a sample and calculate a confidence interval.
+                </div>
+              </div>
             </div>
           </div>
 
@@ -227,7 +243,7 @@ function SimSection() {
             <div style={{ padding: '14px 16px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 8, marginBottom: 12 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: C.amber, marginBottom: 8 }}>What do you notice?</div>
               <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-                Most intervals contain the true value (p = 0.40) — but not all. Each interval was computed from a different random sample of the same population. The true value didn't change. The procedure produced different intervals each time.
+                Most intervals contain the true population proportion (p = 0.40) — but not all. Each interval was calculated from a different random sample of the same population. The population itself never changed. The confidence intervals changed because the <em>samples</em> changed. That's sampling variability in action.
               </div>
             </div>
           )}
@@ -273,8 +289,8 @@ function SimSection() {
           {reflectPick !== null && (
             <div style={{ padding: '12px 14px', background: reflectPick === 1 ? C.tealSoft : C.coralSoft, border: `1px solid ${reflectPick === 1 ? 'rgba(0,153,168,0.2)' : 'rgba(232,69,42,0.2)'}`, borderRadius: 8, marginBottom: 12, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
               {reflectPick === 1
-                ? <><strong style={{ color: C.teal }}>Correct.</strong> Look at the red intervals in the plot — those intervals do not contain p = 0.40, even though each was built correctly from its sample. The 95% is a statement about the procedure producing intervals over the long run, not about any particular interval.</>
-                : <><strong style={{ color: C.coral }}>Not quite.</strong> Look at the red intervals. Those intervals are "wrong" — they don't contain the true value — yet they were built using exactly the same procedure as the green ones. Once an interval is computed, the true value is either inside it or it isn't. The 95% describes how often the procedure succeeds, not the probability for any individual interval.</>
+                ? <><strong style={{ color: C.teal }}>Correct.</strong> Look at the red intervals — they do not contain the true population proportion (p = 0.40), even though each was built correctly from its sample. The population never changed. The samples changed, producing different intervals. The 95% describes the long-run success rate of the procedure, not the probability for any one interval.</>
+                : <><strong style={{ color: C.coral }}>Not quite.</strong> Look at the red intervals. They miss the true population proportion (p = 0.40) — yet they were built using exactly the same procedure as the green ones. Once an interval is computed from a sample, the true value is either inside it or it isn't. The 95% describes how often the procedure succeeds across many repeated samples, not the probability for any individual interval.</>
               }
             </div>
           )}
@@ -491,45 +507,75 @@ export default function CIBuilder() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[
               {
-                step: 'The sample',
+                step: 'What did we observe?',
                 content: '200 adults were surveyed about influenza vaccination. 86 reported receiving the vaccine.',
                 formula: null,
+                extra: null,
                 color: C.teal,
               },
               {
-                step: 'The estimate',
-                content: <>How many were vaccinated? 86 out of 200 = 43%. This is our <strong style={{ color: C.text }}>point estimate</strong> (<PHat /> = 0.43). Our best single guess for the population proportion.</>,
+                step: 'What is our best guess about the population?',
+                content: <span>Because we selected a random sample, the sample should resemble the population. That makes the sample proportion our best estimate of the unknown population proportion (p). It won't be exactly right — but it's usually close.</span>,
                 formula: 'p̂ = 86/200 = 0.43',
+                extra: (
+                  <div style={{ marginTop: 10, display: 'flex', gap: 16, alignItems: 'center', padding: '10px 14px', background: C.tealSoft, borderRadius: 7, border: `1px solid rgba(0,153,168,0.15)`, flexWrap: 'wrap' }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: C.muted, marginBottom: 3 }}>Population (unknown)</div>
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, color: C.purple, fontWeight: 700 }}>p = ?</div>
+                    </div>
+                    <div style={{ fontSize: 20, color: C.muted }}>↑</div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: C.muted, marginBottom: 3 }}>Sample of 200</div>
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, color: C.teal, fontWeight: 700 }}>p̂ = 0.43</div>
+                    </div>
+                    <div style={{ fontSize: 13, color: C.dim, flex: 1, minWidth: 120 }}>The entire purpose of a confidence interval is to use p̂ to learn about p.</div>
+                  </div>
+                ),
                 color: C.teal,
               },
               {
-                step: 'The uncertainty',
-                content: 'How much might this estimate differ from the true population proportion? A different sample of 200 adults might give 40% or 46%. We need to quantify that variability.',
+                step: "Why can't we trust that guess exactly?",
+                content: "If we drew another random sample of 200 adults, we probably wouldn't get exactly 43% again. Sampling naturally produces different results each time, even when the population hasn't changed. We need to account for that variability.",
                 formula: null,
+                extra: null,
                 color: C.amber,
               },
               {
-                step: 'Standard error',
-                content: 'The standard error measures how much sample proportions vary from sample to sample. Larger samples → smaller SE → more precise estimate.',
+                step: 'How much do random samples typically vary?',
+                content: 'The standard error measures the typical amount of random variation in sample estimates. Small SE = estimates stay close together. Large SE = estimates bounce around more. Larger samples produce smaller standard errors.',
                 formula: 'SE = √(p̂(1−p̂)/n) = √(0.43 × 0.57 / 200) = 0.035',
+                extra: (
+                  <div style={{ marginTop: 8, padding: '8px 12px', background: C.alt, borderRadius: 7, border: `1px solid ${C.border}` }}>
+                    <div style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>If we drew many samples of 200, the estimates might look like:</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {['41%', '44%', '39%', '45%', '42%', '43%'].map((v, i) => (
+                        <span key={i} style={{ padding: '3px 10px', background: C.tealSoft, borderRadius: 4, fontSize: 12, color: C.teal, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{v}</span>
+                      ))}
+                    </div>
+                    <div style={{ fontSize: 12, color: C.dim, marginTop: 6 }}>The SE (≈3.5%) tells us the typical spread of these estimates around the truth.</div>
+                  </div>
+                ),
                 color: C.amber,
               },
               {
-                step: 'Critical value',
-                content: 'For 95% confidence, we use z* = 1.96. This comes from the normal distribution — 95% of values fall within 1.96 standard deviations of the mean.',
+                step: 'How much should we extend the interval for 95% confidence?',
+                content: "If we extend too narrowly, we'll miss the true value too often. If we extend too widely, the interval becomes uninformative. For 95% confidence, we extend 1.96 standard errors in each direction — this width captures the true value in about 95% of repeated samples.",
                 formula: 'z* = 1.96  (for 95% confidence)',
+                extra: null,
                 color: C.purple,
               },
               {
-                step: 'Margin of error',
-                content: 'The margin of error is how far we extend the interval in each direction from the point estimate.',
+                step: 'How wide is the interval?',
+                content: 'The margin of error tells us how far above and below our estimate we extend. Here: 43% ± 6.9 percentage points.',
                 formula: 'ME = z* × SE = 1.96 × 0.035 = 0.069',
+                extra: null,
                 color: C.coral,
               },
               {
-                step: 'The confidence interval',
-                content: 'Extend the margin of error in both directions from the point estimate.',
+                step: 'What is our final estimate?',
+                content: 'Extend the margin of error in both directions from the point estimate to get our range of plausible values.',
                 formula: 'CI = p̂ ± ME = 0.43 ± 0.069 = (0.361, 0.499)',
+                extra: null,
                 color: C.green,
               },
             ].map((item, i) => (
@@ -544,6 +590,7 @@ export default function CIBuilder() {
                   {item.formula && (
                     <div style={{ background: C.alt, border: `1px solid ${C.border}`, borderRadius: 7, padding: '8px 12px', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.amber }}>{item.formula}</div>
                   )}
+                  {item.extra}
                 </div>
               </div>
             ))}

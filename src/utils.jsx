@@ -116,7 +116,7 @@ export function Section({ icon, iconBg, title, children, defaultOpen = false }) 
         </span>
         <span style={{ ...s.chevron, transform: open ? 'rotate(180deg)' : 'none' }}>▼</span>
       </button>
-      {open && <div style={s.body}>{children}</div>}
+      {open && <div style={s.body} onClick={e => e.stopPropagation()}>{children}</div>}
     </div>
   )
 }
