@@ -23,8 +23,8 @@ const Q1_OPTS = [
 
 // ── Q2 options ──
 const Q2_OPTS = [
-  { val: 'one', label: 'One group', sub: 'Comparing to a known or historical value' },
-  { val: 'two', label: 'Two groups', sub: 'e.g., treatment vs. control, men vs. women' },
+  { val: 'one', label: 'One group', sub: 'Comparing a single group to a known or historical value' },
+  { val: 'two', label: 'Two groups (or one group measured twice)', sub: 'e.g., treatment vs. control, men vs. women, before vs. after' },
   { val: 'many', label: 'More than two groups', sub: 'e.g., three treatment arms, four age groups' },
 ]
 
@@ -63,10 +63,12 @@ function q1Why(val, scenario) {
 }
 
 // ── Q2 feedback ──
-function q2Why(val) {
+function q2Why(val, design) {
   const map = {
     one: 'With only one group, we\'re comparing a sample estimate to a known or assumed population value — not comparing two groups against each other.',
-    two: 'Two groups means we\'re comparing two sets of measurements. The test we use depends on whether those groups are independent or related.',
+    two: design === 'paired'
+      ? 'There are two sets of measurements to compare: before and after (or two matched observations). Even though it\'s the same people, we\'re still comparing two measurement conditions — which is why we select "two groups." The next question will distinguish whether those measurements are paired or independent.'
+      : 'Two groups means we\'re comparing two sets of measurements. The test we use depends on whether those groups are independent or related.',
     many: 'More than two groups means a simple two-group comparison won\'t work — we need a test that handles multiple groups simultaneously to control for false positives.',
   }
   return map[val]
@@ -349,7 +351,7 @@ function GuidedScenario({ scenario, onComplete }) {
           ))}
           {showQ2Feedback && (
             <div style={{ padding: '10px 12px', background: q2Correct ? C.tealSoft : C.coralSoft, border: `1px solid ${q2Correct ? 'rgba(0,153,168,0.2)' : 'rgba(232,69,42,0.2)'}`, borderRadius: 7, fontSize: 13, color: C.dim, lineHeight: 1.7, marginTop: 4 }}>
-              {q2Correct ? q2Why(q2) : 'Count the distinct groups being compared in this study.'}
+              {q2Correct ? q2Why(q2, scenario.design) : 'Count the distinct groups being compared in this study.'}
             </div>
           )}
         </div>
