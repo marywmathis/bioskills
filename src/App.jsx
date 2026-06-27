@@ -9,6 +9,7 @@ import DiagnosticTest from './DiagnosticTest'
 import StudyDesign from './StudyDesign'
 import CIBuilder from './CIBuilder'
 import HypothesisTest from './HypothesisTest'
+import PowerSampleSize from './PowerSampleSize'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -73,8 +74,7 @@ const tools = [
   {
     id: "power-sample-size", title: "Power & Sample Size", group: "Design & Inference",
     description: "What moves statistical power and what it costs to be underpowered. Interactive sliders show the relationships directly.",
-    accent: C.purple, accentSoft: C.purpleSoft, component: null,
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/></svg>,
+    accent: C.purple, accentSoft: C.purpleSoft, component: PowerSampleSize,
   },
   {
     id: "sample-size-effect", title: "Effect of Sample Size", group: "Design & Inference",
