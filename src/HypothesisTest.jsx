@@ -67,11 +67,11 @@ function q1Why(val, scenario) {
 // ── Q2 feedback ──
 function q2Why(val, design) {
   const map = {
-    one: 'With only one group, we\'re comparing a sample estimate to a known or assumed population value — not comparing two groups against each other.',
+    one: 'With only one group and one measurement, we\'re comparing a sample estimate to a known or assumed population value — not comparing two sets of measurements against each other.',
     two: design === 'paired'
-      ? 'There are two sets of measurements to compare: before and after (or two matched observations). Even though it\'s the same people, we\'re still comparing two measurement conditions — which is why we select "two groups." The next question will distinguish whether those measurements are paired or independent.'
-      : 'Two groups means we\'re comparing two sets of measurements. The test we use depends on whether those groups are independent or related.',
-    many: 'More than two groups means a simple two-group comparison won\'t work — we need a test that handles multiple groups simultaneously to control for false positives.',
+      ? 'There is one group of participants, but two measurements are being compared — one from each time point or condition. That makes this a two-measurement comparison. The next question asks whether those measurements are linked person-by-person (paired) or from different people (independent).'
+      : 'There are two separate groups being compared. The next question determines whether the people in those groups are different individuals (independent) or the same individuals measured twice (paired).',
+    many: 'More than two groups or measurement sets means we need a test that handles multiple comparisons simultaneously — to avoid inflating the false positive rate.',
   }
   return map[val]
 }
@@ -368,13 +368,16 @@ function GuidedScenario({ scenario, onComplete }) {
       {/* Q2 — show after Q1 answered (full) or always (combined/independent) */}
       {(scaffold !== 'full' || q1Done) && (
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>2. How many groups are being compared?</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>2. How many sets of measurements or comparison groups are there?</div>
           {q2Opts.map(opt => (
             <OptionBtn key={opt.val} opt={opt} picked={q2} correct={scenario.groups} showFeedback={showQ2Feedback} onClick={setQ2} />
           ))}
           {showQ2Feedback && (
             <div style={{ padding: '10px 12px', background: q2Correct ? C.tealSoft : C.coralSoft, border: `1px solid ${q2Correct ? 'rgba(0,153,168,0.2)' : 'rgba(232,69,42,0.2)'}`, borderRadius: 7, fontSize: 13, color: C.dim, lineHeight: 1.7, marginTop: 4 }}>
-              {q2Correct ? q2Why(q2, scenario.design) : `Count the sets of measurements being compared in this study. ${scenario.q2example ? 'Here: ' + scenario.q2example + '.' : ''}`}
+              {q2Correct ? q2Why(q2, scenario.design) : q2 === 'one' && scenario.groups === 'two' && scenario.design === 'paired'
+                ? `This is one group of participants, but it is not a one-sample comparison. We are comparing two measurements from that group: ${scenario.q2example || 'two sets of measurements'}. Choose "two sets of measurements."`
+                : `Count the sets of measurements being compared in this study. ${scenario.q2example ? 'Here: ' + scenario.q2example + '.' : ''}`
+              }
             </div>
           )}
         </div>
@@ -541,7 +544,7 @@ export default function HypothesisTest() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[
               { n: '1', q: 'What are you measuring?', sub: 'The outcome type determines the entire family of appropriate tests.', color: C.teal },
-              { n: '2', q: 'How many groups are being compared?', sub: 'One group vs. a known value, two groups, or more than two groups.', color: C.purple },
+              { n: '2', q: 'How many sets of measurements or comparison groups are there?', sub: 'One group vs. a known value, two groups or measurement sets, or more than two.', color: C.purple },
               { n: '3', q: 'Are these the same people measured twice (or matched pairs)?', sub: 'Paired designs require paired tests — using an independent test when data are paired loses statistical power.', color: C.amber },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', gap: 12 }}>
