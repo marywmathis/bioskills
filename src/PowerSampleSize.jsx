@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { C, s, Section } from './utils'
+import { C, s as styles, Section } from './utils'
 
 // ── Math helpers ──
 function erf(x) {
@@ -38,24 +38,24 @@ function calcPower(n, effectSize, sigma, alpha) {
   return 1 - ncdf(zAlpha - ncp) + ncdf(-zAlpha - ncp)
 }
 
-function calcN(effectSize, sigma, alpha, power) {
+function calcN(effectSize, sigma, alpha, targetPower) {
   const zAlpha = nppf(1 - alpha / 2)
-  const zBeta = nppf(power)
+  const zBeta = nppf(targetPower)
   return Math.ceil(((zAlpha + zBeta) * sigma / effectSize) ** 2)
 }
 
 // ── Overlapping distributions curve ──
 function PowerCurve({ n, effectSize, sigma, alpha }) {
-  const W = 500, H = 160, PAD = { l: 20, r: 20, t: 16, b: 24 }
-  const innerW = W - PAD.l - PAD.r
-  const innerH = H - PAD.t - PAD.b
+  const SVGW = 500, SVGH = 160, PAD = { l: 20, r: 20, t: 16, b: 24 }
+  const innerW = SVGW - PAD.l - PAD.r
+  const innerH = SVGH - PAD.t - PAD.b
 
   const se = sigma / Math.sqrt(n)
   const mu0 = 0, mu1 = effectSize
   const xMin = mu0 - 4 * se, xMax = mu1 + 4 * se
   const toX = v => PAD.l + ((v - xMin) / (xMax - xMin)) * innerW
-  const maxPdf = npdf(0) / se
-  const toY = v => PAD.t + innerH - (v / (maxPdf * 1.1)) * innerH
+  const maxPdfVal = npdf(0) / se
+  const toY = v => PAD.t + innerH - (v / (maxPdfVal * 1.1)) * innerH
 
   const zAlpha = nppf(1 - alpha / 2)
   const critRight = mu0 + zAlpha * se
@@ -94,10 +94,10 @@ function PowerCurve({ n, effectSize, sigma, alpha }) {
 
   return (
     <div style={{ overflowX: 'auto' }}>
-      <svg width={W} height={H} style={{ display: 'block', maxWidth: '100%' }}>
+      <svg width={SVGW} height={SVGH} style={{ display: 'block', maxWidth: '100%' }}>
         <rect x={0} y={0} width={W} height={H} fill={C.alt} rx={8} />
         {/* Baseline */}
-        <line x1={PAD.l} y1={toY(0)} x2={W - PAD.r} y2={toY(0)} stroke={C.border} strokeWidth={1} />
+        <line x1={PAD.l} y1={toY(0)} x2={SVGW - PAD.r} y2={toY(0)} stroke={C.border} strokeWidth={1} />
         {/* Beta region */}
         {betaPath && <path d={betaPath} fill={C.coral} fillOpacity={0.15} />}
         {/* Power region */}
@@ -189,16 +189,16 @@ export default function PowerSampleSize() {
   const [studyPick, setStudyPick] = useState(null)
 
   return (
-    <div style={s.page}>
-      <div style={s.pageTitle}>Power & Sample Size</div>
-      <div style={s.pageSub}>
+    <div style={styles.page}>
+      <div style={stylestyles.pageTitle}>Power & Sample Size</div>
+      <div style={stylestyles.pageSub}>
         Every sample size calculation asks one question: How many participants do we need so that, if the effect we're looking for is real, our study is likely to detect it?
       </div>
 
       {/* 1. Can you miss a real effect? */}
       <Section icon="?" iconBg={C.coralSoft} title="Can You Miss a Real Effect?" defaultOpen={true}>
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>Suppose a new blood pressure medication truly lowers systolic blood pressure by 8 mmHg on average. Two research teams study the same medication.</p>
+          <p style={styles.prose}>Suppose a new blood pressure medication truly lowers systolic blood pressure by 8 mmHg on average. Two research teams study the same medication.</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             {[
               { label: 'Study A', n: 30, result: 'p = 0.21', sig: false, conclusion: '"The medication doesn\'t appear to work."', reality: 'Wrong. The effect is real — the study was just too small to detect it.' },
@@ -263,7 +263,7 @@ export default function PowerSampleSize() {
       {/* 3. What moves power? */}
       <Section icon="~" iconBg={C.tealSoft} title="What Moves Power?" defaultOpen={true}>
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>Move one slider at a time and watch what happens to the distributions. After each change, an explanation appears.</p>
+          <p style={styles.prose}>Move one slider at a time and watch what happens to the distributions. After each change, an explanation appears.</p>
           <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
             {[
               { key: 'n', label: 'Sample size (n)' },
@@ -333,7 +333,7 @@ export default function PowerSampleSize() {
       {/* 4. Why each factor matters */}
       <Section icon="→" iconBg={C.amberSoft} title="Why Each Factor Matters">
         <div style={{ paddingTop: 20 }}>
-          <p style={{ ...s.prose, marginBottom: 16 }}>
+          <p style={{ ...styles.prose, marginBottom: 16 }}>
             Think of detecting an effect like trying to hear someone talking across a room.
             A <strong style={{ color: C.text }}>small effect</strong> is a whisper. A <strong style={{ color: C.text }}>small sample</strong> is a crowded, noisy room. Increasing the sample size quiets the room. Increasing the effect size makes the signal louder. Either way, power rises.
           </p>
@@ -381,7 +381,7 @@ export default function PowerSampleSize() {
       {/* 5. Why 80%? */}
       <Section icon="%" iconBg={C.purpleSoft} title="Why 80% Power?">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>Students often wonder whether 80% is a magic number. It isn't.</p>
+          <p style={styles.prose}>Students often wonder whether 80% is a magic number. It isn't.</p>
           <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 10, marginBottom: 14, fontSize: 13, color: C.dim, lineHeight: 1.75 }}>
             <strong style={{ color: C.purple }}>80% power</strong> means that if a real effect exists, your study has an 80% chance of detecting it — and a 20% chance of missing it. Researchers commonly choose 80% because it balances two competing pressures:
             <ul style={{ marginTop: 8, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -411,7 +411,7 @@ export default function PowerSampleSize() {
       {/* 6. Cost of being underpowered */}
       <Section icon="!" iconBg={C.coralSoft} title="The Cost of Being Underpowered">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>Both studies below test whether a dietary intervention reduces systolic blood pressure. The true effect is real — a 6 mmHg reduction. Which study gets it right?</p>
+          <p style={styles.prose}>Both studies below test whether a dietary intervention reduces systolic blood pressure. The true effect is real — a 6 mmHg reduction. Which study gets it right?</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
             {[
               { label: 'Underpowered Study', n: 25, pwr: 40, result: 'p = 0.18', sig: false, conclusion: '"The dietary intervention did not significantly reduce blood pressure. Further research may not be warranted."', problem: 'This conclusion is likely wrong. With only 40% power, the study had a 60% chance of missing the effect — and it did.' },
@@ -435,7 +435,7 @@ export default function PowerSampleSize() {
       {/* 7. Sample size calculator */}
       <Section icon="⚙" iconBg={C.tealSoft} title="Sample Size Calculator">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>For comparing two proportions. Enter your study parameters and calculate the required sample size per group.</p>
+          <p style={styles.prose}>For comparing two proportions. Enter your study parameters and calculate the required sample size per group.</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 16 }}>
             <div>
               {[
@@ -485,7 +485,7 @@ export default function PowerSampleSize() {
       {/* 8. JMP walkthrough — collapsed */}
       <Section icon="💻" iconBg={C.alt} title="Using JMP for Sample Size Calculations">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>JMP's interactive sample size calculator handles means, proportions, and paired designs. Here's the path for a two-proportion comparison.</p>
+          <p style={styles.prose}>JMP's interactive sample size calculator handles means, proportions, and paired designs. Here's the path for a two-proportion comparison.</p>
           {[
             { step: 1, text: 'DOE → Sample Size and Power → Two Sample Proportions' },
             { step: 2, text: 'Enter Alpha (significance level, typically 0.05)' },
