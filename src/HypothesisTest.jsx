@@ -21,12 +21,14 @@ const Q1_OPTS = [
   { val: 'categorical', label: 'A category', sub: 'e.g., yes/no, disease/no disease, blood type' },
 ]
 
-// ── Q2 options ──
-const Q2_OPTS = [
-  { val: 'one', label: 'One group', sub: 'Comparing a single group to a known or historical value' },
-  { val: 'two', label: 'Two sets of measurements', sub: 'e.g., treatment vs. control, men vs. women, before vs. after' },
-  { val: 'many', label: 'More than two groups', sub: 'e.g., three treatment arms, four age groups' },
-]
+// ── Q2 options — dynamic based on scenario ──
+function getQ2Opts(scenario) {
+  return [
+    { val: 'one', label: 'One group', sub: 'Comparing a single group to a known or historical value' },
+    { val: 'two', label: 'Two sets of measurements', sub: scenario?.q2example || 'e.g., treatment vs. control, before vs. after' },
+    { val: 'many', label: 'More than two groups', sub: 'e.g., three treatment arms, four age groups' },
+  ]
+}
 
 // ── Q3 options ──
 const Q3_OPTS = [
@@ -102,6 +104,7 @@ const SCENARIOS = [
   {
     id: 1,
     q: 'Researchers compare mean systolic blood pressure between patients taking Drug A and patients taking Drug B. Each patient takes only one drug.',
+    q2example: 'e.g., Drug A patients vs. Drug B patients',
     outcome: 'continuous',
     groups: 'two',
     design: 'independent',
@@ -114,6 +117,7 @@ const SCENARIOS = [
   {
     id: 2,
     q: 'A researcher measures pain scores (0–10 scale) before and after a new physical therapy protocol in 30 patients.',
+    q2example: 'e.g., before physical therapy vs. after physical therapy',
     outcome: 'ordinal',
     groups: 'two',
     design: 'paired',
@@ -126,6 +130,7 @@ const SCENARIOS = [
   {
     id: 3,
     q: 'A health department surveys 500 adults and records whether each person is vaccinated (yes/no). They want to compare vaccination rates between men and women.',
+    q2example: 'e.g., men vs. women',
     outcome: 'categorical',
     groups: 'two',
     design: 'independent',
@@ -138,6 +143,7 @@ const SCENARIOS = [
   {
     id: 4,
     q: 'Researchers test a new cholesterol-lowering drug. Forty patients have their LDL cholesterol measured before taking the drug and again after 12 weeks.',
+    q2example: 'e.g., before treatment vs. 12 weeks after treatment',
     outcome: 'continuous',
     groups: 'two',
     design: 'paired',
@@ -149,6 +155,7 @@ const SCENARIOS = [
   {
     id: 5,
     q: 'A study compares self-rated health (Poor/Fair/Good/Very Good/Excellent) among adults from four different U.S. regions.',
+    q2example: 'Four regions: Northeast, South, Midwest, West',
     outcome: 'ordinal',
     groups: 'many',
     design: 'independent',
@@ -160,6 +167,7 @@ const SCENARIOS = [
   {
     id: 6,
     q: 'A clinical trial randomizes 300 patients to one of three treatment arms: placebo, low-dose, or high-dose. The primary outcome is change in blood glucose (mg/dL).',
+    q2example: 'Three arms: placebo, low-dose, high-dose',
     outcome: 'continuous',
     groups: 'many',
     design: 'independent',
@@ -171,6 +179,7 @@ const SCENARIOS = [
   {
     id: 7,
     q: 'Epidemiologists want to know if HIV status (positive/negative) is associated with homelessness status (yes/no) in a sample of 800 adults.',
+    q2example: 'e.g., HIV+ vs. HIV− (or homeless vs. not homeless)',
     outcome: 'categorical',
     groups: 'two',
     design: 'independent',
@@ -182,6 +191,7 @@ const SCENARIOS = [
   {
     id: 8,
     q: 'Researchers compare mean weekly step counts among adults with normal weight, overweight, and obesity (three groups). Each participant is measured once.',
+    q2example: 'Three groups: normal weight, overweight, obesity',
     outcome: 'continuous',
     groups: 'many',
     design: 'independent',
@@ -193,6 +203,7 @@ const SCENARIOS = [
   {
     id: 9,
     q: 'A study follows 50 pairs of identical twins. One twin in each pair receives a dietary intervention; the other serves as control. Researchers compare weight loss (kg) between the two groups.',
+    q2example: 'e.g., intervention twin vs. control twin (matched pairs)',
     outcome: 'continuous',
     groups: 'two',
     design: 'paired',
@@ -310,6 +321,7 @@ function GuidedScenario({ scenario, onComplete }) {
   const [q3, setQ3] = useState(null)
   const [submitted, setSubmitted] = useState(false)
 
+  const q2Opts = getQ2Opts(scenario)
   const scaffold = scenario.scaffold
   const showQ1Feedback = scaffold === 'full' ? q1 !== null : submitted && q1 !== null
   const showQ2Feedback = scaffold === 'full' ? q2 !== null : submitted && q2 !== null
@@ -357,12 +369,12 @@ function GuidedScenario({ scenario, onComplete }) {
       {(scaffold !== 'full' || q1Done) && (
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>2. How many groups are being compared?</div>
-          {Q2_OPTS.map(opt => (
+          {q2Opts.map(opt => (
             <OptionBtn key={opt.val} opt={opt} picked={q2} correct={scenario.groups} showFeedback={showQ2Feedback} onClick={setQ2} />
           ))}
           {showQ2Feedback && (
             <div style={{ padding: '10px 12px', background: q2Correct ? C.tealSoft : C.coralSoft, border: `1px solid ${q2Correct ? 'rgba(0,153,168,0.2)' : 'rgba(232,69,42,0.2)'}`, borderRadius: 7, fontSize: 13, color: C.dim, lineHeight: 1.7, marginTop: 4 }}>
-              {q2Correct ? q2Why(q2, scenario.design) : 'Count the distinct groups being compared in this study.'}
+              {q2Correct ? q2Why(q2, scenario.design) : `Count the sets of measurements being compared in this study. ${scenario.q2example ? 'Here: ' + scenario.q2example + '.' : ''}`}
             </div>
           )}
         </div>
