@@ -181,9 +181,9 @@ export default function PowerSampleSize() {
   const [calcP1, setCalcP1] = useState(0.30)
   const [calcDelta, setCalcDelta] = useState(0.10)
   const [calcAlpha, setCalcAlpha] = useState(0.05)
-  const [calcPower, setCalcPower] = useState(0.80)
+  const [targetPower, setTargetPower] = useState(0.80)
   const calcSigma = Math.sqrt((calcP1 * (1 - calcP1) + (calcP1 + calcDelta) * (1 - calcP1 - calcDelta)) / 2)
-  const requiredN = calcN(calcDelta, calcSigma, calcAlpha, calcPower)
+  const requiredN = calcN(calcDelta, calcSigma, calcAlpha, targetPower)
 
   // Study comparison
   const [studyPick, setStudyPick] = useState(null)
@@ -462,7 +462,7 @@ export default function PowerSampleSize() {
                 <div style={{ fontSize: 13, color: C.dim, marginBottom: 6 }}>Desired power</div>
                 <div style={{ display: 'flex', gap: 6 }}>
                   {[0.80, 0.90, 0.95].map(v => (
-                    <button key={v} onClick={() => setCalcPower(v)} style={{ flex: 1, padding: '7px 0', borderRadius: 6, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', background: calcPower === v ? C.teal : C.surface, border: `1px solid ${calcPower === v ? C.teal : C.border}`, color: calcPower === v ? '#fff' : C.dim, fontWeight: calcPower === v ? 700 : 400 }}>{(v*100).toFixed(0)}%</button>
+                    <button key={v} onClick={() => setTargetPower(v)} style={{ flex: 1, padding: '7px 0', borderRadius: 6, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', background: targetPower === v ? C.teal : C.surface, border: `1px solid ${targetPower === v ? C.teal : C.border}`, color: targetPower === v ? '#fff' : C.dim, fontWeight: targetPower === v ? 700 : 400 }}>{(v*100).toFixed(0)}%</button>
                   ))}
                 </div>
               </div>
@@ -475,7 +475,7 @@ export default function PowerSampleSize() {
                 <div style={{ fontSize: 12, color: C.purple, marginTop: 4, fontWeight: 600 }}>Total: {requiredN * 2} participants</div>
               </div>
               <div style={{ padding: '12px 14px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-                <strong style={{ color: C.text }}>What this means:</strong> To detect a difference of {(calcDelta*100).toFixed(0)} percentage points (from {(calcP1*100).toFixed(0)}% to {((calcP1+calcDelta)*100).toFixed(0)}%) with {(calcPower*100).toFixed(0)}% power and α = {calcAlpha}, you need {requiredN} participants in each group.
+                <strong style={{ color: C.text }}>What this means:</strong> To detect a difference of {(calcDelta*100).toFixed(0)} percentage points (from {(calcP1*100).toFixed(0)}% to {((calcP1+calcDelta)*100).toFixed(0)}%) with {(targetPower*100).toFixed(0)}% power and α = {calcAlpha}, you need {requiredN} participants in each group.
               </div>
             </div>
           </div>
