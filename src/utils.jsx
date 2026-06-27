@@ -107,18 +107,20 @@ export function Quiz({ q, options, answer, explain, wrongExplain }) {
 
 export function Section({ icon, iconBg, title, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen)
-  const headerRef = React.useRef(null)
   return (
     <div style={s.section}>
-      <div ref={headerRef}
-        style={{ ...s.sectionBtn, background: open ? C.alt : C.surface, cursor: 'pointer', userSelect: 'none' }}
-        onClick={e => { if (headerRef.current && headerRef.current === e.currentTarget) setOpen(o => !o) }}
-      >
-        <span style={s.sectionBtnLeft}>
-          <span style={{ ...s.sectionIcon, background: iconBg }}>{icon}</span>
-          {title}
-        </span>
-        <span style={{ ...s.chevron, transform: open ? 'rotate(180deg)' : 'none' }}>▼</span>
+      <div style={{ position: 'relative' }}>
+        <div style={{ ...s.sectionBtn, background: open ? C.alt : C.surface, pointerEvents: 'none' }}>
+          <span style={s.sectionBtnLeft}>
+            <span style={{ ...s.sectionIcon, background: iconBg }}>{icon}</span>
+            {title}
+          </span>
+          <span style={{ ...s.chevron, transform: open ? 'rotate(180deg)' : 'none' }}>▼</span>
+        </div>
+        <div
+          onClick={() => setOpen(o => !o)}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', cursor: 'pointer', zIndex: 1 }}
+        />
       </div>
       {open && <div style={s.body}>{children}</div>}
     </div>
