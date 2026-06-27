@@ -11,6 +11,7 @@ import CIBuilder from './CIBuilder'
 import HypothesisTest from './HypothesisTest'
 import PowerSampleSize from './PowerSampleSize'
 import SampleSizeEffect from './SampleSizeEffect'
+import PValueExplorer from './PValueExplorer'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -81,6 +82,11 @@ const tools = [
     id: "sample-size-effect", title: "Why Sample Size Matters", group: "Design & Inference",
     description: "Watch CI width and power change simultaneously as n grows. The most important relationship in applied statistics.",
     accent: C.amber, accentSoft: C.amberSoft, component: SampleSizeEffect,
+  },
+  {
+    id: "p-value-explorer", title: "P-Value Explorer", group: "Design & Inference",
+    description: "Build intuition for what p-values actually measure — step by step, with common misconceptions addressed directly.",
+    accent: C.coral, accentSoft: C.coralSoft, component: PValueExplorer,
   },
 ]
 
