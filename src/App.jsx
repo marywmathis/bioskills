@@ -7,6 +7,7 @@ import DistributionsExplorer from './DistributionsExplorer'
 import ProbabilityRules from './ProbabilityRules'
 import DiagnosticTest from './DiagnosticTest'
 import StudyDesign from './StudyDesign'
+import CIBuilder from './CIBuilder'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -61,8 +62,7 @@ const tools = [
   {
     id: "confidence-intervals", title: "CI Builder", group: "Design & Inference",
     description: "Build a confidence interval step by step. See how width, precision, and sample size are connected.",
-    accent: C.teal, accentSoft: C.tealSoft, component: null,
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" strokeWidth="2"/><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" strokeWidth="2" strokeDasharray="3 2"/><rect x="7" y="9" width="10" height="6" rx="2" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity="0.1"/></svg>,
+    accent: C.teal, accentSoft: C.tealSoft, component: CIBuilder,
   },
   {
     id: "hypothesis-testing", title: "Hypothesis Test Selector", group: "Design & Inference",
