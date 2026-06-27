@@ -109,14 +109,21 @@ export function Section({ icon, iconBg, title, children, defaultOpen = false }) 
   const [open, setOpen] = useState(defaultOpen)
   return (
     <div style={s.section}>
-      <button style={{ ...s.sectionBtn, background: open ? C.alt : C.surface }} onClick={() => setOpen(o => !o)}>
+      <div
+        style={{ ...s.sectionBtn, background: open ? C.alt : C.surface, cursor: 'pointer', userSelect: 'none' }}
+        onClick={() => setOpen(o => !o)}
+      >
         <span style={s.sectionBtnLeft}>
           <span style={{ ...s.sectionIcon, background: iconBg }}>{icon}</span>
           {title}
         </span>
         <span style={{ ...s.chevron, transform: open ? 'rotate(180deg)' : 'none' }}>▼</span>
-      </button>
-      {open && <div style={s.body} onClick={e => e.stopPropagation()}>{children}</div>}
+      </div>
+      {open && (
+        <div style={s.body} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
+          {children}
+        </div>
+      )}
     </div>
   )
 }
