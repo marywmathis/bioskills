@@ -8,6 +8,7 @@ import ProbabilityRules from './ProbabilityRules'
 import DiagnosticTest from './DiagnosticTest'
 import StudyDesign from './StudyDesign'
 import CIBuilder from './CIBuilder'
+import HypothesisTest from './HypothesisTest'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -67,8 +68,7 @@ const tools = [
   {
     id: "hypothesis-testing", title: "Hypothesis Test Selector", group: "Design & Inference",
     description: "Scenario-based test selection with decision logic. Input your data type and question, get the right test and why.",
-    accent: C.coral, accentSoft: C.coralSoft, component: null,
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2"/></svg>,
+    accent: C.coral, accentSoft: C.coralSoft, component: HypothesisTest,
   },
   {
     id: "power-sample-size", title: "Power & Sample Size", group: "Design & Inference",
