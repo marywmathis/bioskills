@@ -159,7 +159,7 @@ export default function PowerSampleSize() {
             </div>
             {[
               { row: 'Reject H₀ (significant result)', cells: [
-                { label: 'Possible Type I Error (α)', sub: 'False positive — concluded an effect exists when it doesn't', color: C.amber },
+                { label: 'Possible Type I Error (α)', sub: "False positive — concluded an effect exists when it doesn't", color: C.amber },
                 { label: 'Correctly detected a real effect ✓', sub: 'Power = 1 − β', color: C.green }
               ]},
               { row: 'Fail to reject H₀ (not significant)', cells: [
