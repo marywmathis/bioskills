@@ -1,7 +1,7 @@
 // Shared utilities for BioSkills tools
 // Import from here rather than redefining in each tool
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 // ── Color system ──
 export const C = {
@@ -107,11 +107,12 @@ export function Quiz({ q, options, answer, explain, wrongExplain }) {
 
 export function Section({ icon, iconBg, title, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen)
+  const headerRef = React.useRef(null)
   return (
     <div style={s.section}>
-      <div
+      <div ref={headerRef}
         style={{ ...s.sectionBtn, background: open ? C.alt : C.surface, cursor: 'pointer', userSelect: 'none' }}
-        onClick={() => setOpen(o => !o)}
+        onClick={e => { if (headerRef.current && headerRef.current === e.currentTarget) setOpen(o => !o) }}
       >
         <span style={s.sectionBtnLeft}>
           <span style={{ ...s.sectionIcon, background: iconBg }}>{icon}</span>
@@ -119,11 +120,7 @@ export function Section({ icon, iconBg, title, children, defaultOpen = false }) 
         </span>
         <span style={{ ...s.chevron, transform: open ? 'rotate(180deg)' : 'none' }}>▼</span>
       </div>
-      {open && (
-        <div style={s.body} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
-          {children}
-        </div>
-      )}
+      {open && <div style={s.body}>{children}</div>}
     </div>
   )
 }
