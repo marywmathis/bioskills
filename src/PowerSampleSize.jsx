@@ -145,25 +145,70 @@ export default function PowerSampleSize() {
             <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, color: C.purple, marginBottom: 4 }}>Power = the probability of detecting a real effect when one truly exists</div>
             <div style={{ fontSize: 13, color: C.dim }}>The chance your study finds a significant result when the treatment actually works.</div>
           </div>
+
+          <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 10 }}>What These Four Boxes Really Mean</div>
+          <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 14 }}>
+            Every hypothesis test produces one of four possible outcomes. The problem is that when you analyze real data, <strong style={{ color: C.text }}>you never know which box you're actually in</strong> — because you don't know the truth about the population. You only have a sample.
+          </p>
+
           <div style={{ borderRadius: 10, border: `1px solid ${C.border}`, overflow: 'hidden', marginBottom: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', background: C.alt, padding: '9px 12px', fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${C.border}` }}>
-              <span></span><span style={{ color: C.teal }}>H₀ True (no effect)</span><span style={{ color: C.coral }}>H₀ False (effect exists)</span>
+              <span></span>
+              <span style={{ color: C.teal }}>H₀ True (no real effect)</span>
+              <span style={{ color: C.coral }}>H₀ False (real effect exists)</span>
             </div>
             {[
-              { row: 'Reject H₀ (significant)', cells: [{ label: 'Type I Error (α)', sub: 'False positive', color: C.amber }, { label: 'Power = 1 − β ✓', sub: 'Detected the real effect', color: C.green }] },
-              { row: 'Fail to reject H₀', cells: [{ label: 'Correct decision', sub: 'No effect found, none exists', color: C.teal }, { label: 'Type II Error (β) ✗', sub: 'Missed a real effect', color: C.coral }] },
+              { row: 'Reject H₀ (significant result)', cells: [
+                { label: 'Possible Type I Error (α)', sub: 'False positive — concluded an effect exists when it doesn't', color: C.amber },
+                { label: 'Correctly detected a real effect ✓', sub: 'Power = 1 − β', color: C.green }
+              ]},
+              { row: 'Fail to reject H₀ (not significant)', cells: [
+                { label: 'Correct decision ✓', sub: 'No significant result, and no real effect', color: C.teal },
+                { label: 'Possible Type II Error (β)', sub: 'Missed a real effect — false negative', color: C.coral }
+              ]},
             ].map((row, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderTop: `1px solid ${C.border}` }}>
                 <div style={{ padding: '10px 12px', fontSize: 12, color: C.dim, fontWeight: 600, borderRight: `1px solid ${C.border}` }}>{row.row}</div>
                 {row.cells.map((cell, j) => (
                   <div key={j} style={{ padding: '10px 12px', background: cell.color + '15', borderLeft: j > 0 ? `1px solid ${C.border}` : 'none' }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: cell.color, marginBottom: 2 }}>{cell.label}</div>
-                    <div style={{ fontSize: 11, color: C.dim }}>{cell.sub}</div>
+                    <div style={{ fontSize: 11, color: C.dim, lineHeight: 1.5 }}>{cell.sub}</div>
                   </div>
                 ))}
               </div>
             ))}
           </div>
+
+          {/* In a real study callout */}
+          <div style={{ padding: '14px 16px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 10, marginBottom: 14 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.amber, marginBottom: 10 }}>In a real study, you never know which box you're in.</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 7, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+                <strong style={{ color: C.text }}>Your study finds a significant result.</strong><br />Did you discover a real effect? Or did random chance produce a false positive (Type I error)?<br /><strong style={{ color: C.amber }}>You don't know.</strong>
+              </div>
+              <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 7, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+                <strong style={{ color: C.text }}>Your study finds no significant result.</strong><br />Is there really no effect? Or did your study miss a real effect because it was underpowered (Type II error)?<br /><strong style={{ color: C.amber }}>You don't know.</strong>
+              </div>
+            </div>
+          </div>
+
+          {/* What researchers can control */}
+          <div style={{ padding: '14px 16px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 10, marginBottom: 14 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.teal, marginBottom: 10 }}>What researchers can — and cannot — control</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ fontSize: 13, color: C.coral, fontWeight: 600 }}>✗ Cannot control whether a Type I or Type II error occurs in a particular study.</div>
+              <div style={{ fontSize: 13, color: C.teal, fontWeight: 600, marginTop: 4 }}>✓ Can design studies that make those errors less likely:</div>
+              {['Choose an appropriate significance level (α = 0.05 is standard)', 'Enroll enough participants to achieve adequate power', 'Reduce measurement error and variability', 'Use the correct statistical test for the outcome and design'].map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: C.dim }}>
+                  <span style={{ color: C.teal, flexShrink: 0 }}>•</span>{item}
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 12, fontSize: 13, color: C.dim, fontStyle: 'italic', lineHeight: 1.7 }}>
+              Even then, every study carries some uncertainty. Everything you've learned in this course — choosing the right study design, selecting the appropriate test, enrolling enough participants, computing confidence intervals — helps reduce the chance of these errors. But no statistical method eliminates uncertainty completely.
+            </div>
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div style={{ padding: '10px 14px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
               <strong style={{ color: C.green }}>Power = 1 − β.</strong> A study with 80% power has an 80% chance of detecting the effect — and a 20% chance of missing it.
@@ -286,9 +331,9 @@ export default function PowerSampleSize() {
                 <div style={{ fontSize: 11, color: C.muted, marginTop: 3 }}>Expected proportion in the control group.</div>
               </div>
               <div style={{ marginBottom: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: C.dim, marginBottom: 2 }}><span>Minimum detectable difference (δ)</span><span style={{ fontWeight: 700 }}>{(calcDiff*100).toFixed(0)} pp</span></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: C.dim, marginBottom: 2 }}><span>Minimum detectable difference (δ)</span><span style={{ fontWeight: 700 }}>{(calcDiff*100).toFixed(0)} percentage points</span></div>
                 <input type="range" min={0.02} max={0.40} step={0.01} value={calcDiff} onChange={e => setCalcDiff(+e.target.value)} style={{ width: '100%', accentColor: C.teal }} />
-                <div style={{ fontSize: 11, color: C.muted, marginTop: 3 }}>Smallest difference that would be clinically meaningful.</div>
+                <div style={{ fontSize: 11, color: C.muted, marginTop: 3 }}>The smallest difference between groups that would be clinically meaningful. Currently: {(calcP1*100).toFixed(0)}% vs. {(Math.min(calcP1+calcDiff,0.99)*100).toFixed(0)}%.</div>
               </div>
               <div style={{ marginBottom: 14 }}>
                 <div style={{ fontSize: 13, color: C.dim, marginBottom: 6 }}>Significance level (α)</div>
@@ -315,8 +360,36 @@ export default function PowerSampleSize() {
                 <div style={{ fontSize: 12, color: C.purple, marginTop: 4, fontWeight: 600 }}>Total: {neededN * 2} participants</div>
               </div>
               <div style={{ padding: '12px 14px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-                <strong style={{ color: C.text }}>What this means:</strong> To detect a difference of {(calcDiff*100).toFixed(0)} pp (from {(calcP1*100).toFixed(0)}% to {((calcP1+calcDiff)*100).toFixed(0)}%) with {(calcPwr*100).toFixed(0)}% power and α = {calcAlpha}, you need {neededN} per group ({neededN*2} total).
+                <strong style={{ color: C.text }}>What this means:</strong> To detect a difference of {(calcDiff*100).toFixed(0)} percentage points ({(calcP1*100).toFixed(0)}% in the control group vs. {(Math.min(calcP1+calcDiff,0.99)*100).toFixed(0)}% in the intervention group) with {(calcPwr*100).toFixed(0)}% power and α = {calcAlpha}, you need {neededN} participants per group ({neededN*2} total).
               </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section icon="★" iconBg={C.amberSoft} title="Why Sample Size Isn't the Whole Story">
+        <div style={{ paddingTop: 20 }}>
+          <p style={s.prose}>This calculator tells you how many participants you need to have a good chance of detecting a real effect. But having enough participants is only half the equation.</p>
+          <div style={{ padding: '14px 16px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 10, marginBottom: 14, fontSize: 13, color: C.dim, lineHeight: 1.75 }}>
+            <strong style={{ color: C.amber }}>A large sample does not guarantee a good study.</strong> The way participants are selected is just as important as how many are included. Sample size calculations assume your sample is appropriate for the research question — but they cannot correct for selection bias.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+            <div style={{ padding: '14px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 10 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.coral, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Large but biased sample</div>
+              <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>1,000 people recruited at a health fair may give excellent statistical power — but those participants may not represent the broader population. High power, low representativeness.</div>
+            </div>
+            <div style={{ padding: '14px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 10 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.green, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Smaller but representative sample</div>
+              <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>A smaller random sample may provide more trustworthy estimates because it better represents the population of interest — even with slightly lower power.</div>
+            </div>
+          </div>
+          <div style={{ padding: '14px 16px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 10, fontSize: 13, color: C.dim, lineHeight: 1.75 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div><strong style={{ color: C.teal }}>Sample size answers:</strong> Do I have enough participants to detect a meaningful effect?</div>
+              <div><strong style={{ color: C.purple }}>Sampling method answers:</strong> Do these participants represent the population I want to study?</div>
+            </div>
+            <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid rgba(0,153,168,0.15)`, fontSize: 13, color: C.dim }}>
+              You need both. A study that is too small may miss a real effect. A study with a large but biased sample may detect an effect that doesn't accurately represent the population. Neither problem can be fixed with statistics after the data are collected.
             </div>
           </div>
         </div>
