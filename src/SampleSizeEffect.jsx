@@ -42,9 +42,9 @@ function CILine({ n, width = 320 }) {
   const halfPx = Math.min((clCiW / 0.6) * (plotW / 2), plotW * 0.48)
 
   return (
-    <svg width={W} height={H} style={{ display: 'block', maxWidth: '100%' }}>
-      <rect width={W} height={H} fill={C.alt} rx={6} />
-      <line x1={PL} y1={H/2} x2={W-PR} y2={H/2} stroke={C.border} strokeWidth={1.5} />
+    <svg width={clW} height={H} style={{ display: 'block', maxWidth: '100%' }}>
+      <rect width={clW} height={H} fill={C.alt} rx={6} />
+      <line x1={PL} y1={H/2} x2={clW-PR} y2={H/2} stroke={C.border} strokeWidth={1.5} />
       {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map(v => {
         const x = PL + v * plotW
         return (
@@ -68,12 +68,12 @@ function PowerBar({ n, width = 320 }) {
   const pbPwr = getPowerA(n)
   const pbW = width, H = 44
   return (
-    <svg width={W} height={H} style={{ display: 'block', maxWidth: '100%' }}>
-      <rect width={W} height={H} fill={C.alt} rx={6} />
+    <svg width={pbW} height={H} style={{ display: 'block', maxWidth: '100%' }}>
+      <rect width={pbW} height={H} fill={C.alt} rx={6} />
       <rect x={8} y={14} width={pbW-16} height={16} rx={4} fill={C.border} />
       <rect x={8} y={14} width={Math.max(0, (pbW-16) * pbPwr)} height={16} rx={4} fill={pbPwr >= 0.8 ? C.green : pbPwr >= 0.5 ? C.amber : C.coral} />
       <text x={pbW/2} y={12} textAnchor="middle" fontSize={10} fill={C.muted}>Power</text>
-      <text x={pbW/2} y={37} textAnchor="middle" fontSize={11} fill={pwr >= 0.8 ? C.green : pwr >= 0.5 ? C.amber : C.coral} fontWeight="700">{(pwr*100).toFixed(1)}%</text>
+      <text x={pbW/2} y={37} textAnchor="middle" fontSize={11} fill={pbPwr >= 0.8 ? C.green : pbPwr >= 0.5 ? C.amber : C.coral} fontWeight="700">{(pbPwr*100).toFixed(1)}%</text>
     </svg>
   )
 }
@@ -101,7 +101,7 @@ function DiminishingChart() {
 
   return (
     <div style={{ overflowX: 'auto' }}>
-      <svg width={clW} height={H} style={{ display: 'block', maxWidth: '100%' }}>
+      <svg width={W} height={H} style={{ display: 'block', maxWidth: '100%' }}>
         <rect width={W} height={H} fill={C.alt} rx={8} />
         <line x1={PL} y1={PT} x2={PL} y2={H-PB} stroke={C.border} strokeWidth={1} />
         <line x1={PL} y1={H-PB} x2={W-PR} y2={H-PB} stroke={C.border} strokeWidth={1} />
