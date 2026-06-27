@@ -66,66 +66,41 @@ function CILine({ n, width = 320 }) {
 // ── Power bar ──
 function PowerBar({ n, width = 320 }) {
   const pbPwr = getPowerA(n)
-  const pbW = width, H = 44
+  const pbW = width, H = 52
   return (
     <svg width={pbW} height={H} style={{ display: 'block', maxWidth: '100%' }}>
       <rect width={pbW} height={H} fill={C.alt} rx={6} />
-      <rect x={8} y={14} width={pbW-16} height={16} rx={4} fill={C.border} />
-      <rect x={8} y={14} width={Math.max(0, (pbW-16) * pbPwr)} height={16} rx={4} fill={pbPwr >= 0.8 ? C.green : pbPwr >= 0.5 ? C.amber : C.coral} />
-      <text x={pbW/2} y={12} textAnchor="middle" fontSize={10} fill={C.muted}>Power</text>
-      <text x={pbW/2} y={37} textAnchor="middle" fontSize={11} fill={pbPwr >= 0.8 ? C.green : pbPwr >= 0.5 ? C.amber : C.coral} fontWeight="700">{(pbPwr*100).toFixed(1)}%</text>
+      <text x={pbW/2} y={13} textAnchor="middle" fontSize={10} fill={C.muted}>Power</text>
+      <rect x={8} y={18} width={pbW-16} height={16} rx={4} fill={C.border} />
+      <rect x={8} y={18} width={Math.max(0, (pbW-16) * pbPwr)} height={16} rx={4} fill={pbPwr >= 0.8 ? C.green : pbPwr >= 0.5 ? C.amber : C.coral} />
+      <text x={pbW/2} y={48} textAnchor="middle" fontSize={11} fill={pbPwr >= 0.8 ? C.green : pbPwr >= 0.5 ? C.amber : C.coral} fontWeight="700">{(pbPwr*100).toFixed(1)}%</text>
     </svg>
   )
 }
 
-// ── Diminishing returns chart ──
-function DiminishingChart() {
-  const W = 460, H = 160, PL = 48, PR = 16, PT = 12, PB = 28
-  const PW = W - PL - PR, PH = H - PT - PB
-  const maxN = 1000, maxW = getCIWidth(10)
-
-  const toX = n => PL + (n / maxN) * PW
-  const toY = w => PT + PH - (w / maxW) * PH
-
-  const ciPts = [], pwrPts = []
-  for (let n = 10; n <= maxN; n += 5) {
-    ciPts.push([n, getCIWidth(n)])
-    pwrPts.push([n, getPowerA(n)])
-  }
-
-  const ciPath = ciPts.map(([n, w], i) => `${i ? 'L' : 'M'}${toX(n).toFixed(1)},${toY(w).toFixed(1)}`).join(' ')
-  const pwrPath = pwrPts.map(([n, p], i) => `${i ? 'L' : 'M'}${toX(n).toFixed(1)},${(PT + PH - p * PH).toFixed(1)}`).join(' ')
-
-  const yTicksCI = [0, 0.1, 0.2, 0.3, 0.4]
-  const xTicks = [0, 200, 400, 600, 800, 1000]
-
+// ── Snapshot card ──
+function SnapshotCard({ n, highlight }) {
+  const snCiW = getCIWidth(n)
+  const snPwr = getPowerA(n)
+  const BAR_W = 180
+  const filledPx = Math.round(BAR_W * snPwr)
+  const ciPx = Math.round(BAR_W * Math.min(snCiW / 0.65, 1))
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <svg width={W} height={H} style={{ display: 'block', maxWidth: '100%' }}>
-        <rect width={W} height={H} fill={C.alt} rx={8} />
-        <line x1={PL} y1={PT} x2={PL} y2={H-PB} stroke={C.border} strokeWidth={1} />
-        <line x1={PL} y1={H-PB} x2={W-PR} y2={H-PB} stroke={C.border} strokeWidth={1} />
-        {yTicksCI.map(v => (
-          <g key={v}>
-            <line x1={PL-3} y1={toY(v)} x2={PL} y2={toY(v)} stroke={C.muted} strokeWidth={1} />
-            <text x={PL-6} y={toY(v)+3} textAnchor="end" fontSize={8} fill={C.muted}>{v.toFixed(1)}</text>
-          </g>
-        ))}
-        {xTicks.map(v => (
-          <g key={v}>
-            <line x1={toX(v)} y1={H-PB} x2={toX(v)} y2={H-PB+3} stroke={C.muted} strokeWidth={1} />
-            <text x={toX(v)} y={H-PB+11} textAnchor="middle" fontSize={8} fill={C.muted}>{v}</text>
-          </g>
-        ))}
-        <path d={pwrPath} fill="none" stroke={C.green} strokeWidth={2} strokeOpacity={0.5} />
-        <path d={ciPath} fill="none" stroke={C.purple} strokeWidth={2.5} />
-        <text x={W-PR-2} y={PT+10} textAnchor="end" fontSize={9} fill={C.purple} fontWeight="600">CI width</text>
-        <text x={W-PR-2} y={PT+22} textAnchor="end" fontSize={9} fill={C.green} fontWeight="600">Power</text>
-        <text x={PL + PW/2} y={H-1} textAnchor="middle" fontSize={9} fill={C.muted}>Sample size (n) →</text>
-        <text x={10} y={PT + PH/2} textAnchor="middle" fontSize={9} fill={C.muted} transform={`rotate(-90, 10, ${PT + PH/2})`}>CI width</text>
-      </svg>
-      <div style={{ fontSize: 12, color: C.dim, marginTop: 6, fontStyle: 'italic' }}>
-        The first 100 participants help enormously. Going from 900 to 1,000 helps very little. This is diminishing returns.
+    <div style={{ padding: '14px 16px', background: highlight ? C.purpleSoft : C.surface, border: `1.5px solid ${highlight ? C.purple : C.border}`, borderRadius: 10 }}>
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: highlight ? C.purple : C.text, marginBottom: 12 }}>n = {n}</div>
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Confidence interval width</div>
+        <div style={{ position: 'relative', height: 14, width: BAR_W, background: C.alt, borderRadius: 3, marginBottom: 3 }}>
+          <div style={{ position: 'absolute', left: Math.round((BAR_W - ciPx) / 2), width: ciPx, height: '100%', background: C.purple, borderRadius: 3, opacity: 0.7 }} />
+        </div>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: C.purple }}>{(snCiW * 100).toFixed(1)} percentage points</div>
+      </div>
+      <div>
+        <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Statistical power</div>
+        <div style={{ height: 14, width: BAR_W, background: C.alt, borderRadius: 3, marginBottom: 3 }}>
+          <div style={{ width: filledPx, height: '100%', background: snPwr >= 0.8 ? C.green : snPwr >= 0.5 ? C.amber : C.coral, borderRadius: 3 }} />
+        </div>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: snPwr >= 0.8 ? C.green : snPwr >= 0.5 ? C.amber : C.coral }}>{(snPwr * 100).toFixed(0)}%</div>
       </div>
     </div>
   )
@@ -349,18 +324,34 @@ export default function SampleSizeEffect() {
       {/* 4. Diminishing returns */}
       <Section icon="↘" iconBg={C.tealSoft} title="Diminishing Returns">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>The relationship between n and precision is not linear. Early participants contribute far more than late ones.</p>
-          <DiminishingChart />
-          <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div style={{ padding: '10px 14px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
-              <strong style={{ color: C.green }}>n = 10 → 100</strong><br />Adding 90 participants narrows the CI width from {(getCIWidth(10)*100).toFixed(1)}% to {(getCIWidth(100)*100).toFixed(1)}% — a dramatic improvement.
-            </div>
-            <div style={{ padding: '10px 14px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
-              <strong style={{ color: C.muted }}>n = 900 → 1000</strong><br />Adding 100 participants narrows the CI from {(getCIWidth(900)*100).toFixed(1)}% to {(getCIWidth(1000)*100).toFixed(1)}% — barely noticeable.
-            </div>
+          <p style={s.prose}>Every additional participant improves precision — but each one improves it a little less than the one before. Watch what happens as n quadruples each time.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+            {[25, 100, 400, 1600].map(pn => <SnapshotCard key={pn} n={pn} highlight={pn === 100} />)}
           </div>
-          <div style={{ marginTop: 10, padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-            This is why sample size calculations matter before data collection — adding participants after the fact is rarely cost-effective, and the most powerful investments in precision happen early.
+          <div style={{ padding: '12px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7, marginBottom: 14 }}>
+            <strong style={{ color: C.amber }}>What you can see:</strong> Quadrupling n from 25 to 100 cuts the CI roughly in half. Quadrupling again from 100 to 400 cuts it in half again. But going from 400 to 1600 produces the same proportional gain for four times as many participants.
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 10 }}>The same +100 participants, three different points in recruitment:</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { from: 10, label: 'Early in recruitment', color: C.green },
+              { from: 400, label: 'Mid-study', color: C.amber },
+              { from: 900, label: 'Late in a large study', color: C.muted },
+            ].map(row => {
+              const wBefore = getCIWidth(row.from)
+              const wAfter = getCIWidth(row.from + 100)
+              const gain = wBefore - wAfter
+              return (
+                <div key={row.from} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '10px 14px', background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8 }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: row.color, fontWeight: 700, minWidth: 120 }}>n={row.from} → n={row.from+100}</div>
+                  <div style={{ fontSize: 12, color: C.dim, flex: 1 }}>{row.label}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: row.color, fontWeight: 600 }}>CI narrows by {(gain*100).toFixed(2)} pp</div>
+                </div>
+              )
+            })}
+          </div>
+          <div style={{ marginTop: 10, padding: '10px 14px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+            The most powerful investments in precision happen early. This is why sample size planning before data collection matters — adding participants after the fact is costly and rarely efficient.
           </div>
         </div>
       </Section>
