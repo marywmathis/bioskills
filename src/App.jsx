@@ -151,7 +151,7 @@ export default function App() {
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: C.teal, marginBottom: 8 }}>BioSkills</div>
           <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 32, fontWeight: 700, color: C.text, marginBottom: 8, lineHeight: 1.2 }}>Biostatistics Tools</h1>
-          <p style={{ fontSize: 15, color: C.dim, maxWidth: 520, lineHeight: 1.6, marginBottom: 16 }}>Interactive tools to help you understand biostatistics concepts — not just memorize them. Free for students.</p>
+          <p style={{ fontSize: 15, color: C.dim, maxWidth: 520, lineHeight: 1.6, marginBottom: 16 }}>Interactive tools to help you understand biostatistics concepts — not just memorize them.</p>
           {/* Suggested path note */}
           <div style={{ padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6, maxWidth: 640 }}>
             <strong style={{ color: C.amber }}>Suggested learning path:</strong> These tools build on one another — Foundation → Probability → Design & Inference. First-time learners may find it helpful to work through them in order. You're also welcome to jump directly to any tool you need.
@@ -227,7 +227,7 @@ export default function App() {
         )}
 
         <div style={{ marginTop: 48, paddingTop: 24, borderTop: `1px solid ${C.border}`, fontSize: 12, color: C.muted, textAlign: 'center' }}>
-          BioSkills · Free for students · Built for PBH 202 at Mercer University
+          BioSkills · © 2026 Mary W. Mathis
         </div>
       </div>
     </div>
