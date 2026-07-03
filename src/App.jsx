@@ -13,6 +13,7 @@ import HypothesisTest from './HypothesisTest'
 import PowerSampleSize from './PowerSampleSize'
 import SampleSizeEffect from './SampleSizeEffect'
 import StudyDesignHelper from './StudyDesignHelper'
+import RegressionInterpreter from './RegressionInterpreter'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -96,6 +97,11 @@ const tools = [
     id: "study-design-helper", title: "Which Study Design?", group: "Reference",
     description: "Detective-style walkthrough: answer four questions about a paper's methods and identify the study design.",
     accent: C.teal, accentSoft: C.tealSoft, component: StudyDesignHelper,
+  },
+  {
+    id: "regression-interpreter", title: "Regression Interpreter", group: "Reference",
+    description: "Read a regression table and translate each coefficient into plain language. Covers linear and logistic regression.",
+    accent: C.purple, accentSoft: C.purpleSoft, component: RegressionInterpreter,
   },
 ]
 
