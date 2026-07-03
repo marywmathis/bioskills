@@ -9,14 +9,14 @@ const SIMPLE_COEFS = [
 ]
 
 const MULTI_COEFS = [
-  { predictor: 'Intercept', beta: 89.4, se: 3.21, tRatio: 27.85, pVal: '<.0001', interpretation: 'The estimated SBP for a 0-year-old male with BMI of 0 — a mathematical anchor with no clinical meaning on its own.' },
+  { predictor: 'Intercept', beta: 89.4, se: 3.21, tRatio: 27.85, pVal: '<.0001', interpretation: 'The predicted SBP when all predictors equal 0 — meaning Age = 0, Male, BMI = 0. In this model that represents a newborn, not a realistic study participant. The intercept gives the regression equation its starting point. Click again to explore the prediction equation.' },
   { predictor: 'Age (years)', beta: 1.2, se: 0.17, tRatio: 7.06, pVal: '<.0001', interpretation: 'For each additional year of age, SBP is estimated to be 1.2 mmHg higher, holding sex and BMI constant.' },
   { predictor: 'Sex [Female]', beta: -3.8, se: 1.14, tRatio: -3.33, pVal: '0.0009', interpretation: 'Women have SBP estimated to be 3.8 mmHg lower than men (the reference category), holding age and BMI constant.' },
   { predictor: 'BMI (kg/m²)', beta: 2.1, se: 0.29, tRatio: 7.24, pVal: '<.0001', interpretation: 'For each additional kg/m² of BMI, SBP is estimated to be 2.1 mmHg higher, holding age and sex constant.' },
 ]
 
 const LOGISTIC_COEFS = [
-  { predictor: 'Intercept', beta: -4.82, se: 0.51, chiSq: 89.3, pVal: '<.0001', or: null, interpretation: 'Mathematical anchor. Not directly interpretable.' },
+  { predictor: 'Intercept', beta: -4.82, se: 0.51, chiSq: 89.3, pVal: '<.0001', or: null, interpretation: 'The predicted log odds of hypertension when all predictors equal 0 (Age = 0, Male, BMI = 0). This represents a newborn — not a meaningful research scenario. The intercept gives the logistic equation its baseline. Do not exponentiate or interpret it as an effect estimate.' },
   { predictor: 'Age (years)', beta: 0.063, se: 0.009, chiSq: 49.2, pVal: '<.0001', or: 1.065, interpretation: 'Each additional year of age is associated with 6.5% higher odds of hypertension, holding sex and BMI constant.' },
   { predictor: 'Sex [Female]', beta: -0.41, se: 0.14, chiSq: 8.6, pVal: '0.0033', or: 0.664, interpretation: 'Women have 33.6% lower odds of hypertension than men (the reference category), holding age and BMI constant.' },
   { predictor: 'BMI (kg/m²)', beta: 0.112, se: 0.016, chiSq: 48.4, pVal: '<.0001', or: 1.118, interpretation: 'Each additional kg/m² of BMI is associated with 11.8% higher odds of hypertension, holding age and sex constant.' },
@@ -90,6 +90,7 @@ function SentenceCard({ coef, outcome }) {
 // ── Main ──
 export default function RegressionInterpreter() {
   const [simpleSelected, setSimpleSelected] = useState(0)
+  const [interceptAge, setInterceptAge] = useState(40)
   const [multiSelected, setMultiSelected] = useState(null)
   const [logisticSelected, setLogisticSelected] = useState(null)
   const [showExp, setShowExp] = useState(false)
@@ -149,7 +150,7 @@ export default function RegressionInterpreter() {
             <strong style={{ color: C.text }}>What each column means:</strong>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
               {[
-                { col: 'Estimate', meaning: 'The coefficient (β) — how much the outcome changes for a one-unit increase in this predictor.' },
+                { col: 'Estimate (β)', meaning: 'For predictor variables: the expected change in the outcome for a one-unit increase in the predictor. For the intercept: the predicted outcome when all predictors equal 0.' },
                 { col: 'Std Error', meaning: 'How precisely the coefficient was estimated. Smaller SE = more precise.' },
                 { col: 't Ratio', meaning: 'Estimate ÷ Std Error. How many standard errors away from zero.' },
                 { col: 'Prob>|t|', meaning: 'The p-value. Probability of seeing a t Ratio this large if the true coefficient were zero.' },
@@ -207,6 +208,23 @@ export default function RegressionInterpreter() {
             <div style={{ marginTop: 12, padding: '14px 16px', background: C.purpleSoft, border: `2px solid ${C.purple}`, borderRadius: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Plain-language interpretation</div>
               <div style={{ fontSize: 14, color: C.dim, lineHeight: 1.8 }}>{MULTI_COEFS[multiSelected].interpretation}</div>
+              {multiSelected === 0 && (
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.amber, marginBottom: 8 }}>Try it — adjust age to see the prediction</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: C.dim, marginBottom: 4 }}>
+                    <span>Age</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>{interceptAge} years</span>
+                  </div>
+                  <input type="range" min={20} max={80} step={1} value={interceptAge} onChange={e => setInterceptAge(+e.target.value)} style={{ width: '100%', accentColor: C.purple, marginBottom: 10 }} />
+                  <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.5)', borderRadius: 7, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.dim, lineHeight: 1.8 }}>
+                    <div>Predicted SBP = 89.4 + (1.2 × {interceptAge})</div>
+                    <div style={{ color: C.purple, fontWeight: 700, fontSize: 15, marginTop: 4 }}>= {(89.4 + 1.2 * interceptAge).toFixed(1)} mmHg</div>
+                    <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>Assumes Male, average BMI. The 89.4 intercept gives the line its starting point.</div>
+                  </div>
+                  <div style={{ marginTop: 10, padding: '8px 12px', background: C.amberSoft, borderRadius: 7, fontSize: 12, color: C.dim, lineHeight: 1.6 }}>
+                    <strong style={{ color: C.amber }}>Does the intercept matter here?</strong> In this model, Age = 0 means a newborn — not a typical study participant. The intercept gives the regression equation a starting point, but most studies focus on the predictor coefficients rather than the intercept itself.
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
