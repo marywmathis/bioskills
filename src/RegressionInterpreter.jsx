@@ -76,12 +76,35 @@ function LogisticTable({ coefs, clickable, onRowClick, selectedRow }) {
 function SentenceCard({ coef, outcome }) {
   if (!coef) return null
   const absB = Math.abs(coef.beta)
+  const dirWord = coef.beta < 0 ? 'decrease' : 'increase'
+  const dirColor = coef.beta < 0 ? C.coral : C.green
   return (
     <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `2px solid ${C.purple}`, borderRadius: 10, fontSize: 14, color: C.dim, lineHeight: 1.8 }}>
       <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Plain-language interpretation</div>
       <div>
-        For each additional <strong style={{ color: C.teal }}>one {coef.unit}</strong> increase in <strong style={{ color: C.teal }}>{coef.predictor}</strong>, {outcome} is estimated to be{' '}
-        <strong style={{ color: coef.beta < 0 ? C.coral : C.green }}>{absB} {coef.outcomeUnit} {coef.direction}</strong>.
+        For each additional <strong style={{ color: C.teal }}>one {coef.unit}</strong> increase in <strong style={{ color: C.teal }}>{coef.predictor}</strong>, the predicted {outcome} is estimated to{' '}
+        <strong style={{ color: dirColor }}>{dirWord} by {absB} {coef.outcomeUnit}</strong>.
+      </div>
+    </div>
+  )
+}
+
+function InterceptCard({ interceptVal, selectedCoef }) {
+  const predName = selectedCoef ? selectedCoef.predictor : 'the predictor'
+  const unitName = selectedCoef ? selectedCoef.unit : 'unit'
+  return (
+    <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `2px solid ${C.purple}`, borderRadius: 10, fontSize: 14, color: C.dim, lineHeight: 1.8 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Plain-language interpretation — Intercept</div>
+      <div style={{ marginBottom: 10 }}>
+        The intercept is the predicted systolic blood pressure when the predictor equals 0.
+      </div>
+      <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.5)', borderRadius: 7, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, marginBottom: 12 }}>
+        <div>{predName} = 0 {unitName}</div>
+        <div style={{ color: C.purple, fontWeight: 700, marginTop: 4 }}>Predicted SBP = {interceptVal} mmHg</div>
+      </div>
+      <div style={{ padding: '10px 12px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 7, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+        <strong style={{ color: C.amber, display: 'block', marginBottom: 4 }}>Why this usually is not the important number</strong>
+        The intercept gives the regression equation its starting point. In most public health studies, a value of 0 for {predName.toLowerCase()} is unrealistic — {selectedCoef && selectedCoef.predictor.includes('Age') ? 'a person aged 0 is a newborn, not a typical study participant' : selectedCoef && selectedCoef.predictor.includes('BMI') ? 'a BMI of 0 is not biologically possible' : selectedCoef && selectedCoef.predictor.includes('sleep') ? 'no one sleeps exactly 0 hours' : 'a value of 0 is outside the range of realistic observations'}. Researchers focus on the predictor coefficients, not the intercept, because those answer the research question.
       </div>
     </div>
   )
@@ -90,6 +113,7 @@ function SentenceCard({ coef, outcome }) {
 // ── Main ──
 export default function RegressionInterpreter() {
   const [simpleSelected, setSimpleSelected] = useState(0)
+  const [simpleIntercept, setSimpleIntercept] = useState(false)
   const [interceptAge, setInterceptAge] = useState(40)
   const [multiSelected, setMultiSelected] = useState(null)
   const [logisticSelected, setLogisticSelected] = useState(null)
@@ -136,16 +160,24 @@ export default function RegressionInterpreter() {
           </div>
           <div style={{ marginBottom: 14 }}>
             <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
-              {SIMPLE_COEFS.map((c, i) => (
-                <button key={i} onClick={() => setSimpleSelected(i)}
-                  style={{ padding: '6px 14px', borderRadius: 7, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600, background: simpleSelected === i ? C.purple : C.surface, color: simpleSelected === i ? '#fff' : C.dim, border: `1px solid ${simpleSelected === i ? C.purple : C.border}` }}>
-                  {c.predictor}
+              {SIMPLE_COEFS.map((sc2, i) => (
+                <button key={i} onClick={() => { setSimpleSelected(i); setSimpleIntercept(false) }}
+                  style={{ padding: '6px 14px', borderRadius: 7, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600, background: simpleSelected === i && !simpleIntercept ? C.purple : C.surface, color: simpleSelected === i && !simpleIntercept ? '#fff' : C.dim, border: `1px solid ${simpleSelected === i && !simpleIntercept ? C.purple : C.border}` }}>
+                  {sc2.predictor}
                 </button>
               ))}
             </div>
-            <LinearTable coefs={[{ predictor: 'Intercept', beta: 78.3, se: 5.12, tRatio: 15.29, pVal: '<.0001' }, SIMPLE_COEFS[simpleSelected]]} clickable={false} />
+            <LinearTable
+              coefs={[{ predictor: 'Intercept', beta: 78.3, se: 5.12, tRatio: 15.29, pVal: '<.0001' }, SIMPLE_COEFS[simpleSelected]]}
+              clickable={true}
+              onRowClick={i => { if (i === 0) setSimpleIntercept(true); else setSimpleIntercept(false) }}
+              selectedRow={simpleIntercept ? 0 : null}
+            />
           </div>
-          <SentenceCard coef={SIMPLE_COEFS[simpleSelected]} outcome="systolic blood pressure" />
+          {simpleIntercept
+            ? <InterceptCard interceptVal={78.3} selectedCoef={SIMPLE_COEFS[simpleSelected]} />
+            : <SentenceCard coef={SIMPLE_COEFS[simpleSelected]} outcome="systolic blood pressure" />
+          }
           <div style={{ marginTop: 14, padding: '12px 14px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
             <strong style={{ color: C.text }}>What each column means:</strong>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
