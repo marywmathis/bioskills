@@ -12,6 +12,7 @@ import PValueExplorer from './PValueExplorer'
 import HypothesisTest from './HypothesisTest'
 import PowerSampleSize from './PowerSampleSize'
 import SampleSizeEffect from './SampleSizeEffect'
+import StudyDesignHelper from './StudyDesignHelper'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -90,9 +91,15 @@ const tools = [
     description: "Watch CI width and power change simultaneously as n grows. The capstone relationship in applied statistics.",
     accent: C.amber, accentSoft: C.amberSoft, component: SampleSizeEffect,
   },
+  // Reference
+  {
+    id: "study-design-helper", title: "Which Study Design?", group: "Reference",
+    description: "Detective-style walkthrough: answer four questions about a paper's methods and identify the study design.",
+    accent: C.teal, accentSoft: C.tealSoft, component: StudyDesignHelper,
+  },
 ]
 
-const groups = ["Foundation", "Probability", "Design & Inference"]
+const groups = ["Foundation", "Probability", "Design & Inference", "Reference"]
 
 export default function App() {
   const [activeTool, setActiveTool] = useState(null)
@@ -178,6 +185,7 @@ export default function App() {
               "Foundation": "What are we measuring? Where did the data come from? How should we describe it?",
               "Probability": "How does randomness work? How do we calculate probabilities? How does probability apply to real public health problems?",
               "Design & Inference": "How do we design a study? How do we estimate the population? How do we evaluate evidence? Was the study large enough?",
+              "Reference": "Quick lookup tools for when you know the concepts but need help deciding which one applies right now.",
             }
             return (
               <div key={grp} style={{ marginBottom: 36 }}>
