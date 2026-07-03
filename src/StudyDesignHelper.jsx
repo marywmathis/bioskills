@@ -458,14 +458,22 @@ function Walkthrough() {
 }
 
 function PracticeSection() {
+  const [shuffled] = useState(() => {
+    const arr = [...PRACTICE]
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+    return arr
+  })
   const [idx, setIdx] = useState(0)
   const [picked, setPicked] = useState(null)
   const [showClues, setShowClues] = useState(false)
-  const sc = PRACTICE[idx]
+  const sc = shuffled[idx]
   const answered = picked !== null
   const correct = picked === sc.answer
 
-  function next() { setIdx(i => (i + 1) % PRACTICE.length); setPicked(null); setShowClues(false) }
+  function next() { setIdx(i => (i + 1) % shuffled.length); setPicked(null); setShowClues(false) }
 
   const designList = Object.values(DESIGNS)
 
@@ -523,7 +531,7 @@ function PracticeSection() {
             </div>
           )}
           <button onClick={next} style={{ width: '100%', padding: '11px 0', background: C.teal, color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-            {idx < PRACTICE.length - 1 ? 'Next paragraph →' : 'Start over ↺'}
+            {idx < shuffled.length - 1 ? 'Next paragraph →' : 'Start over ↺'}
           </button>
         </div>
       )}
