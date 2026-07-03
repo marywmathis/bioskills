@@ -104,7 +104,7 @@ function InterceptCard({ interceptVal, selectedCoef }) {
       </div>
       <div style={{ padding: '10px 12px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 7, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
         <strong style={{ color: C.amber, display: 'block', marginBottom: 4 }}>Why this usually is not the important number</strong>
-        The intercept gives the regression equation its starting point. In most public health studies, a value of 0 for {predName.toLowerCase()} is unrealistic — {selectedCoef && selectedCoef.predictor.includes('Age') ? 'a person aged 0 is a newborn, not a typical study participant' : selectedCoef && selectedCoef.predictor.includes('BMI') ? 'a BMI of 0 is not biologically possible' : selectedCoef && selectedCoef.predictor.includes('sleep') ? 'no one sleeps exactly 0 hours' : 'a value of 0 is outside the range of realistic observations'}. Researchers focus on the predictor coefficients, not the intercept, because those answer the research question.
+        The intercept gives the regression equation its starting point. In most public health studies, a value of 0 for {predName.toLowerCase()} is unrealistic — {selectedCoef && selectedCoef.predictor.includes('Age') ? 'a person aged 0 is a newborn, not a typical study participant' : selectedCoef && selectedCoef.predictor.includes('BMI') ? 'a BMI of 0 is not biologically possible' : selectedCoef && selectedCoef.predictor.includes('sleep') ? 'no one sleeps exactly 0 hours' : 'a value of 0 is outside the range of realistic observations'}. Researchers focus on the predictor estimates, not the intercept, because those answer the research question.
       </div>
     </div>
   )
@@ -138,7 +138,7 @@ export default function RegressionInterpreter() {
           <p style={s.prose}>But regression lets you ask all three at once — and answers a fourth question those separate analyses cannot:</p>
           <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `2px solid ${C.purple}`, borderRadius: 10, marginBottom: 14 }}>
             <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: C.purple, marginBottom: 6 }}>Which factors predict SBP, and by how much — after accounting for the others?</div>
-            <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>That last phrase — "after accounting for the others" — is what makes regression powerful. It separates the contribution of each predictor from the others. A regression coefficient tells you what age does to SBP when BMI and sex are held constant.</div>
+            <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>That last phrase — "after accounting for the others" — is what makes regression powerful. It separates the contribution of each predictor from the others. The estimate for age tells you what age does to SBP when BMI and sex are held constant.</div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div style={{ padding: '12px 14px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
@@ -182,7 +182,7 @@ export default function RegressionInterpreter() {
             <strong style={{ color: C.text }}>What each column means:</strong>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
               {[
-                { col: 'Estimate (β)', meaning: 'For predictor variables: the expected change in the outcome for a one-unit increase in the predictor. For the intercept: the predicted outcome when all predictors equal 0.' },
+                { col: 'Estimate', meaning: 'For predictor variables: the expected change in the outcome for a one-unit increase in the predictor. For the intercept: the predicted outcome when all predictors equal 0.' },
                 { col: 'Std Error', meaning: 'How precisely the coefficient was estimated. Smaller SE = more precise.' },
                 { col: 't Ratio', meaning: 'Estimate ÷ Std Error. How many standard errors away from zero.' },
                 { col: 'Prob>|t|', meaning: 'The p-value. Probability of seeing a t Ratio this large if the true coefficient were zero.' },
@@ -202,7 +202,7 @@ export default function RegressionInterpreter() {
         <div style={{ paddingTop: 20 }}>
           <p style={s.prose}>Now all three predictors are in the model at once. Click any row to see its interpretation.</p>
           <div style={{ marginBottom: 14, padding: '12px 14px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-            <strong style={{ color: C.purple }}>What "holding everything else constant" means:</strong> When you read the coefficient for Age, it tells you what age does to SBP among people who are identical in sex and BMI. The regression model mathematically separates each predictor's contribution from the others.
+            <strong style={{ color: C.purple }}>What "holding everything else constant" means:</strong> When you read the estimate for Age, it tells you what age does to SBP among people who are identical in sex and BMI. The regression model mathematically separates each predictor's contribution from the others.
           </div>
 
           {/* Visual: same person, one thing changes */}
@@ -253,7 +253,7 @@ export default function RegressionInterpreter() {
                     <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>Assumes Male, average BMI. The 89.4 intercept gives the line its starting point.</div>
                   </div>
                   <div style={{ marginTop: 10, padding: '8px 12px', background: C.amberSoft, borderRadius: 7, fontSize: 12, color: C.dim, lineHeight: 1.6 }}>
-                    <strong style={{ color: C.amber }}>Does the intercept matter here?</strong> In this model, Age = 0 means a newborn — not a typical study participant. The intercept gives the regression equation a starting point, but most studies focus on the predictor coefficients rather than the intercept itself.
+                    <strong style={{ color: C.amber }}>Does the intercept matter here?</strong> In this model, Age = 0 means a newborn — not a typical study participant. The intercept gives the regression equation a starting point, but most studies focus on the predictor estimates rather than the intercept itself.
                   </div>
                 </div>
               )}
@@ -271,7 +271,7 @@ export default function RegressionInterpreter() {
       {/* 4. Linear to logistic */}
       <Section icon="3" iconBg={C.coralSoft} title="From Linear to Logistic — When the Outcome Is Binary">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>Same predictors. Same adults. But now the outcome is hypertension (yes/no) instead of a blood pressure number. That change requires a different regression model — and a different way to read the coefficients.</p>
+          <p style={s.prose}>Same predictors. Same adults. But now the outcome is hypertension (yes/no) instead of a blood pressure number. That change requires a different regression model — and a different way to read the estimates.</p>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
             <div style={{ padding: '12px 14px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8 }}>
@@ -288,7 +288,7 @@ export default function RegressionInterpreter() {
           <div style={{ padding: '14px 16px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 10, marginBottom: 14 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: C.amber, marginBottom: 10 }}>The exponentiation step — why it is necessary</div>
             <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, marginBottom: 10 }}>
-              Logistic regression models the <em>log odds</em> of the outcome. The coefficient for Age = +0.063 means the log odds of hypertension increases by 0.063 for each year of age. Log odds are hard to interpret. To get something meaningful, exponentiate:
+              Logistic regression models the <em>log odds</em> of the outcome. The estimate for Age = +0.063 means the log odds of hypertension increases by 0.063 for each year of age. Log odds are hard to interpret. To get something meaningful, exponentiate:
             </div>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
               {[
@@ -339,24 +339,24 @@ export default function RegressionInterpreter() {
       {/* 5. Reference categories */}
       <Section icon="4" iconBg={C.amberSoft} title="Reference Categories — What the Coefficient Is Compared To">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>When a predictor is categorical (like sex), one category must be chosen as the reference. The coefficient for every other category is the difference from the reference.</p>
+          <p style={s.prose}>When a predictor is categorical (like sex), one category must be chosen as the reference. The estimate for every other category is the difference from the reference.</p>
           <div style={{ padding: '14px 16px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 10, marginBottom: 14 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: C.amber, marginBottom: 10 }}>In our example: Sex [Female] — reference is Male</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 10, alignItems: 'center' }}>
               <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 7, textAlign: 'center' }}>
                 <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Reference category</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: C.text }}>Male</div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.muted, marginTop: 4 }}>coefficient = 0 (implicit)</div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.muted, marginTop: 4 }}>estimate = 0 (implicit)</div>
               </div>
               <div style={{ textAlign: 'center', fontSize: 20, color: C.muted }}>vs.</div>
               <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 7, textAlign: 'center' }}>
                 <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Comparison category</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: C.text }}>Female</div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.teal, marginTop: 4 }}>coefficient = −3.8 mmHg</div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: C.teal, marginTop: 4 }}>estimate = −3.8 mmHg</div>
               </div>
             </div>
             <div style={{ marginTop: 12, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-              The coefficient −3.8 means: women have SBP estimated to be 3.8 mmHg <em>lower than men</em>, holding age and BMI constant. The reference category (Male) does not appear in the table — its coefficient is implicitly zero.
+              The estimate −3.8 means: women have SBP estimated to be 3.8 mmHg <em>lower than men</em>, holding age and BMI constant. The reference category (Male) does not appear in the table — its coefficient is implicitly zero.
             </div>
           </div>
           <div style={{ padding: '10px 14px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
@@ -371,15 +371,15 @@ export default function RegressionInterpreter() {
           {[
             {
               wrong: 'Treating the coefficient as a correlation.',
-              right: 'A regression coefficient depends on the scale of the predictor. A coefficient of 2.1 for BMI (in kg/m²) and 0.063 for age (in years) cannot be compared directly — they are on different scales. Standardized coefficients or effect sizes are needed for comparison.',
+              right: 'A regression estimate depends on the scale of the predictor. A coefficient of 2.1 for BMI (in kg/m²) and 0.063 for age (in years) cannot be compared directly — they are on different scales. Standardized coefficients or effect sizes are needed for comparison.',
             },
             {
               wrong: 'Interpreting a non-significant coefficient as "no effect."',
               right: 'A non-significant p-value means the data are insufficient to rule out chance, not that the true coefficient is zero. The estimate may still be meaningful — the study may simply have been underpowered to detect it.',
             },
             {
-              wrong: 'Reporting logistic regression coefficients without exponentiating them.',
-              right: 'The raw coefficient from logistic regression is a log odds ratio. It must be exponentiated (e^β) to produce an odds ratio, which is what most readers expect. Reporting β = 0.063 without noting the OR = 1.065 is incomplete.',
+              wrong: 'Reporting logistic regression estimates without exponentiating them.',
+              right: 'The estimate from logistic regression is a log odds ratio. It must be exponentiated to produce an odds ratio, which is what most readers expect. Reporting the estimate without the odds ratio is incomplete.',
             },
             {
               wrong: 'Ignoring the reference category for categorical predictors.',
@@ -406,7 +406,7 @@ export default function RegressionInterpreter() {
 
       {/* Closing bridge */}
       <div style={{ marginTop: 20, padding: '14px 16px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.75 }}>
-        <strong style={{ color: C.text }}>Connecting regression to what you have already learned:</strong> The p-values in a regression table follow the same logic as any hypothesis test — they measure how compatible the data are with a null coefficient of zero. The confidence intervals work the same way as the CI Builder. The study design affects what you can conclude: a significant coefficient in an observational study shows association, not causation. Regression does not change those rules.
+        <strong style={{ color: C.text }}>Connecting regression to what you have already learned:</strong> The p-values in a regression table follow the same logic as any hypothesis test — they test whether the estimate is different from 0. The confidence intervals work the same way as the CI Builder. The study design affects what you can conclude: a significant coefficient in an observational study shows association, not causation. Regression helps estimate associations, but it does not change what the study design allows you to conclude. A statistically significant estimate in an observational study still shows association, not causation.
       </div>
     </div>
   )
