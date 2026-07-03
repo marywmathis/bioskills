@@ -14,6 +14,7 @@ import PowerSampleSize from './PowerSampleSize'
 import SampleSizeEffect from './SampleSizeEffect'
 import StudyDesignHelper from './StudyDesignHelper'
 import RegressionInterpreter from './RegressionInterpreter'
+import SummaryStatsHelper from './SummaryStatsHelper'
 
 const C = {
   bg: "#f8f9fc", surface: "#ffffff", alt: "#f0f2f7", border: "#e2e6ef",
@@ -100,8 +101,13 @@ const tools = [
   },
   {
     id: "regression-interpreter", title: "Regression Interpreter", group: "Reference",
-    description: "Read a regression table and translate each coefficient into plain language. Covers linear and logistic regression.",
+    description: "Read a regression table and translate each estimate into plain language. Covers linear and logistic regression.",
     accent: C.purple, accentSoft: C.purpleSoft, component: RegressionInterpreter,
+  },
+  {
+    id: "summary-stats-helper", title: "Which Summary Statistics?", group: "Reference",
+    description: "Variable type and distribution shape determine the right summary statistic. Decision walkthrough with practice.",
+    accent: C.teal, accentSoft: C.tealSoft, component: SummaryStatsHelper,
   },
 ]
 
