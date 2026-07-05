@@ -545,7 +545,7 @@ export default function StudyDesign() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div style={{ padding: '16px', background: C.greenSoft, border: `1px solid rgba(26,122,62,0.2)`, borderRadius: 10 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: C.green, marginBottom: 8 }}>Yes → Experimental</div>
-              <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, marginBottom: 8 }}>The researcher assigns participants to receive the exposure or treatment. The only experimental design in this course is the randomized controlled trial.</div>
+              <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, marginBottom: 8 }}>The researcher assigns participants to receive the exposure or treatment. The only experimental design covered here is the randomized controlled trial.</div>
               <div style={{ fontSize: 12, color: C.green, fontWeight: 600 }}>Example: Vaccine vs. placebo trial</div>
             </div>
             <div style={{ padding: '16px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 10 }}>

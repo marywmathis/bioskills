@@ -660,7 +660,7 @@ export default function StudyDesignHelper() {
             ))}
           </div>
           <div style={{ padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-            Those five clues identify nearly every study design you will encounter in introductory public health courses.
+            Those five clues identify nearly every study design you will encounter in introductory public health.
           </div>
         </div>
       </Section>

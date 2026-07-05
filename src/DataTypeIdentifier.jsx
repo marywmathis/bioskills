@@ -380,7 +380,7 @@ export default function DataTypeIdentifier() {
             ))}
           </div>
           <div style={{ fontSize: 12, color: C.muted, fontStyle: 'italic', padding: '8px 12px', background: C.alt, borderRadius: 6 }}>
-            Note: Dichotomous variables are a special case of categorical with exactly two categories. Count variables are often analyzed like continuous variables in introductory courses.
+            Note: Dichotomous variables are a special case of categorical with exactly two categories. Count variables are often analyzed like continuous variables at the introductory level.
           </div>
         </div>
       </Section>

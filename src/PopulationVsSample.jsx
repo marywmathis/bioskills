@@ -296,7 +296,7 @@ export default function PopulationVsSample() {
     <div style={s.page}>
       <div style={s.pageTitle}>Population vs. Sample</div>
       <div style={s.pageSub}>
-        The definitions are easy. The hard part — and the idea that explains everything else in the course — is understanding why samples vary.
+        The definitions are easy. The hard part — and the idea that explains everything else here — is understanding why samples vary.
       </div>
 
       {/* 1. Core distinction */}
@@ -408,7 +408,7 @@ export default function PopulationVsSample() {
         </Concept>
 
         <p style={{ ...s.prose, padding: '10px 14px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 8, color: C.dim }}>
-          Because we cannot usually measure the entire population, we collect a sample and use it to estimate the population parameter. That's what the rest of this course is about.
+          Because we cannot usually measure the entire population, we collect a sample and use it to estimate the population parameter. That's what the rest of these tools are about.
         </p>
 
         <Concept title="Big enough is not the same as representative">
@@ -505,7 +505,7 @@ export default function PopulationVsSample() {
       <Section icon="→" iconBg={C.greenSoft} title="The Inference Bridge">
         <div style={{ paddingTop: 20 }}>
           <p style={s.prose}>
-            This diagram captures almost everything in the rest of the course.
+            This diagram captures almost everything in the tools that follow.
             Every method you'll learn — confidence intervals, hypothesis tests, p-values — is a tool for crossing this bridge.
           </p>
 
@@ -528,7 +528,7 @@ export default function PopulationVsSample() {
           </div>
 
           <div style={s.example}>
-            <div style={s.exampleLabel}>What this means for the course</div>
+            <div style={s.exampleLabel}>What this means going forward</div>
             Every statistical method you'll learn this semester lives in the "Inference" box.
             Confidence intervals and hypothesis tests are different tools for doing the same thing: using sample statistics to make defensible claims about population parameters.
           </div>

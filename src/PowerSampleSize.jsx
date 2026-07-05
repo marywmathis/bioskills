@@ -205,7 +205,7 @@ export default function PowerSampleSize() {
               ))}
             </div>
             <div style={{ marginTop: 12, fontSize: 13, color: C.dim, fontStyle: 'italic', lineHeight: 1.7 }}>
-              Even then, every study carries some uncertainty. Everything you've learned in this course — choosing the right study design, selecting the appropriate test, enrolling enough participants, computing confidence intervals — helps reduce the chance of these errors. But no statistical method eliminates uncertainty completely.
+              Even then, every study carries some uncertainty. Everything you've worked through here — choosing the right study design, selecting the appropriate test, enrolling enough participants, computing confidence intervals — helps reduce the chance of these errors. But no statistical method eliminates uncertainty completely.
             </div>
           </div>
 
