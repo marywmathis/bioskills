@@ -28,17 +28,17 @@ const tools = [
   // Foundation
   {
     id: "math-refresher", title: "Math Refresher", group: "Foundation",
-    description: "Fractions, proportions, logarithms, Σ notation, and order of operations — the building blocks behind every formula in the course.",
+    description: "Fractions, proportions, logarithms, Σ notation, and order of operations — the building blocks behind every formula in biostatistics.",
     accent: C.teal, accentSoft: C.tealSoft, component: MathRefresher,
   },
   {
     id: "population-vs-sample", title: "Population vs. Sample", group: "Foundation",
-    description: "Parameters vs. statistics, why we sample at all, and how sampling variability sets up every inference concept in the course.",
+    description: "Parameters vs. statistics, why we sample at all, and how sampling variability sets up every inference concept that follows.",
     accent: C.coral, accentSoft: C.coralSoft, component: PopulationVsSample,
   },
   {
     id: "data-type-identifier", title: "Data Type Identifier", group: "Foundation",
-    description: "Variable types → right summary statistic → right hypothesis test. The chain that organizes the entire course.",
+    description: "Variable types → right summary statistic → right hypothesis test. The chain that organizes everything else.",
     accent: C.amber, accentSoft: C.amberSoft, component: DataTypeIdentifier,
   },
   {
