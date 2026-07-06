@@ -464,6 +464,11 @@ export default function PopulationVsSample() {
                 purpose: 'Estimate average value'
               },
               {
+                param: <span>σ² &nbsp;<span style={{color: C.muted, fontWeight:400}}>(population variance)</span></span>,
+                stat: <span>s² &nbsp;<span style={{color:C.muted,fontWeight:400}}>(sample variance)</span></span>,
+                purpose: 'Estimate spread (squared units)'
+              },
+              {
                 param: <span>σ &nbsp;<span style={{color: C.muted, fontWeight:400}}>(population SD)</span></span>,
                 stat: <span>s &nbsp;<span style={{color:C.muted,fontWeight:400}}>(sample SD)</span></span>,
                 purpose: 'Estimate spread'
@@ -481,6 +486,33 @@ export default function PopulationVsSample() {
               </div>
             ))}
           </div>
+
+          <div style={{ margin: '12px 0 4px', borderRadius: 8, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr 1fr', background: C.alt, padding: '8px 14px', fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <span>Formula</span><span style={{ color: C.purple }}>Population</span><span style={{ color: C.teal }}>Sample</span>
+            </div>
+            {[
+              {
+                label: 'Variance',
+                pop: <span>σ² = Σ(x<sub>i</sub> − μ)² / N</span>,
+                samp: <span>s² = Σ(x<sub>i</sub> − <XBar />)² / (n − 1)</span>,
+              },
+              {
+                label: 'Standard deviation',
+                pop: <span>σ = √( Σ(x<sub>i</sub> − μ)² / N )</span>,
+                samp: <span>s = √( Σ(x<sub>i</sub> − <XBar />)² / (n − 1) )</span>,
+              },
+            ].map((row, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr 1fr', padding: '10px 14px', borderTop: `1px solid ${C.border}`, fontSize: 13, background: i % 2 === 0 ? C.surface : C.alt, alignItems: 'center', gap: 8 }}>
+                <span style={{ color: C.dim, fontWeight: 600 }}>{row.label}</span>
+                <span style={{ color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>{row.pop}</span>
+                <span style={{ color: C.teal, fontFamily: "'JetBrains Mono', monospace" }}>{row.samp}</span>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: 12, color: C.muted, marginBottom: 0 }}>
+            Population forms use μ and divide by N. Sample forms use <XBar /> and divide by n − 1. The section below explains why.
+          </p>
         </Concept>
 
         <Quiz
@@ -510,9 +542,8 @@ export default function PopulationVsSample() {
           <p style={s.prose}>
             Standard deviation fixes that. Take the square root of the variance and you are back in the original units (mg/dL). That is why standard deviation, not variance, is usually the number reported: it reads as "a typical patient falls about this far from the average."
           </p>
-          <div style={s.formula}>{"Variance = (sum of squared distances from the mean) ÷ count\nStandard deviation = √Variance"}</div>
           <p style={s.prose}>
-            There are two versions, and the σ / s row in the table above is the reason. When you have the whole population, variance divides by N — the full count. When you have only a sample, it divides by <strong style={{ color: C.text }}>n − 1</strong> instead.
+            There are two versions, shown in the formula table above. When you have the whole population, variance divides by N — the full count. When you have only a sample, it divides by <strong style={{ color: C.text }}>n − 1</strong> instead.
           </p>
           <p style={s.prose}>
             Why one less? A sample's values sit a little closer to their own average than to the true population average, so dividing by the full count would make the spread look smaller than it really is. Subtracting one nudges the estimate up to compensate. σ is the population's true spread; s is your best estimate of it from a sample.
