@@ -100,6 +100,111 @@ function DotPlot({ data, meanVal, medianVal }) {
   )
 }
 
+function SkewTrio() {
+  const bell = (xm, sigL, sigR) => {
+    const skDXA = -4, skDXB = 14, skPXA = 14, skPXB = 146, skBASE = 118, skTOP = 18, skSTEP = 0.15
+    const skMapx = (x) => skPXA + (x - skDXA) / (skDXB - skDXA) * (skPXB - skPXA)
+    const skDens = (x) => Math.exp(-((x - xm) ** 2) / (2 * (x < xm ? sigL : sigR) ** 2))
+    const skXs = [], skDs = []
+    let skDmax = 0, skArea = 0
+    for (let x = skDXA; x <= skDXB; x += skSTEP) { const dv = skDens(x); skXs.push(x); skDs.push(dv); if (dv > skDmax) skDmax = dv; skArea += dv * skSTEP }
+    let skMean = 0
+    for (let k = 0; k < skXs.length; k++) skMean += skXs[k] * skDs[k] * skSTEP
+    skMean /= skArea
+    let skCum = 0, skMedian = skXs[skXs.length - 1]
+    for (let k = 0; k < skXs.length; k++) { skCum += skDs[k] * skSTEP; if (skCum >= skArea / 2) { skMedian = skXs[k]; break } }
+    const skMapy = (dv) => skBASE - (dv / skDmax) * (skBASE - skTOP)
+    let skPath = `M ${skMapx(skDXA).toFixed(1)} ${skBASE}`
+    for (let k = 0; k < skXs.length; k += 3) skPath += ` L ${skMapx(skXs[k]).toFixed(1)} ${skMapy(skDs[k]).toFixed(1)}`
+    skPath += ` L ${skMapx(skDXB).toFixed(1)} ${skBASE} Z`
+    return { path: skPath, meanX: skMapx(skMean), medianX: skMapx(skMedian), base: skBASE }
+  }
+  const skPanels = [
+    { name: 'Left skew', xm: 7.5, sigL: 3.2, sigR: 1.1 },
+    { name: 'Symmetric', xm: 5, sigL: 2, sigR: 2 },
+    { name: 'Right skew', xm: 2.5, sigL: 1.1, sigR: 3.2 },
+  ]
+  return (
+    <svg viewBox="0 0 525 150" style={{ width: '100%', height: 'auto', display: 'block' }} role="img" aria-label="Left skew, symmetric, and right skew distributions: the mean slides toward the long tail while the median stays near the peak">
+      <g fontSize="10" fontFamily="'Inter', sans-serif">
+        <line x1="14" y1="9" x2="30" y2="9" stroke={C.teal} strokeWidth="2" />
+        <text x="34" y="12" fill={C.dim}>mean</text>
+        <line x1="72" y1="9" x2="88" y2="9" stroke={C.green} strokeWidth="2" strokeDasharray="4 3" />
+        <text x="92" y="12" fill={C.dim}>median</text>
+      </g>
+      {skPanels.map((p, i) => {
+        const skB = bell(p.xm, p.sigL, p.sigR)
+        return (
+          <g key={i} transform={`translate(${i * 175}, 8)`}>
+            <line x1="14" y1={skB.base} x2="146" y2={skB.base} stroke={C.border} strokeWidth="1" />
+            <path d={skB.path} fill={C.alt} stroke={C.muted} strokeWidth="1.5" />
+            <line x1={skB.medianX} y1="26" x2={skB.medianX} y2={skB.base} stroke={C.green} strokeWidth="2" strokeDasharray="4 3" />
+            <line x1={skB.meanX} y1="26" x2={skB.meanX} y2={skB.base} stroke={C.teal} strokeWidth="2" />
+            <text x="80" y="140" textAnchor="middle" fontSize="11" fontWeight="600" fill={C.text} fontFamily="'Space Grotesk', sans-serif">{p.name}</text>
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
+function SkewBoxplot() {
+  const bxRXA = 0, bxRXB = 20, bxPXA = 44, bxPXB = 500
+  const bxX = (v) => bxPXA + (v - bxRXA) / (bxRXB - bxRXA) * (bxPXB - bxPXA)
+  const bxYMID = 72, bxBH = 26
+  const bxQ1 = 3, bxMed = 4, bxQ3 = 7, bxLo = 2, bxHi = 12, bxFence = 13, bxOut = 18
+  return (
+    <svg viewBox="0 0 520 150" style={{ width: '100%', height: 'auto', display: 'block' }} role="img" aria-label="A right-skewed boxplot: the median sits left of center in the box, the upper whisker is long, and one outlier lies past the 1.5 times IQR fence">
+      <line x1={bxX(0)} y1="120" x2={bxX(20)} y2="120" stroke={C.border} strokeWidth="1" />
+      {[0, 5, 10, 15, 20].map((t) => (
+        <g key={t}>
+          <line x1={bxX(t)} y1="117" x2={bxX(t)} y2="123" stroke={C.muted} strokeWidth="1" />
+          <text x={bxX(t)} y="136" textAnchor="middle" fontSize="10" fill={C.muted}>{t}</text>
+        </g>
+      ))}
+      <line x1={bxX(bxLo)} y1={bxYMID} x2={bxX(bxQ1)} y2={bxYMID} stroke={C.dim} strokeWidth="1.5" />
+      <line x1={bxX(bxLo)} y1={bxYMID - 8} x2={bxX(bxLo)} y2={bxYMID + 8} stroke={C.dim} strokeWidth="1.5" />
+      <line x1={bxX(bxQ3)} y1={bxYMID} x2={bxX(bxHi)} y2={bxYMID} stroke={C.dim} strokeWidth="1.5" />
+      <line x1={bxX(bxHi)} y1={bxYMID - 8} x2={bxX(bxHi)} y2={bxYMID + 8} stroke={C.dim} strokeWidth="1.5" />
+      <rect x={bxX(bxQ1)} y={bxYMID - bxBH / 2} width={bxX(bxQ3) - bxX(bxQ1)} height={bxBH} fill={C.tealSoft} stroke={C.teal} strokeWidth="1.5" rx="2" />
+      <line x1={bxX(bxMed)} y1={bxYMID - bxBH / 2} x2={bxX(bxMed)} y2={bxYMID + bxBH / 2} stroke={C.teal} strokeWidth="2.5" />
+      <line x1={bxX(bxFence)} y1="44" x2={bxX(bxFence)} y2="100" stroke={C.amber} strokeWidth="1.5" strokeDasharray="4 3" />
+      <circle cx={bxX(bxOut)} cy={bxYMID} r="5" fill={C.coral} />
+      <text x={bxX(5)} y="42" textAnchor="middle" fontSize="10" fill={C.teal} fontWeight="600">box = middle 50% (IQR)</text>
+      <text x={bxX(bxMed)} y={bxYMID + bxBH / 2 + 13} textAnchor="middle" fontSize="9.5" fill={C.dim}>median (off-center)</text>
+      <text x={bxX(bxFence)} y="38" textAnchor="middle" fontSize="9.5" fill={C.amber} fontWeight="600">Q3 + 1.5×IQR fence</text>
+      <text x={bxX(bxOut)} y={bxYMID - 11} textAnchor="middle" fontSize="9.5" fill={C.coral} fontWeight="600">outlier</text>
+    </svg>
+  )
+}
+
+function SdRuler() {
+  const sdMU = 260, sdSIG = 62, sdBASE = 112, sdAMP = 80
+  const sdGy = (x) => sdBASE - sdAMP * Math.exp(-((x - sdMU) ** 2) / (2 * sdSIG * sdSIG))
+  let sdCurve = ''
+  for (let x = 40; x <= 480; x += 4) sdCurve += (x === 40 ? 'M ' : ' L ') + x + ' ' + sdGy(x).toFixed(1)
+  const sdTicks = [-3, -2, -1, 0, 1, 2, 3]
+  return (
+    <svg viewBox="0 0 520 150" style={{ width: '100%', height: 'auto', display: 'block' }} role="img" aria-label="A symmetric bell curve with standard-deviation marks; the tails beyond two standard deviations are shaded as the candidate-outlier zone">
+      <rect x="40" y="22" width={sdMU - 2 * sdSIG - 40} height="90" fill={C.coralSoft} />
+      <rect x={sdMU + 2 * sdSIG} y="22" width={480 - (sdMU + 2 * sdSIG)} height="90" fill={C.coralSoft} />
+      <line x1="40" y1={sdBASE} x2="480" y2={sdBASE} stroke={C.border} strokeWidth="1" />
+      <path d={sdCurve} fill="none" stroke={C.teal} strokeWidth="2" />
+      {sdTicks.map((t) => {
+        const tx = sdMU + t * sdSIG
+        return (
+          <g key={t}>
+            <line x1={tx} y1={sdBASE} x2={tx} y2={sdBASE + 5} stroke={C.muted} strokeWidth="1" />
+            <text x={tx} y={sdBASE + 17} textAnchor="middle" fontSize="10" fill={C.muted}>{t === 0 ? 'mean' : (t > 0 ? '+' + t : t)}</text>
+          </g>
+        )
+      })}
+      <text x="42" y="16" fontSize="9.5" fill={C.coral} fontWeight="600">candidate outliers</text>
+      <text x="478" y="16" textAnchor="end" fontSize="9.5" fill={C.coral} fontWeight="600">candidate outliers</text>
+    </svg>
+  )
+}
+
 function Simulator() {
   const [hasOutlier, setHasOutlier] = useState(false)
   const [reportChoice, setReportChoice] = useState(null)
@@ -342,6 +447,59 @@ export default function SummaryStatistics() {
             Below is the actual dataset. The mean and median start close together — the distribution is fairly symmetric. Add the 45-day patient and watch what happens.
           </p>
           <Simulator />
+        </div>
+      </Section>
+
+      {/* 2b. Spotting skew and outliers */}
+      <Section icon="⚑" iconBg={C.coralSoft} title="Spotting Skew and Outliers">
+        <div style={{ paddingTop: 20 }}>
+          <p style={s.prose}>
+            Four clues tell you a distribution is skewed or has outliers. Each one you can read straight off a picture — no heavy computation.
+          </p>
+
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: 600, color: C.text, margin: '18px 0 6px' }}>1. The mean pulls away from the median</div>
+          <p style={s.prose}>
+            The median marks the middle value; the mean gets dragged toward extreme values. When a distribution has a long tail, the mean slides toward it while the median barely moves. The direction of the gap is the direction of the tail: mean above median means a tail stretching high (right skew), mean below median means a tail stretching low (left skew).
+          </p>
+          <SkewTrio />
+          <p style={{ fontSize: 12, color: C.muted, margin: '8px 0 0' }}>
+            The mean (solid) slides toward the long tail; the median (dashed) stays near the peak. When the two sit together, the shape is roughly symmetric.
+          </p>
+
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: 600, color: C.text, margin: '22px 0 6px' }}>2. The variable itself</div>
+          <p style={s.prose}>
+            You can often predict skew from what a variable measures, before computing anything.
+          </p>
+          <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden' }}>
+            {[
+              { dot: C.coral, head: 'Right-skewed by default', body: 'Money, counts, times, hospital stays — anything with a floor at zero and no upper limit. A few large values stretch the high tail.' },
+              { dot: C.purple, head: 'Left-skewed', body: 'Scores near a maximum — an easy test most people ace, with a few low scores trailing down.' },
+              { dot: C.teal, head: 'Usually symmetric', body: 'Height, blood pressure — values cluster around a center with no natural floor or ceiling pulling one side.' },
+            ].map((r, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, padding: '10px 14px', borderTop: i ? `1px solid ${C.border}` : 'none', background: i % 2 ? C.alt : C.surface }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: r.dot, marginTop: 5, flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: C.dim, lineHeight: 1.6 }}><strong style={{ color: C.text }}>{r.head}.</strong> {r.body}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: 600, color: C.text, margin: '22px 0 6px' }}>3. The boxplot</div>
+          <p style={s.prose}>
+            A boxplot draws both clues at once. The box holds the middle 50% of the data, from Q1 to Q3 — that width is the IQR. The line inside is the median; when it sits off-center in the box, the distribution is skewed toward the far side. The whiskers reach out to 1.5×IQR past the box, marked by the dashed fence. Any point past that fence is flagged as an outlier.
+          </p>
+          <SkewBoxplot />
+          <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.6, margin: '10px 0 0' }}>
+            A flagged point is a candidate, not a verdict — check it. It is often a data-entry error (an impossible age, a zero blood pressure) worth correcting, not a real value to delete.
+          </p>
+
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: 600, color: C.text, margin: '22px 0 6px' }}>4. Distance in standard deviations</div>
+          <p style={s.prose}>
+            On roughly symmetric data, about 95% of values fall within 2 SD of the mean. So a value more than about 2 to 3 SD out is a candidate outlier — the shaded tails below.
+          </p>
+          <SdRuler />
+          <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.6, margin: '10px 0 0' }}>
+            The catch: this assumes symmetry. On skewed data the long tail inflates the SD itself, so this method mislabels — it can flag ordinary tail values or miss real ones. For skewed data, trust the boxplot's 1.5×IQR rule instead. The IQR rule holds up when data are skewed; the SD rule does not.
+          </p>
         </div>
       </Section>
 
