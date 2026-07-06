@@ -499,6 +499,53 @@ export default function PopulationVsSample() {
             3: <span>Any number calculated from a sample is a statistic. Since 142 mg/dL came from a sample of 200 patients, it is a sample statistic (<XBar />). Statistics are how we estimate population parameters when we can't measure everyone.</span>
           }}
         />
+
+        <Concept title="Describing spread: variance and standard deviation">
+          <p style={s.prose}>
+            The mean tells you the center. <strong style={{ color: C.text }}>Standard deviation</strong> tells you the spread — how far values typically fall from that center. It is built from <strong style={{ color: C.text }}>variance</strong>, so start there.
+          </p>
+          <p style={s.prose}>
+            Variance is the average of the squared distances from the mean. You square each distance so that values above and below the mean do not cancel out. The drawback: squaring also squares the units. Glucose measured in mg/dL produces a variance in mg/dL² — a number you can't read directly.
+          </p>
+          <p style={s.prose}>
+            Standard deviation fixes that. Take the square root of the variance and you are back in the original units (mg/dL). That is why standard deviation, not variance, is usually the number reported: it reads as "a typical patient falls about this far from the average."
+          </p>
+          <div style={s.formula}>{"Variance = (sum of squared distances from the mean) ÷ count\nStandard deviation = √Variance"}</div>
+          <p style={s.prose}>
+            There are two versions, and the σ / s row in the table above is the reason. When you have the whole population, variance divides by N — the full count. When you have only a sample, it divides by <strong style={{ color: C.text }}>n − 1</strong> instead.
+          </p>
+          <p style={s.prose}>
+            Why one less? A sample's values sit a little closer to their own average than to the true population average, so dividing by the full count would make the spread look smaller than it really is. Subtracting one nudges the estimate up to compensate. σ is the population's true spread; s is your best estimate of it from a sample.
+          </p>
+          <div style={s.example}>
+            <div style={s.exampleLabel}>Worked example — same data, two divisors</div>
+            Five fasting glucose readings: 130, 138, 142, 150, 150 mg/dL. The mean is 142, and the squared distances from 142 add up to 288.
+            <div style={{ marginTop: 8 }}>
+              <div>Sample (÷ n − 1 = 4): 288 ÷ 4 = 72 &nbsp;→&nbsp; s = √72 ≈ <strong style={{ color: C.text }}>8.5 mg/dL</strong></div>
+              <div>Population (÷ N = 5): 288 ÷ 5 = 57.6 &nbsp;→&nbsp; σ = √57.6 ≈ <strong style={{ color: C.text }}>7.6 mg/dL</strong></div>
+            </div>
+            <div style={{ marginTop: 8 }}>
+              Since these came from a sample, you would report s ≈ 8.5. Dividing by n − 1 gives the slightly larger, more honest estimate of the population's spread.
+            </div>
+          </div>
+        </Concept>
+
+        <Quiz
+          q="Which statement about spread is correct?"
+          options={[
+            "Standard deviation is variance squared.",
+            "Standard deviation is the square root of variance, and the sample version divides by n − 1 to avoid understating the population's spread.",
+            "Variance and standard deviation are two names for the same number.",
+            "The sample standard deviation divides by n − 1 to make the value smaller."
+          ]}
+          answer={1}
+          explain={<span>Correct. Standard deviation is the square root of variance — that is what returns it to the original units. And because a sample underestimates the population's spread, the sample version divides by n − 1, which nudges the estimate up.</span>}
+          wrongExplain={{
+            0: <span>Reversed. Variance comes first (the average of squared distances), and standard deviation is its square root — not the other way around. Squaring the standard deviation gives you back the variance.</span>,
+            2: <span>Not quite. They are linked but not equal: variance is in squared units, and standard deviation is its square root, back in the original units. You report the standard deviation because it is directly readable.</span>,
+            3: <span>The direction is backwards. Dividing by n − 1 instead of n makes the estimate slightly <em>larger</em>, not smaller. That correction exists because a sample's spread understates the population's, so the estimate needs to be nudged up.</span>
+          }}
+        />
       </Section>
 
       {/* 5. Inference bridge */}
