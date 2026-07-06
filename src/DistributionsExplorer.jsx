@@ -82,41 +82,45 @@ function BarChart({ data, color, xLabel }) {
   )
 }
 
-// ── Normal curve SVG ──
+// ── Normal curve SVG (fixed axis, true height) ──
 function NormalCurve({ mu, sigma }) {
   const W = 520, H = 160, PAD = { l: 10, r: 10, t: 20, b: 28 }
   const innerW = W - PAD.l - PAD.r
-  const span = 4 * sigma
-  const xMin = mu - span, xMax = mu + span
-  const toX = v => PAD.l + ((v - xMin) / (xMax - xMin)) * innerW
-  const peak = npdf(mu, mu, sigma)
-  const toY = p => PAD.t + (1 - p / peak) * (H - PAD.t - PAD.b)
+  const plotH = H - PAD.t - PAD.b
+  const DMIN = 40, DMAX = 200, SIGMA_MIN = 8
+  const toX = v => PAD.l + ((v - DMIN) / (DMAX - DMIN)) * innerW
+  // Full-scale height is pinned to the tallest allowed curve (the smallest sigma),
+  // with headroom, so the frame stays fixed and raising sigma visibly flattens the curve.
+  const FULL = (1 / (SIGMA_MIN * Math.sqrt(2 * Math.PI))) / 0.9
+  const toY = p => PAD.t + (1 - Math.min(p, FULL) / FULL) * plotH
 
   const pts = []
   for (let i = 0; i <= 200; i++) {
-    const x = xMin + (i / 200) * (xMax - xMin)
-    pts.push({ x, y: npdf(x, mu, sigma) })
+    const xv = DMIN + (i / 200) * (DMAX - DMIN)
+    pts.push({ x: xv, y: npdf(xv, mu, sigma) })
   }
   const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(p.x).toFixed(1)},${toY(p.y).toFixed(1)}`).join(' ')
 
   const bands = [
-    { lo: mu - sigma, hi: mu + sigma, color: C.teal, label: '±1σ ≈ 68%', opacity: 0.25 },
-    { lo: mu - 2 * sigma, hi: mu + 2 * sigma, color: C.teal, label: '±2σ ≈ 95%', opacity: 0.15 },
-    { lo: mu - 3 * sigma, hi: mu + 3 * sigma, color: C.teal, label: '±3σ ≈ 99.7%', opacity: 0.08 },
+    { lo: mu - sigma, hi: mu + sigma, color: C.teal, opacity: 0.25 },
+    { lo: mu - 2 * sigma, hi: mu + 2 * sigma, color: C.teal, opacity: 0.15 },
+    { lo: mu - 3 * sigma, hi: mu + 3 * sigma, color: C.teal, opacity: 0.08 },
   ]
 
-  // Filled band paths
+  // Filled band paths, clamped to the fixed frame
   function bandPath(lo, hi) {
-    const bandPts = pts.filter(p => p.x >= lo && p.x <= hi)
+    const clo = Math.max(lo, DMIN), chi = Math.min(hi, DMAX)
+    if (chi <= clo) return ''
+    const bandPts = pts.filter(p => p.x >= clo && p.x <= chi)
     if (!bandPts.length) return ''
     return [
-      `M${toX(lo).toFixed(1)},${toY(0).toFixed(1)}`,
+      `M${toX(clo).toFixed(1)},${toY(0).toFixed(1)}`,
       ...bandPts.map(p => `L${toX(p.x).toFixed(1)},${toY(p.y).toFixed(1)}`),
-      `L${toX(hi).toFixed(1)},${toY(0).toFixed(1)}Z`
+      `L${toX(chi).toFixed(1)},${toY(0).toFixed(1)}Z`
     ].join(' ')
   }
 
-  const ticks = [mu - 3 * sigma, mu - 2 * sigma, mu - sigma, mu, mu + sigma, mu + 2 * sigma, mu + 3 * sigma]
+  const ticks = [40, 60, 80, 100, 120, 140, 160, 180, 200]
 
   return (
     <svg width={W} height={H} style={{ display: 'block', maxWidth: '100%', overflow: 'visible' }}>
@@ -129,12 +133,12 @@ function NormalCurve({ mu, sigma }) {
       {/* Mean line */}
       <line x1={toX(mu)} y1={PAD.t} x2={toX(mu)} y2={H - PAD.b} stroke={C.purple} strokeWidth={1.5} strokeDasharray="4 2" />
       <text x={toX(mu)} y={PAD.t - 4} textAnchor="middle" fontSize={10} fill={C.purple} fontWeight="600">μ</text>
-      {/* Axis */}
+      {/* Fixed axis 40–200 */}
       <line x1={PAD.l} y1={H - PAD.b} x2={W - PAD.r} y2={H - PAD.b} stroke={C.border} strokeWidth={1.5} />
       {ticks.map((v, i) => (
         <g key={i}>
           <line x1={toX(v)} y1={H - PAD.b} x2={toX(v)} y2={H - PAD.b + 4} stroke={C.muted} strokeWidth={1} />
-          <text x={toX(v)} y={H - PAD.b + 14} textAnchor="middle" fontSize={9} fill={i === 3 ? C.purple : C.muted} fontWeight={i === 3 ? '700' : '400'}>{Math.round(v)}</text>
+          <text x={toX(v)} y={H - PAD.b + 14} textAnchor="middle" fontSize={9} fill={C.muted}>{v}</text>
         </g>
       ))}
     </svg>
@@ -201,7 +205,7 @@ function NormalTab() {
           ))}
         </div>
         <Slider label="Mean (μ) — moves the center" value={mu} min={80} max={160} step={1} onChange={setMu} />
-        <Slider label="Standard deviation (σ) — controls the spread" value={sigma} min={5} max={40} step={1} onChange={setSigma} />
+        <Slider label="Standard deviation (σ) — controls the spread" value={sigma} min={8} max={40} step={1} onChange={setSigma} />
       </div>
 
       <div style={{ ...s.example }}>
