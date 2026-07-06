@@ -111,7 +111,8 @@ function Simulator() {
   const i = +iqr(data).toFixed(1)
 
   const diff = Math.abs(m - med)
-  const isSkewed = diff > 1.5
+  const gap = +diff.toFixed(1)
+  const isSkewed = gap > 0.5
   const reportDone = reportChoice !== null
 
   return (
@@ -194,12 +195,16 @@ function Simulator() {
         fontSize: 13, color: C.dim, lineHeight: 1.6, transition: 'all 0.3s',
       }}>
         <strong style={{ color: isSkewed ? C.amber : C.teal }}>
-          {isSkewed ? 'Mean and median differ noticeably.' : 'Mean and median are similar.'}
+          {isSkewed
+            ? 'Mean and median differ.'
+            : (gap === 0 ? 'Mean and median are equal here.' : 'Mean and median are close.')}
         </strong>
         {' '}
         {isSkewed
-          ? 'This often indicates a skewed distribution or influential outliers. Consider reporting median + IQR.'
-          : 'The distribution appears roughly symmetric. Mean + SD is appropriate.'}
+          ? `Mean is ${m} days, median is ${med} — a gap of ${gap} days. That gap points to skew or influential outliers, so the distribution is not roughly symmetric. Median + IQR is the safer summary.`
+          : (gap === 0
+              ? `Both land at ${m} days. That points to a roughly symmetric distribution, so mean + SD works. They don't need to be exactly equal, though — within about half a day is close enough.`
+              : `Mean is ${m} days, median is ${med} — within half a day of each other. Close enough to treat the shape as roughly symmetric, so mean + SD works. They don't need to match exactly.`)}
         <div style={{ marginTop: 6, fontWeight: 600, color: isSkewed ? C.amber : C.teal }}>
           Recommended: {isSkewed ? 'Median + IQR' : 'Mean + SD'}
         </div>
@@ -285,7 +290,7 @@ export default function SummaryStatistics() {
             {[
               { step: '1', label: 'Describe', sub: 'Mean, median, SD, IQR, counts', color: C.teal, bg: C.tealSoft, border: 'rgba(0,153,168,0.2)' },
               { step: '2', label: 'Visualize', sub: 'Histogram, boxplot, bar chart', color: C.purple, bg: C.purpleSoft, border: 'rgba(107,63,204,0.2)' },
-              { step: '3', label: 'Understand your data', sub: 'Shape, outliers, missing patterns', color: C.green, bg: C.greenSoft, border: 'rgba(26,122,62,0.2)' },
+              { step: '3', label: 'Understand your data', sub: "Shape, outliers, what's missing", color: C.green, bg: C.greenSoft, border: 'rgba(26,122,62,0.2)' },
               { step: '4', label: 'Ask a research question', sub: 'Is there a difference? An association?', color: C.amber, bg: C.amberSoft, border: 'rgba(184,112,0,0.2)' },
               { step: '5', label: 'Choose a test', sub: 't-test, chi-square, Mann-Whitney...', color: C.coral, bg: C.coralSoft, border: 'rgba(232,69,42,0.2)' },
             ].map((item, i) => (
