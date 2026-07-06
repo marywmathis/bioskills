@@ -57,6 +57,39 @@ const s = {
   tag: { display: 'inline-block', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, marginLeft: 8 },
 }
 
+function VariabilityCurves() {
+  const CBASE = 200, CMEAN = 260, CX0 = 24, CX1 = 496
+  const buildPath = (sigma, amp, close) => {
+    let d = ''
+    for (let x = CX0; x <= CX1; x += 4) {
+      const cy = CBASE - amp * Math.exp(-((x - CMEAN) ** 2) / (2 * sigma * sigma))
+      d += (x === CX0 ? 'M ' : ' L ') + x + ' ' + cy.toFixed(1)
+    }
+    return close ? d + ` L ${CX1} ${CBASE} L ${CX0} ${CBASE} Z` : d
+  }
+  const bands = [
+    { name: 'High variability', sigma: 90, amp: 62, color: C.green, lx: 372, ly: 178 },
+    { name: 'Medium variability', sigma: 46, amp: 100, color: C.purple, lx: 330, ly: 120 },
+    { name: 'Low variability', sigma: 22, amp: 150, color: C.coral, lx: 286, ly: 52 },
+  ]
+  return (
+    <svg viewBox="0 0 520 250" style={{ width: '100%', height: 'auto', display: 'block' }} role="img" aria-label="Three bell curves sharing the same mean with increasing spread: low, medium, and high variability">
+      <line x1={CX0} y1="200" x2={CX1} y2="200" stroke={C.border} strokeWidth="1" />
+      <line x1="260" y1="34" x2="260" y2="200" stroke={C.muted} strokeWidth="1" strokeDasharray="3 3" />
+      <text x="260" y="26" textAnchor="middle" fontSize="11" fill={C.dim} fontFamily="'Space Grotesk', sans-serif">Mean</text>
+      {bands.map((b, i) => (
+        <g key={i}>
+          <path d={buildPath(b.sigma, b.amp, true)} fill={b.color} fillOpacity="0.18" />
+          <path d={buildPath(b.sigma, b.amp, false)} fill="none" stroke={b.color} strokeWidth="2" />
+        </g>
+      ))}
+      {bands.map((b, i) => (
+        <text key={'l' + i} x={b.lx} y={b.ly} fontSize="12" fontWeight="600" fill={b.color} fontFamily="'Space Grotesk', sans-serif">{b.name}</text>
+      ))}
+    </svg>
+  )
+}
+
 function Quiz({ q, options, answer, explain, wrongExplain }) {
   const [picked, setPicked] = useState(null)
   const done = picked !== null
@@ -542,6 +575,13 @@ export default function PopulationVsSample() {
           <p style={s.prose}>
             Standard deviation fixes that. Take the square root of the variance and you are back in the original units (mg/dL). That is why standard deviation, not variance, is usually the number reported: it reads as "a typical patient falls about this far from the average."
           </p>
+          <div style={{ margin: '4px 0 12px', padding: '14px 16px 10px', background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Same mean, three different spreads</div>
+            <VariabilityCurves />
+            <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.6, margin: '10px 0 0' }}>
+              All three curves share the same mean. A wider curve means values sit farther from the center — larger squared distances from the mean, so larger variance and a larger standard deviation. A narrow curve is the reverse.
+            </p>
+          </div>
           <p style={s.prose}>
             There are two versions, shown in the formula table above. When you have the whole population, variance divides by N — the full count. When you have only a sample, it divides by <strong style={{ color: C.text }}>n − 1</strong> instead.
           </p>
