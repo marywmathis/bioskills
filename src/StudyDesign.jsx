@@ -610,6 +610,20 @@ export default function StudyDesign() {
                           <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>{d.weakness}</div>
                         </div>
                       </div>
+                      {d.id === 'caseControl' && (
+                        <div style={{ marginTop: 10, padding: '12px 14px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 7 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>What is an odds ratio — and why not relative risk?</div>
+                          <p style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.7, margin: '0 0 7px' }}>
+                            Odds are the chance something happened versus the chance it did not — if 30 of 100 cases had smoked, their odds of smoking are 30 to 70. The <strong style={{ color: C.text }}>odds ratio</strong> compares those odds between the groups: the odds a case was exposed, divided by the odds a control was exposed. Above 1, the exposure is linked to higher odds of disease; 1 means no link; below 1 means it looks protective.
+                          </p>
+                          <p style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.7, margin: '0 0 7px' }}>
+                            This is not the same as <strong style={{ color: C.text }}>relative risk</strong>. Relative risk compares the actual risk of getting the disease between exposed and unexposed people — and measuring risk means following people over time and counting new cases, which is a cohort study's job.
+                          </p>
+                          <p style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.7, margin: 0 }}>
+                            A case-control study cannot measure risk, because you decide up front how many cases and controls to include — so the share with disease reflects your design, not the real population. That is why you report an odds ratio, not relative risk. The payoff: when the disease is <strong style={{ color: C.text }}>rare</strong>, the odds ratio comes very close to the relative risk, so it stands in well for exactly the situations case-control studies are built for. When the disease is common, the odds ratio drifts further from 1 than the true relative risk and overstates the effect.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
