@@ -206,9 +206,9 @@ const MEASURES = [
   },
 ]
 
-// ── PPV vs prevalence mini chart ──
+// ── PPV/NPV across prevalence chart ──
 function PrevChart({ sens, spec, currentPrev }) {
-  const W = 240, H = 110, PAD = { l: 28, r: 8, t: 10, b: 24 }
+  const W = 720, H = 200, PAD = { l: 36, r: 54, t: 16, b: 30 }
   const innerW = W - PAD.l - PAD.r
   const innerH = H - PAD.t - PAD.b
 
@@ -228,39 +228,59 @@ function PrevChart({ sens, spec, currentPrev }) {
   const { tp, fp, fn, tn } = calcCounts(sens, spec, currentPrev)
   const { ppv, npv } = calcMetrics(tp, fp, fn, tn)
 
+  const endPpv = points[points.length - 1].ppv
+  const endNpv = points[points.length - 1].npv
+
+  // End-of-line labels, spaced vertically so they never overlap
+  const endLabels = [
+    { name: 'PPV', color: C.purple, y: toY(endPpv) },
+    { name: 'NPV', color: C.teal, y: toY(endNpv) },
+    { name: 'Sens', color: '#e8452a', y: toY(sens) },
+    { name: 'Spec', color: '#94a3b8', y: toY(spec) },
+  ].sort((a, b) => a.y - b.y)
+  const lblGap = 15
+  for (let i = 1; i < endLabels.length; i++) {
+    if (endLabels[i].y - endLabels[i - 1].y < lblGap) endLabels[i].y = endLabels[i - 1].y + lblGap
+  }
+  const yFloor = H - PAD.b
+  const spill = endLabels[endLabels.length - 1].y - yFloor
+  if (spill > 0) endLabels.forEach(l => { l.y -= spill })
+  if (endLabels[0].y < PAD.t + 4) { const lift = PAD.t + 4 - endLabels[0].y; endLabels.forEach(l => { l.y += lift }) }
+
   const ticks = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
 
   return (
-    <svg width={W} height={H} style={{ display: 'block' }}>
-      <rect x={0} y={0} width={W} height={H} fill={C.alt} rx={6} />
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block', height: 'auto' }}>
+      <rect x={0} y={0} width={W} height={H} fill={C.alt} rx={8} />
       <line x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={H - PAD.b} stroke={C.border} strokeWidth={1} />
       <line x1={PAD.l} y1={H - PAD.b} x2={W - PAD.r} y2={H - PAD.b} stroke={C.border} strokeWidth={1} />
       {[0, 0.25, 0.5, 0.75, 1].map(v => (
         <g key={v}>
           <line x1={PAD.l - 3} y1={toY(v)} x2={PAD.l} y2={toY(v)} stroke={C.muted} strokeWidth={1} />
-          <text x={PAD.l - 5} y={toY(v) + 3} textAnchor="end" fontSize={8} fill={C.muted}>{(v * 100).toFixed(0)}%</text>
+          <text x={PAD.l - 6} y={toY(v) + 3} textAnchor="end" fontSize={10} fill={C.muted}>{(v * 100).toFixed(0)}%</text>
         </g>
       ))}
       {ticks.map(v => (
         <g key={v}>
           <line x1={toX(v)} y1={H - PAD.b} x2={toX(v)} y2={H - PAD.b + 3} stroke={C.muted} strokeWidth={1} />
-          <text x={toX(v)} y={H - PAD.b + 11} textAnchor="middle" fontSize={8} fill={C.muted}>{(v * 100).toFixed(0)}%</text>
+          <text x={toX(v)} y={H - PAD.b + 14} textAnchor="middle" fontSize={10} fill={C.muted}>{(v * 100).toFixed(0)}%</text>
         </g>
       ))}
-      <path d={ppvPath} fill="none" stroke={C.purple} strokeWidth={2} />
-      <path d={npvPath} fill="none" stroke={C.teal} strokeWidth={2} />
-      {/* Flat sens/spec lines */}
-      <line x1={PAD.l} y1={toY(sens)} x2={W - PAD.r} y2={toY(sens)} stroke="#e8452a" strokeWidth={1.5} strokeDasharray="3 2" />
-      <line x1={PAD.l} y1={toY(spec)} x2={W - PAD.r} y2={toY(spec)} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="3 2" />
-      {/* Current prevalence dot */}
-      <circle cx={toX(currentPrev)} cy={toY(ppv)} r={4} fill={C.purple} />
-      <circle cx={toX(currentPrev)} cy={toY(npv)} r={4} fill={C.teal} />
+      {/* Flat sensitivity / specificity lines */}
+      <line x1={PAD.l} y1={toY(sens)} x2={W - PAD.r} y2={toY(sens)} stroke="#e8452a" strokeWidth={1.5} strokeDasharray="4 3" />
+      <line x1={PAD.l} y1={toY(spec)} x2={W - PAD.r} y2={toY(spec)} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
+      {/* PPV / NPV curves */}
+      <path d={ppvPath} fill="none" stroke={C.purple} strokeWidth={2.5} />
+      <path d={npvPath} fill="none" stroke={C.teal} strokeWidth={2.5} />
+      {/* Current prevalence marker */}
       <line x1={toX(currentPrev)} y1={PAD.t} x2={toX(currentPrev)} y2={H - PAD.b} stroke={C.amber} strokeWidth={1} strokeDasharray="3 2" />
-      <text x={W - PAD.r - 2} y={PAD.t + 9} textAnchor="end" fontSize={8} fill={C.purple}>PPV</text>
-      <text x={W - PAD.r - 2} y={PAD.t + 18} textAnchor="end" fontSize={8} fill={C.teal}>NPV</text>
-      <text x={W - 4} y={toY(sens) - 3} textAnchor="end" fontSize={8} fill="#e8452a">Sens</text>
-      <text x={W - 4} y={toY(spec) + 9} textAnchor="end" fontSize={8} fill="#94a3b8">Spec</text>
-      <text x={W / 2} y={H - 2} textAnchor="middle" fontSize={8} fill={C.muted}>Prevalence →</text>
+      <circle cx={toX(currentPrev)} cy={toY(ppv)} r={4.5} fill={C.purple} />
+      <circle cx={toX(currentPrev)} cy={toY(npv)} r={4.5} fill={C.teal} />
+      {/* Spaced end-of-line labels */}
+      {endLabels.map((l, i) => (
+        <text key={i} x={W - PAD.r + 6} y={l.y + 3} textAnchor="start" fontSize={11} fontWeight={600} fill={l.color}>{l.name}</text>
+      ))}
+      <text x={PAD.l + innerW / 2} y={H - 4} textAnchor="middle" fontSize={10} fill={C.muted}>Prevalence →</text>
     </svg>
   )
 }
@@ -467,23 +487,33 @@ export default function DiagnosticTest() {
             </div>
           )}
 
-          {/* Side-by-side: dot grid + chart */}
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-            <div style={{ flex: 2, minWidth: 280 }}>
-              <div style={{ background: C.alt, borderRadius: 10, padding: 12, border: `1px solid ${C.border}`, overflowX: 'auto' }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>1,000 patients at {(prev * 100).toFixed(0)}% prevalence</div>
-                <DotGrid tp={tp} fp={fp} fn={fn} tn={tn} highlight={null} />
-              </div>
-            </div>
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>PPV & NPV across all prevalence values</div>
-              <PrevChart sens={sens} spec={spec} currentPrev={prev} />
-              <div style={{ display: 'flex', gap: 10, marginTop: 6, fontSize: 11, flexWrap: 'wrap' }}>
-                <span style={{ color: C.purple }}>— PPV</span>
-                <span style={{ color: C.teal }}>— NPV</span>
-                <span style={{ color: '#e8452a' }}>- - Sensitivity</span>
-                <span style={{ color: '#94a3b8' }}>- - Specificity</span>
-              </div>
+          {/* Patient dot grid */}
+          <div style={{ background: C.alt, borderRadius: 10, padding: 12, border: `1px solid ${C.border}`, overflowX: 'auto' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>1,000 patients at {(prev * 100).toFixed(0)}% prevalence</div>
+            <DotGrid tp={tp} fp={fp} fn={fn} tn={tn} highlight={null} />
+          </div>
+
+          {/* PPV & NPV across prevalence — full width */}
+          <div style={{ marginTop: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>PPV & NPV across all prevalence values</div>
+            <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.65, margin: '0 0 10px' }}>
+              Each measure is plotted against disease prevalence. The two dashed flat lines — sensitivity and specificity — never move, because they are fixed properties of the test. The two solid curves — PPV (purple) climbing and NPV (teal) easing down — change with the population. The gold line marks the current prevalence; the dots are PPV and NPV there. Flat means the test itself; curved means what a result means in this population.
+            </p>
+            <PrevChart sens={sens} spec={spec} currentPrev={prev} />
+            <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 12, flexWrap: 'wrap' }}>
+              {[
+                { name: 'PPV', color: C.purple, dash: false },
+                { name: 'NPV', color: C.teal, dash: false },
+                { name: 'Sensitivity', color: '#e8452a', dash: true },
+                { name: 'Specificity', color: '#94a3b8', dash: true },
+              ].map((l, i) => (
+                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <svg width={22} height={8} style={{ display: 'block' }}>
+                    <line x1={0} y1={4} x2={22} y2={4} stroke={l.color} strokeWidth={2} strokeDasharray={l.dash ? '4 3' : 'none'} />
+                  </svg>
+                  <span style={{ color: l.color, fontWeight: 600 }}>{l.name}</span>
+                </span>
+              ))}
             </div>
           </div>
 
