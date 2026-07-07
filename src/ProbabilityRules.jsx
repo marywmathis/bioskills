@@ -200,6 +200,28 @@ function AdditionSim() {
         In this screened population, {(pA * 100).toFixed(0)}% of patients have hypertension, {(pB * 100).toFixed(0)}% have diabetes
         {!mutExcl ? `, and ${(overlap * 100).toFixed(0)}% have both — so those patients would be counted twice if we simply added the percentages` : ', and these conditions cannot occur in the same patient (mutually exclusive)'}. Therefore, the probability that a randomly selected patient has hypertension or diabetes is <strong style={{ color: C.text }}>{(union * 100).toFixed(0)}%</strong>.
       </div>
+
+      {!unionInvalid && !overlapInvalid && (
+        <div style={{ marginTop: 10, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ ...s.exampleLabel, padding: '10px 12px 2px', marginBottom: 0 }}>Reading each region</div>
+          {[
+            { dot: C.teal, name: 'Hypertension only', note: 'has hypertension, not diabetes', val: pA - overlap },
+            { dot: C.purple, name: 'Diabetes only', note: 'has diabetes, not hypertension', val: pB - overlap },
+            { dot: C.amber, name: 'Both', note: 'has hypertension and diabetes', val: overlap },
+            { dot: C.muted, name: 'Neither', note: 'has neither condition', val: 1 - union },
+          ].map((r, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 12px', borderTop: `1px solid ${C.border}`, fontSize: 13 }}>
+              <span style={{ width: 9, height: 9, borderRadius: '50%', background: r.dot, flexShrink: 0 }} />
+              <span style={{ color: C.text, fontWeight: 600, minWidth: 128 }}>{r.name}</span>
+              <span style={{ color: C.dim, flex: 1 }}>{r.note}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", color: C.text, fontWeight: 600 }}>{(r.val * 100).toFixed(0)}%</span>
+            </div>
+          ))}
+          <div style={{ padding: '8px 12px', borderTop: `1px solid ${C.border}`, fontSize: 12, color: C.muted, lineHeight: 1.6 }}>
+            Of every 100 patients: {((pA - overlap) * 100).toFixed(0)} have hypertension only, {((pB - overlap) * 100).toFixed(0)} diabetes only, {(overlap * 100).toFixed(0)} both, and {((1 - union) * 100).toFixed(0)} neither. These four groups don't overlap and cover everyone — they add to 100%.
+          </div>
+        </div>
+      )}
     </div>
   )
 }
