@@ -513,12 +513,32 @@ function ConditionalSim() {
             background: row.highlight ? 'rgba(107,63,204,0.08)' : (i % 2 === 0 ? C.surface : C.alt),
             borderLeft: row.highlight ? `3px solid ${C.purple}` : 'none',
           }}>
-            <span style={{ color: C.dim }}>{row.label}{row.highlight && <span style={{ marginLeft: 6, fontSize: 10, color: C.purple, fontWeight: 700 }}>← denominator</span>}</span>
-            <span style={{ color: '#e8452a' }}>{row.d}</span>
+            <span style={{ color: C.dim }}>{row.label}</span>
+            <span style={{ color: '#e8452a' }}>{row.d}{row.highlight && <span style={{ marginLeft: 6, fontSize: 10, color: C.purple, fontWeight: 700 }}>← numerator</span>}</span>
             <span style={{ color: '#94a3b8' }}>{row.h}</span>
-            <span style={{ color: C.text }}>{row.t}</span>
+            <span style={{ color: C.text }}>{row.t}{row.highlight && <span style={{ marginLeft: 6, fontSize: 10, color: C.purple, fontWeight: 700 }}>← denominator</span>}</span>
           </div>
         ))}
+      </div>
+
+      <div style={{ marginTop: 8, fontSize: 12, color: C.dim, lineHeight: 1.6 }}>
+        Both numbers come from the <strong style={{ color: C.purple }}>Test +</strong> row, because we have restricted to patients who tested positive. The numerator is the 80 in that row who also have disease (Disease + and Test +); the denominator is the row total, 140. So P(Disease | Positive) = 80 ÷ 140.
+      </div>
+
+      <div style={{ marginTop: 14, padding: '14px 16px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 8 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: C.amber, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Who are the "truly diseased" — and how do we know?</div>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, margin: '0 0 8px' }}>
+          Every patient here was sorted into Disease + or Disease − by a <strong style={{ color: C.text }}>reference standard</strong> (often called a gold standard) — a more definitive method than the screening test, such as a biopsy, a confirmatory lab assay, or long-term follow-up.
+        </p>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, margin: '0 0 8px' }}>
+          The screening test is the thing being evaluated, so it cannot also be the judge of who is truly sick. A separate, better method had to establish the truth first.
+        </p>
+        <p style={{ fontSize: 13, color: C.text, lineHeight: 1.7, margin: '0 0 8px', fontWeight: 600 }}>
+          This is what makes the conditional probability possible. P(Disease | Positive) exists only because true disease status was established for all 1,000 patients beforehand. Without that known status there are no Disease +/− columns, and nothing to condition on.
+        </p>
+        <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, margin: 0 }}>
+          One caveat: the reference standard is called "gold," but it is not flawless either. "Truly diseased" means diseased by the best available method — not absolute certainty.
+        </p>
       </div>
 
       {/* Reflection question */}
