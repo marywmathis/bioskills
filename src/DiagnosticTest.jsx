@@ -475,30 +475,9 @@ export default function DiagnosticTest() {
             ))}
           </div>
 
-          {/* The key message */}
-          {prev <= 0.05 && (
-            <div style={{ padding: '12px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 8, marginBottom: 12, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-              <strong style={{ color: C.amber }}>At {(prev * 100).toFixed(1)}% prevalence:</strong> PPV = {(metrics.ppv * 100).toFixed(1)}%. Most positive tests are false alarms — not because the test is poor, but because disease is rare. The test didn't fail. The population changed.
-            </div>
-          )}
-          {prev >= 0.25 && (
-            <div style={{ padding: '12px 14px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 8, marginBottom: 12, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-              <strong style={{ color: C.teal }}>At {(prev * 100).toFixed(1)}% prevalence:</strong> PPV = {(metrics.ppv * 100).toFixed(1)}%. Most positive tests are true cases. The same test — better predictive value — because the population has more disease.
-            </div>
-          )}
-
-          {/* Patient dot grid */}
-          <div style={{ background: C.alt, borderRadius: 10, padding: 12, border: `1px solid ${C.border}`, overflowX: 'auto' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>1,000 patients at {(prev * 100).toFixed(0)}% prevalence</div>
-            <DotGrid tp={tp} fp={fp} fn={fn} tn={tn} highlight={null} />
-          </div>
-
-          {/* PPV & NPV across prevalence — full width */}
-          <div style={{ marginTop: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>PPV & NPV across all prevalence values</div>
-            <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.65, margin: '0 0 10px' }}>
-              Each measure is plotted against disease prevalence. The two dashed flat lines — sensitivity and specificity — never move, because they are fixed properties of the test. The two solid curves — PPV (purple) climbing and NPV (teal) easing down — change with the population. The gold line marks the current prevalence; the dots are PPV and NPV there. Flat means the test itself; curved means what a result means in this population.
-            </p>
+          {/* PPV & NPV across prevalence — placed near the controls */}
+          <div style={{ marginTop: 4, marginBottom: 14 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 6 }}>PPV & NPV across all prevalence values</div>
             <PrevChart sens={sens} spec={spec} currentPrev={prev} />
             <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 12, flexWrap: 'wrap' }}>
               {[
@@ -515,6 +494,27 @@ export default function DiagnosticTest() {
                 </span>
               ))}
             </div>
+            <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.65, margin: '10px 0 0' }}>
+              Each measure is plotted against disease prevalence. The two dashed flat lines — sensitivity and specificity — never move, because they are fixed properties of the test. The two solid curves — PPV (purple) climbing and NPV (teal) easing down — change with the population. The gold line marks the current prevalence; the dots are PPV and NPV there. Flat means the test itself; curved means what a result means in this population.
+            </p>
+          </div>
+
+          {/* The key message */}
+          {prev <= 0.05 && (
+            <div style={{ padding: '12px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.25)`, borderRadius: 8, marginBottom: 12, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+              <strong style={{ color: C.amber }}>At {(prev * 100).toFixed(1)}% prevalence:</strong> PPV = {(metrics.ppv * 100).toFixed(1)}%. Most positive tests are false alarms — not because the test is poor, but because disease is rare. The test didn't fail. The population changed.
+            </div>
+          )}
+          {prev >= 0.25 && (
+            <div style={{ padding: '12px 14px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.2)`, borderRadius: 8, marginBottom: 12, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+              <strong style={{ color: C.teal }}>At {(prev * 100).toFixed(1)}% prevalence:</strong> PPV = {(metrics.ppv * 100).toFixed(1)}%. Most positive tests are true cases. The same test — better predictive value — because the population has more disease.
+            </div>
+          )}
+
+          {/* Patient dot grid */}
+          <div style={{ background: C.alt, borderRadius: 10, padding: 12, border: `1px solid ${C.border}`, overflowX: 'auto' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>1,000 patients at {(prev * 100).toFixed(0)}% prevalence</div>
+            <DotGrid tp={tp} fp={fp} fn={fn} tn={tn} highlight={null} />
           </div>
 
           {/* Advanced toggle */}
