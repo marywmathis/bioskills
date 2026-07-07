@@ -883,14 +883,9 @@ export default function ProbabilityRules() {
       </Section>
 
       {/* Foreshadow */}
-      <div style={{ marginTop: 24, padding: '16px 20px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.25)`, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.teal, marginBottom: 4 }}>You just learned the mathematics behind diagnostic testing.</div>
-          <div style={{ fontSize: 13, color: C.dim }}>Sensitivity, specificity, PPV, and NPV are all applications of conditional probability.</div>
-        </div>
-        <button style={{ padding: '9px 18px', background: C.teal, color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
-          Continue to Diagnostic Test Interpreter →
-        </button>
+      <div style={{ marginTop: 24, padding: '16px 20px', background: C.tealSoft, border: `1px solid rgba(0,153,168,0.25)`, borderRadius: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: C.teal, marginBottom: 4 }}>You just learned the mathematics behind diagnostic testing.</div>
+        <div style={{ fontSize: 13, color: C.dim }}>Sensitivity, specificity, PPV, and NPV are all applications of conditional probability.</div>
       </div>
     </div>
   )
