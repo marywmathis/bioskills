@@ -539,7 +539,7 @@ function PracticeSection() {
   )
 }
 
-export default function StudyDesignHelper() {
+export default function StudyDesignHelper({ onNavigate }) {
   const [showTable, setShowTable] = useState(false)
 
   return (
@@ -666,7 +666,7 @@ export default function StudyDesignHelper() {
       </Section>
 
       <div style={{ marginTop: 20, padding: '12px 14px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-        <strong style={{ color: C.text }}>Want to go deeper?</strong> The <span style={{ color: C.amber, fontWeight: 600 }}>Study Design Selector</span> tool walks through the conceptual reasoning behind each design — not just identification, but why each design fits or fails for a given research question.
+        <strong style={{ color: C.text }}>Want to go deeper?</strong> The <button onClick={() => onNavigate && onNavigate('study-design')} style={{ color: C.amber, fontWeight: 600, background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textDecoration: 'underline' }}>Study Design Selector</button> tool walks through the conceptual reasoning behind each design — not just identification, but why each design fits or fails for a given research question.
       </div>
     </div>
   )

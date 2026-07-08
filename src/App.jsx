@@ -134,7 +134,7 @@ export default function App() {
           <span style={{ marginLeft: 'auto', fontSize: 12, color: C.muted }}>Tool {currentIdx + 1} of {tools.length}</span>
         </div>
 
-        <Tool />
+        <Tool onNavigate={setActiveTool} />
 
         {/* Prev/Next navigation */}
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 1.5rem 3rem' }}>
