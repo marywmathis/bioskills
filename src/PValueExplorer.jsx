@@ -76,7 +76,7 @@ function NullDist({ observed, showShade, width = 460 }) {
         {observed !== 0 && (
           <>
             <line x1={toX(observed)} y1={PT} x2={toX(observed)} y2={toY(0)} stroke={C.teal} strokeWidth={2.5} strokeDasharray="5 3" />
-            <text x={toX(observed)} y={PT + 12} textAnchor={observed > 0 ? 'start' : 'end'} fontSize={10} fill={C.teal} fontWeight="700">Observed: {observed > 0 ? '+' : ''}{observed.toFixed(1)} mmHg</text>
+            <text x={toX(observed) + (toX(observed) > pvW / 2 ? -5 : 5)} y={PT + 12} textAnchor={toX(observed) > pvW / 2 ? 'end' : 'start'} fontSize={10} fill={C.teal} fontWeight="700">Observed: {observed > 0 ? '+' : ''}{observed.toFixed(1)} mmHg</text>
             {showShade && observed !== 0 && (
               <>
                 <line x1={toX(-observed)} y1={PT} x2={toX(-observed)} y2={toY(0)} stroke={C.coral} strokeWidth={1.5} strokeDasharray="3 2" />
@@ -214,7 +214,7 @@ export default function PValueExplorer() {
           )}
           {stage === 3 && (
             <div style={{ marginTop: 14, padding: '12px 14px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
-              <strong style={{ color: C.coral }}>The shaded area is the p-value.</strong> It represents the probability of observing a difference of 6 mmHg or larger (in either direction) if the null hypothesis were true. The smaller this area, the more unusual our result — and the stronger the evidence against H₀. We shade both tails because we're asking about differences "this large or larger" in either direction (two-sided test).
+              <strong style={{ color: C.coral }}>The shaded area is the p-value.</strong> It represents the probability of seeing a difference at least this far from zero — 6 mmHg or more, in either direction — if the null hypothesis were true. The smaller this area, the more unusual our result, and the stronger the evidence against H₀. We shade both tails because "at least this far from zero" counts results that are extreme in either direction (a two-sided test).
             </div>
           )}
         </div>
