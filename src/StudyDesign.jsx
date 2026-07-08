@@ -622,6 +622,16 @@ export default function StudyDesign() {
                           <p style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.7, margin: 0 }}>
                             A case-control study cannot measure risk, because you decide up front how many cases and controls to include — so the share with disease reflects your design, not the real population. That is why you report an odds ratio, not relative risk. The payoff: when the disease is <strong style={{ color: C.text }}>rare</strong>, the odds ratio comes very close to the relative risk, so it stands in well for exactly the situations case-control studies are built for. When the disease is common, the odds ratio drifts further from 1 than the true relative risk and overstates the effect.
                           </p>
+                          <div style={{ marginTop: 9, padding: '10px 12px', background: C.surface, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 6 }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5 }}>Why does rare make the two nearly equal?</div>
+                            <p style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.7, margin: '0 0 6px' }}>
+                              Odds equal risk divided by (1 − risk). When a disease is rare, risk is tiny, so (1 − risk) is almost 1 — dividing by it barely changes the number, and the odds nearly equal the risk. That carries into the ratio, so the odds ratio nearly equals the relative risk.
+                            </p>
+                            <div style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.75 }}>
+                              Rare — exposed risk 2%, unexposed 1%: relative risk <strong style={{ color: C.text }}>2.0</strong>, odds ratio <strong style={{ color: C.text }}>2.02</strong> (nearly identical).<br />
+                              Common — exposed risk 50%, unexposed 25%: relative risk <strong style={{ color: C.text }}>2.0</strong>, odds ratio <strong style={{ color: C.text }}>3.0</strong> (now overstated).
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
