@@ -214,7 +214,7 @@ export default function PowerSampleSize() {
               <strong style={{ color: C.green }}>Power = 1 − β.</strong> A study with 80% power has an 80% chance of detecting the effect — and a 20% chance of missing it.
             </div>
             <div style={{ padding: '10px 14px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
-              <strong style={{ color: C.coral }}>β = chance of missing.</strong> "Probability of missing a real effect" is more intuitive than β — they mean the same thing.
+              <strong style={{ color: C.coral }}>β = the chance of missing a real effect.</strong> It is the probability of concluding "no effect" when there truly is one — a false negative. Power is its flip side: power = 1 − β, so 80% power means β = 20% — a 1-in-5 chance of missing a real effect.
             </div>
           </div>
         </div>
@@ -309,7 +309,7 @@ export default function PowerSampleSize() {
                 <div style={{ fontSize: 12, fontWeight: 700, color: st.sig ? C.green : C.coral, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>{st.label}</div>
                 <div style={{ fontSize: 13, color: C.dim, marginBottom: 4 }}>n = <strong>{st.n}</strong> | Power ≈ <strong>{st.pwr}%</strong></div>
                 <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: st.sig ? C.green : C.coral, marginBottom: 8 }}>{st.result} → {st.sig ? 'Significant ✓' : 'Not significant ✗'}</div>
-                <div style={{ fontSize: 12, color: C.dim, fontStyle: 'italic', marginBottom: 6, lineHeight: 1.6 }}>"{st.conclusion}"</div>
+                <div style={{ fontSize: 12, color: C.dim, fontStyle: 'italic', marginBottom: 6, lineHeight: 1.6 }}>{st.conclusion}</div>
                 <div style={{ fontSize: 12, color: st.sig ? C.green : C.coral, fontWeight: 600, lineHeight: 1.6 }}>{st.note}</div>
               </div>
             ))}
@@ -322,7 +322,7 @@ export default function PowerSampleSize() {
 
       <Section icon="⚙" iconBg={C.tealSoft} title="Sample Size Calculator">
         <div style={{ paddingTop: 20 }}>
-          <p style={s.prose}>For comparing two proportions. Enter your parameters to get the required sample size per group.</p>
+          <p style={s.prose}>For comparing two proportions. The parameters are the four numbers you set below — what you decide up front about the study you're planning. Give them, and the tool returns the sample size each group needs.</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div>
               <div style={{ marginBottom: 14 }}>
@@ -342,6 +342,7 @@ export default function PowerSampleSize() {
                     <button key={v} onClick={() => setCalcAlpha(v)} style={{ flex: 1, padding: '7px 0', borderRadius: 6, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', background: calcAlpha === v ? C.teal : C.surface, border: `1px solid ${calcAlpha === v ? C.teal : C.border}`, color: calcAlpha === v ? '#fff' : C.dim, fontWeight: calcAlpha === v ? 700 : 400 }}>{v}</button>
                   ))}
                 </div>
+                <div style={{ fontSize: 11, color: C.muted, marginTop: 6 }}>How often you would accept a false alarm — calling an effect real when it is not. Lower α is stricter and needs more participants.</div>
               </div>
               <div style={{ marginBottom: 14 }}>
                 <div style={{ fontSize: 13, color: C.dim, marginBottom: 6 }}>Desired power</div>
@@ -350,6 +351,7 @@ export default function PowerSampleSize() {
                     <button key={v} onClick={() => setCalcPwr(v)} style={{ flex: 1, padding: '7px 0', borderRadius: 6, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', background: calcPwr === v ? C.teal : C.surface, border: `1px solid ${calcPwr === v ? C.teal : C.border}`, color: calcPwr === v ? '#fff' : C.dim, fontWeight: calcPwr === v ? 700 : 400 }}>{(v*100).toFixed(0)}%</button>
                   ))}
                 </div>
+                <div style={{ fontSize: 11, color: C.muted, marginTop: 6 }}>Your chance of catching the effect if it is real. Higher power is safer but needs more participants.</div>
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
