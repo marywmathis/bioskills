@@ -352,12 +352,12 @@ function BuilderSection() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[
-            { label: 'Point estimate (p̂)', val: ci.p.toFixed(3), color: C.teal, note: `${Math.min(x, n)} / ${n}` },
-            { label: 'Standard error (SE)', val: ci.se.toFixed(4), color: C.amber, note: '√(p̂(1−p̂)/n)' },
-            { label: `Critical value (z* for ${(conf*100).toFixed(0)}%)`, val: ci.z.toFixed(3), color: C.purple, note: '' },
-            { label: 'Margin of error', val: ci.me.toFixed(4), color: C.coral, note: 'z* × SE' },
+            { id: 'pe', label: <>Point estimate (<PHat />)</>, val: ci.p.toFixed(3), color: C.teal, note: `${Math.min(x, n)} / ${n}` },
+            { id: 'se', label: 'Standard error (SE)', val: ci.se.toFixed(4), color: C.amber, note: <>√(<PHat />(1−<PHat />)/n)</> },
+            { id: 'cv', label: `Critical value (z* for ${(conf*100).toFixed(0)}%)`, val: ci.z.toFixed(3), color: C.purple, note: '' },
+            { id: 'me', label: 'Margin of error', val: ci.me.toFixed(4), color: C.coral, note: 'z* × SE' },
           ].map(item => (
-            <div key={item.label} style={{ padding: '8px 12px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 7, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={item.id} style={{ padding: '8px 12px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 7, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div style={{ fontSize: 11, color: C.muted, marginBottom: 1 }}>{item.label}</div>
                 {item.note && <div style={{ fontSize: 10, color: C.muted, fontFamily: "'JetBrains Mono', monospace" }}>{item.note}</div>}
@@ -408,7 +408,7 @@ function WidthSection() {
       <p style={s.prose}>Click the buttons below to change the sample size or confidence level. Watch what happens to the interval width.</p>
 
       <div style={{ padding: '14px 16px', background: C.purpleSoft, border: `2px solid ${C.purple}`, borderRadius: 10, marginBottom: 14, textAlign: 'center' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Current {(conf * 100).toFixed(0)}% CI (n={n}, p̂≈{baseP})</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Current {(conf * 100).toFixed(0)}% CI (n={n}, <PHat />≈{baseP})</div>
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, color: C.purple }}>({ci.lo.toFixed(3)}, {ci.hi.toFixed(3)})</div>
         <div style={{ fontSize: 13, color: C.dim, marginTop: 4 }}>Width: <strong style={{ color: C.purple }}>{width.toFixed(3)}</strong></div>
       </div>
@@ -504,7 +504,7 @@ export default function CIBuilder() {
               {
                 step: 'What is our best guess about the population?',
                 content: <span>Because we selected a random sample, the sample should resemble the population. That makes the sample proportion our best estimate of the unknown population proportion (p). It won't be exactly right — but it's usually close.</span>,
-                formula: 'p̂ = 86/200 = 0.43',
+                formula: <><PHat /> = 86/200 = 0.43</>,
                 extra: (
                   <div style={{ marginTop: 10, display: 'flex', gap: 16, alignItems: 'center', padding: '10px 14px', background: C.tealSoft, borderRadius: 7, border: `1px solid rgba(0,153,168,0.15)`, flexWrap: 'wrap' }}>
                     <div style={{ textAlign: 'center' }}>
@@ -514,9 +514,9 @@ export default function CIBuilder() {
                     <div style={{ fontSize: 20, color: C.muted }}>↑</div>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: 11, color: C.muted, marginBottom: 3 }}>Sample of 200</div>
-                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, color: C.teal, fontWeight: 700 }}>p̂ = 0.43</div>
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, color: C.teal, fontWeight: 700 }}><PHat /> = 0.43</div>
                     </div>
-                    <div style={{ fontSize: 13, color: C.dim, flex: 1, minWidth: 120 }}>The entire purpose of a confidence interval is to use p̂ to learn about p.</div>
+                    <div style={{ fontSize: 13, color: C.dim, flex: 1, minWidth: 120 }}>The entire purpose of a confidence interval is to use <PHat /> to learn about p.</div>
                   </div>
                 ),
                 color: C.teal,
@@ -531,7 +531,7 @@ export default function CIBuilder() {
               {
                 step: 'How much do random samples typically vary?',
                 content: 'The standard error measures the typical amount of random variation in sample estimates. Small SE = estimates stay close together. Large SE = estimates bounce around more. Larger samples produce smaller standard errors.',
-                formula: 'SE = √(p̂(1−p̂)/n) = √(0.43 × 0.57 / 200) = 0.035',
+                formula: <>SE = √(<PHat />(1−<PHat />)/n) = √(0.43 × 0.57 / 200) = 0.035</>,
                 extra: (
                   <div style={{ marginTop: 8, padding: '8px 12px', background: C.alt, borderRadius: 7, border: `1px solid ${C.border}` }}>
                     <div style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>If we drew many samples of 200, the estimates might look like:</div>
@@ -582,7 +582,7 @@ export default function CIBuilder() {
               {
                 step: 'What is our final estimate?',
                 content: 'Extend the margin of error in both directions from the point estimate to get our range of plausible values.',
-                formula: 'CI = p̂ ± ME = 0.43 ± 0.069 = (0.361, 0.499)',
+                formula: <>CI = <PHat /> ± ME = 0.43 ± 0.069 = (0.361, 0.499)</>,
                 extra: null,
                 color: C.green,
               },
