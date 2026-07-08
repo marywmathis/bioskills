@@ -315,6 +315,10 @@ export default function SampleSizeEffect() {
               ))}
             </div>
           </div>
+          <div style={{ padding: '12px 14px', background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.75, marginBottom: 14 }}>
+            <div style={{ fontWeight: 700, color: C.text, marginBottom: 6 }}>Why four times, not two?</div>
+            A confidence interval's width is 2 × z* × SE, and SE = √(p(1−p)/n). The sample size sits <em>under a square root</em>, so the width shrinks with 1/√n, not 1/n. That square root is the whole story: to halve the width, √n must double, and for √n to double, n must quadruple. Check it — √25 = 5, √100 = 10: n went ×4, √n went ×2, the width halved. Plain version: precision rides on the square root of n, and square roots grow slowly, so it takes four times the people to double the precision.
+          </div>
           <div style={{ padding: '12px 14px', background: C.purpleSoft, border: `1px solid rgba(107,63,204,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
             <strong style={{ color: C.purple }}>The 1/√n rule:</strong> CI width is proportional to 1/√n. To halve the width, you must quadruple the sample size. To cut it to one-third, you need nine times as many participants. Precision is expensive.
           </div>
@@ -330,6 +334,26 @@ export default function SampleSizeEffect() {
           </div>
           <div style={{ padding: '12px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.7, marginBottom: 14 }}>
             <strong style={{ color: C.amber }}>What you can see:</strong> Quadrupling n from 25 to 100 cuts the CI roughly in half. Quadrupling again from 100 to 400 cuts it in half again. But going from 400 to 1600 produces the same proportional gain for four times as many participants.
+          </div>
+          <div style={{ padding: '14px 16px', background: C.coralSoft, border: `1px solid rgba(232,69,42,0.2)`, borderRadius: 8, marginBottom: 14 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.coral, marginBottom: 8 }}>Each added participant buys less precision than the last — but doesn't cost less.</div>
+            <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, margin: '0 0 8px' }}>Here is what one participant actually costs:</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 10 }}>
+              {[
+                ['Recruitment', 'advertising, outreach, and screening to find each eligible person'],
+                ['Compensation', "payment for participants' time and travel — often the largest line"],
+                ['Staff time', 'consent, visits, measurements, and data entry, per person'],
+                ['Retention', 'reminders, rescheduling, and follow-up to keep people enrolled'],
+                ['Data & monitoring', 'entry, cleaning, and quality checks that scale with n'],
+              ].map(([k, v], i) => (
+                <div key={i} style={{ fontSize: 13, color: C.dim, lineHeight: 1.6 }}>
+                  <strong style={{ color: C.text }}>{k}</strong> — {v}
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, margin: 0 }}>
+              These add up fast — even a modest study can run hundreds to several thousand dollars per participant. At just $1,000 each, the 1,200 extra people to go from n = 400 to n = 1,600 cost about <strong style={{ color: C.text }}>$1.2 million</strong> — to narrow the interval from about 10 to about 5 percentage points. Past "precise enough," that is a lot of money and participant time for a sliver of precision.
+            </p>
           </div>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 10 }}>The same +100 participants, three different points in recruitment:</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
