@@ -24,9 +24,9 @@ const Q1_OPTS = [
 // ── Q2 options — dynamic based on scenario ──
 function getQ2Opts(scenario) {
   return [
-    { val: 'one', label: 'One group', sub: 'Comparing a single group to a known or historical value' },
+    { val: 'one', label: 'One set of measurements', sub: 'Compared to a known or historical value' },
     { val: 'two', label: 'Two sets of measurements', sub: scenario?.q2example || 'e.g., treatment vs. control, before vs. after' },
-    { val: 'many', label: 'More than two groups', sub: 'e.g., three treatment arms, four age groups' },
+    { val: 'many', label: 'More than two sets of measurements', sub: 'e.g., three treatment arms, four age groups' },
   ]
 }
 
@@ -291,7 +291,7 @@ function ReasoningTrace({ outcome, groups, design, testId, scenario }) {
   const steps = [
     { label: 'Research question', val: scenario.q, color: C.muted },
     { label: 'Outcome type', val: outcome === 'continuous' ? 'Continuous measurement' : outcome === 'ordinal' ? 'Ordinal / ranking' : 'Categorical', color: C.teal },
-    { label: 'Number of groups', val: groups === 'one' ? 'One group' : groups === 'two' ? 'Two groups' : 'More than two groups', color: C.purple },
+    { label: 'Sets of measurements', val: groups === 'one' ? 'One set' : groups === 'two' ? 'Two sets' : 'More than two sets', color: C.purple },
     ...(groups !== 'one' ? [{ label: 'Study design', val: design === 'paired' ? 'Paired / matched' : 'Independent', color: C.amber }] : []),
     { label: 'Test', val: test?.name, color: C.green, bold: true },
   ]
@@ -368,7 +368,7 @@ function GuidedScenario({ scenario, onComplete }) {
       {/* Q2 — show after Q1 answered (full) or always (combined/independent) */}
       {(scaffold !== 'full' || q1Done) && (
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>2. How many sets of measurements or comparison groups are there?</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>2. How many sets of measurements are being compared?</div>
           {q2Opts.map(opt => (
             <OptionBtn key={opt.val} opt={opt} picked={q2} correct={scenario.groups} showFeedback={showQ2Feedback} onClick={setQ2} />
           ))}
@@ -544,7 +544,7 @@ export default function HypothesisTest() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[
               { n: '1', q: 'What are you measuring?', sub: 'The outcome type determines the entire family of appropriate tests.', color: C.teal },
-              { n: '2', q: 'How many sets of measurements or comparison groups are there?', sub: 'One group vs. a known value, two groups or measurement sets, or more than two.', color: C.purple },
+              { n: '2', q: 'How many sets of measurements are being compared?', sub: 'One set vs. a known value, two sets, or more than two sets.', color: C.purple },
               { n: '3', q: 'Are these the same people measured twice (or matched pairs)?', sub: 'Paired designs require paired tests — using an independent test when data are paired loses statistical power.', color: C.amber },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', gap: 12 }}>
