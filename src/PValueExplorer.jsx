@@ -32,6 +32,15 @@ function NullDist({ observed, showShade, width = 460 }) {
   const obsAbs = Math.abs(observed)
   const ndPval = twoTailP(observed / STUDY_SE)
 
+  // Observed-label placement: point outward (away from center), but clamp so it
+  // can't run off the card edge or collide with the centered "Null: 0" label.
+  const OBS_EST = 112
+  const obsLineX = toX(observed)
+  const obsLabelAnchor = observed > 0 ? 'start' : 'end'
+  const obsLabelX = observed > 0
+    ? Math.min(Math.max(obsLineX + 4, toX(0) + 30), pvW - PR - OBS_EST)
+    : Math.max(Math.min(obsLineX - 4, toX(0) - 30), PL + OBS_EST)
+
   const pts = []
   for (let i = 0; i <= 300; i++) {
     const x = xMin + (i / 300) * (xMax - xMin)
@@ -76,7 +85,7 @@ function NullDist({ observed, showShade, width = 460 }) {
         {observed !== 0 && (
           <>
             <line x1={toX(observed)} y1={PT} x2={toX(observed)} y2={toY(0)} stroke={C.teal} strokeWidth={2.5} strokeDasharray="5 3" />
-            <text x={toX(observed) + (toX(observed) > pvW / 2 ? -5 : 5)} y={PT + 12} textAnchor={toX(observed) > pvW / 2 ? 'end' : 'start'} fontSize={10} fill={C.teal} fontWeight="700">Observed: {observed > 0 ? '+' : ''}{observed.toFixed(1)} mmHg</text>
+            <text x={obsLabelX} y={PT + 12} textAnchor={obsLabelAnchor} fontSize={10} fill={C.teal} fontWeight="700">Observed: {observed > 0 ? '+' : ''}{observed.toFixed(1)} mmHg</text>
             {showShade && observed !== 0 && (
               <>
                 <line x1={toX(-observed)} y1={PT} x2={toX(-observed)} y2={toY(0)} stroke={C.coral} strokeWidth={1.5} strokeDasharray="3 2" />
