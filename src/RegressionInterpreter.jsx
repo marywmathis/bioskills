@@ -9,7 +9,7 @@ const SIMPLE_COEFS = [
 ]
 
 const MULTI_COEFS = [
-  { predictor: 'Intercept', beta: 89.4, se: 3.21, tRatio: 27.85, pVal: '<.0001', interpretation: 'The predicted SBP when all predictors equal 0 — meaning Age = 0, Male, BMI = 0. In this model that represents a newborn, not a realistic study participant. The intercept gives the regression equation its starting point. Click again to explore the prediction equation.' },
+  { predictor: 'Intercept', beta: 89.4, se: 3.21, tRatio: 27.85, pVal: '<.0001', interpretation: 'The intercept is where the line starts — the predicted SBP for someone at 0 on every predictor (here Age = 0, Male, BMI = 0). Every coefficient then adds to or subtracts from this baseline. In this model, 0 on everything means a newborn, not a realistic participant, so the intercept on its own is not meaningful — but the equation still needs it as the starting point the predictors adjust. Click again to explore the prediction equation.' },
   { predictor: 'Age (years)', beta: 1.2, se: 0.17, tRatio: 7.06, pVal: '<.0001', interpretation: 'For each additional year of age, SBP is estimated to be 1.2 mmHg higher, holding sex and BMI constant.' },
   { predictor: 'Sex [Female]', beta: -3.8, se: 1.14, tRatio: -3.33, pVal: '0.0009', interpretation: 'Women have SBP estimated to be 3.8 mmHg lower than men (the reference category), holding age and BMI constant.' },
   { predictor: 'BMI (kg/m²)', beta: 2.1, se: 0.29, tRatio: 7.24, pVal: '<.0001', interpretation: 'For each additional kg/m² of BMI, SBP is estimated to be 2.1 mmHg higher, holding age and sex constant.' },
@@ -184,8 +184,8 @@ export default function RegressionInterpreter() {
               {[
                 { col: 'Estimate', meaning: 'For predictor variables: the expected change in the outcome for a one-unit increase in the predictor. For the intercept: the predicted outcome when all predictors equal 0.' },
                 { col: 'Std Error', meaning: 'How precisely the coefficient was estimated. Smaller SE = more precise.' },
-                { col: 't Ratio', meaning: 'Estimate ÷ Std Error. How many standard errors away from zero.' },
-                { col: 'Prob>|t|', meaning: 'The p-value. Probability of seeing a t Ratio this large if the true coefficient were zero.' },
+                { col: 't Ratio', meaning: 'Estimate ÷ Std Error — the size of the effect compared with the noise in estimating it. A large t Ratio means the estimate is big relative to its uncertainty, so it is unlikely to be zero. The bigger the t Ratio, the smaller the p-value.' },
+                { col: 'Prob>|t|', meaning: 'This is the p-value. A small value (say, under 0.05) means the estimate is very unlikely to be zero just by chance — strong evidence the predictor really matters. Formally: the probability of seeing a t Ratio this large if the true coefficient were zero.' },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, fontSize: 13 }}>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", color: C.purple, fontWeight: 600, minWidth: 90, flexShrink: 0 }}>{item.col}</span>
@@ -406,7 +406,7 @@ export default function RegressionInterpreter() {
 
       {/* Closing bridge */}
       <div style={{ marginTop: 20, padding: '14px 16px', background: C.alt, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.75 }}>
-        <strong style={{ color: C.text }}>Connecting regression to what you have already learned:</strong> The p-values in a regression table follow the same logic as any hypothesis test — they test whether the estimate is different from 0. The confidence intervals work the same way as the CI Builder. The study design affects what you can conclude: a significant coefficient in an observational study shows association, not causation. Regression helps estimate associations, but it does not change what the study design allows you to conclude. A statistically significant estimate in an observational study still shows association, not causation.
+        <strong style={{ color: C.text }}>Connecting regression to what you have already learned:</strong> First, the word itself: <strong style={{ color: C.text }}>regression</strong> just means a method that fits the best line (or equation) through the data to predict an outcome from one or more predictors. The name is historical — it comes from an 1880s study of height and has nothing to do with the modern meaning, so do not try to read sense into the word; what matters is the line and its coefficients. The p-values in a regression table follow the same logic as any hypothesis test — they test whether the estimate is different from 0. The confidence intervals work the same way as the CI Builder. The study design affects what you can conclude: a significant coefficient in an observational study shows association, not causation. Regression helps estimate associations, but it does not change what the study design allows you to conclude. A statistically significant estimate in an observational study still shows association, not causation.
       </div>
     </div>
   )
