@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { logEvent } from './logging'
 import MathRefresher from './MathRefresher'
 import PopulationVsSample from './PopulationVsSample'
 import DataTypeIdentifier from './DataTypeIdentifier'
@@ -115,6 +116,13 @@ const groups = ["Foundation", "Probability", "Design & Inference", "Reference"]
 
 export default function App() {
   const [activeTool, setActiveTool] = useState(null)
+  useEffect(() => {
+    logEvent("app", "session_start")
+  }, [])
+
+  useEffect(() => {
+    if (activeTool) logEvent(activeTool, "opened")
+  }, [activeTool])
   const [activeGroup, setActiveGroup] = useState("All")
   const currentIdx = tools.findIndex(t => t.id === activeTool)
   const current = currentIdx >= 0 ? tools[currentIdx] : null
