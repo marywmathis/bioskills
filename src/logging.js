@@ -22,3 +22,8 @@ export async function logEvent(module, event, detail = {}) {
     console.warn("log failed", e);
   }
 }
+export function changeStudentCode() {
+  const code = (prompt("Enter your course code (e.g., BS-2026-047):") || "").trim().toUpperCase();
+  if (code) localStorage.setItem(STUDENT_CODE_KEY, code);
+  return localStorage.getItem(STUDENT_CODE_KEY) || "UNKNOWN";
+}

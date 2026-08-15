@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { logEvent } from './logging'
+import { logEvent, getStudentCode, changeStudentCode } from './logging'
 import MathRefresher from './MathRefresher'
 import PopulationVsSample from './PopulationVsSample'
 import DataTypeIdentifier from './DataTypeIdentifier'
@@ -115,14 +115,23 @@ const tools = [
 const groups = ["Foundation", "Probability", "Design & Inference", "Reference"]
 
 export default function App() {
-  const [activeTool, setActiveTool] = useState(null)
+const [activeTool, setActiveTool] = useState(null)
+  const [studentCode, setStudentCode] = useState("")
+
   useEffect(() => {
+    setStudentCode(getStudentCode())
     logEvent("app", "session_start")
   }, [])
 
   useEffect(() => {
     if (activeTool) logEvent(activeTool, "opened")
   }, [activeTool])
+
+  const handleChangeCode = () => {
+    const newCode = changeStudentCode()
+    setStudentCode(newCode)
+    logEvent("app", "code_change")
+  }
   const [activeGroup, setActiveGroup] = useState("All")
   const currentIdx = tools.findIndex(t => t.id === activeTool)
   const current = currentIdx >= 0 ? tools[currentIdx] : null
@@ -179,6 +188,11 @@ export default function App() {
           <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: C.teal, marginBottom: 8 }}>BioSkills</div>
           <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 32, fontWeight: 700, color: C.text, marginBottom: 8, lineHeight: 1.2 }}>Biostatistics Tools</h1>
           <p style={{ fontSize: 15, color: C.dim, maxWidth: 520, lineHeight: 1.6, marginBottom: 16 }}>Interactive tools to help you understand biostatistics concepts — not just memorize them.</p>
+          <div style={{ fontSize: 12, color: C.muted, marginBottom: 12 }}>
+            Your code: <strong style={{ color: C.dim }}>{studentCode || "not set"}</strong>
+            {" · "}
+            <button onClick={handleChangeCode} style={{ background: 'none', border: 'none', padding: 0, color: C.teal, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', textDecoration: 'underline' }}>not you? change it</button>
+          </div>
           {/* Suggested path note */}
           <div style={{ padding: '10px 14px', background: C.amberSoft, border: `1px solid rgba(184,112,0,0.2)`, borderRadius: 8, fontSize: 13, color: C.dim, lineHeight: 1.6, maxWidth: 640 }}>
             <strong style={{ color: C.amber }}>Suggested learning path:</strong> These tools build on one another — Foundation → Probability → Design & Inference. First-time learners may find it helpful to work through them in order. You're also welcome to jump directly to any tool you need.
