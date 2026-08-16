@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { logEvent, getStudentCode, changeStudentCode } from './logging'
+import { logEvent, getStudentCode, setStudentCode, clearStudentCode } from './logging'
 import MathRefresher from './MathRefresher'
 import PopulationVsSample from './PopulationVsSample'
 import DataTypeIdentifier from './DataTypeIdentifier'
@@ -121,22 +121,44 @@ const tools = [
 const groups = ["Foundation", "Probability", "Design & Inference", "Reference"]
 
 export default function App() {
-const [activeTool, setActiveTool] = useState(null)
-  const [studentCode, setStudentCode] = useState("")
+  const [activeTool, setActiveTool] = useState(null)
+  const [studentCode, setStudentCodeState] = useState("")
+  const [gateInput, setGateInput] = useState("")
+  const [gateError, setGateError] = useState("")
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    setStudentCode(getStudentCode())
-    logEvent("app", "session_start")
+    const existing = getStudentCode()
+    if (existing) {
+      setStudentCodeState(existing)
+      logEvent("app", "session_start")
+    }
+    setReady(true)
   }, [])
 
   useEffect(() => {
-    if (activeTool) logEvent(activeTool, "opened")
-  }, [activeTool])
+    if (studentCode && activeTool) logEvent(activeTool, "opened")
+  }, [activeTool, studentCode])
+
+  const submitCode = () => {
+    const c = setStudentCode(gateInput)
+    if (c) {
+      setStudentCodeState(c)
+      setGateInput("")
+      setGateError("")
+      logEvent("app", "session_start")
+    } else {
+      setGateError("That code wasn't recognized. Check your slip or ask your instructor.")
+    }
+  }
 
   const handleChangeCode = () => {
-    const newCode = changeStudentCode()
-    setStudentCode(newCode)
     logEvent("app", "code_change")
+    clearStudentCode()
+    setStudentCodeState("")
+    setActiveTool(null)
+    setGateInput("")
+    setGateError("")
   }
   const [activeGroup, setActiveGroup] = useState("All")
   const currentIdx = tools.findIndex(t => t.id === activeTool)
@@ -144,6 +166,37 @@ const [activeTool, setActiveTool] = useState(null)
   const prevTool = currentIdx > 0 ? tools[currentIdx - 1] : null
   const nextTool = currentIdx < tools.length - 1 ? tools[currentIdx + 1] : null
   const filtered = activeGroup === "All" ? tools : tools.filter(t => t.group === activeGroup)
+
+  // Gate: require a valid course code before anything else renders.
+  if (!ready) return null
+  if (!studentCode) {
+    return (
+      <div style={{ minHeight: '100vh', background: C.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+        <div style={{ width: '100%', maxWidth: 420, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '28px 26px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: C.teal, marginBottom: 8 }}>BioSkills</div>
+          <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 6, lineHeight: 1.25 }}>Enter your course code</h1>
+          <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.6, marginBottom: 16 }}>Your instructor gave you a code (for example, BS-2026-001). Enter it to open the tools.</p>
+          <input
+            type="text"
+            value={gateInput}
+            onChange={e => { setGateInput(e.target.value); if (gateError) setGateError("") }}
+            onKeyDown={e => { if (e.key === 'Enter') submitCode() }}
+            placeholder="BS-2026-001"
+            autoFocus
+            style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', fontSize: 15, fontFamily: 'inherit', border: `1px solid ${gateError ? C.coral : C.border}`, borderRadius: 8, color: C.text, textTransform: 'uppercase', marginBottom: gateError ? 8 : 14, outline: 'none' }}
+          />
+          {gateError && <div style={{ fontSize: 12.5, color: C.coral, lineHeight: 1.5, marginBottom: 14 }}>{gateError}</div>}
+          <button
+            onClick={submitCode}
+            style={{ width: '100%', padding: '11px 0', background: C.teal, color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer' }}
+          >
+            Continue
+          </button>
+          <p style={{ fontSize: 11.5, color: C.muted, lineHeight: 1.6, marginTop: 14, marginBottom: 0 }}>Don't have a code, or yours isn't working? Contact your instructor.</p>
+        </div>
+      </div>
+    )
+  }
 
   if (current && current.component) {
     const Tool = current.component
