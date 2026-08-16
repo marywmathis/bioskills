@@ -3,6 +3,7 @@ import { logEvent, getStudentCode, changeStudentCode } from './logging'
 import MathRefresher from './MathRefresher'
 import PopulationVsSample from './PopulationVsSample'
 import DataTypeIdentifier from './DataTypeIdentifier'
+import VariableRoles from './VariableRoles'
 import SummaryStatistics from './SummaryStatistics'
 import DistributionsExplorer from './DistributionsExplorer'
 import ProbabilityRules from './ProbabilityRules'
@@ -41,6 +42,11 @@ const tools = [
     id: "data-type-identifier", title: "Data Type Identifier", group: "Foundation",
     description: "Variable types → right summary statistic → right hypothesis test. The chain that organizes everything else.",
     accent: C.amber, accentSoft: C.amberSoft, component: DataTypeIdentifier,
+  },
+  {
+    id: "variable-roles", title: "Variable Roles and Statistical Test Selection", group: "Foundation",
+    description: "Which variable is the outcome, which is the predictor, and how their types drive the test — a six-step sequence with practice.",
+    accent: C.purple, accentSoft: C.purpleSoft, component: VariableRoles,
   },
   {
     id: "summary-statistics", title: "Summary Statistics Explorer", group: "Foundation",
