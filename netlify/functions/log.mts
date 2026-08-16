@@ -6,7 +6,7 @@ export default async (req: Request, context: Context) => {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  let body: { code?: string; module?: string; event?: string; detail?: unknown };
+  let body: { code?: string; deviceId?: string; module?: string; event?: string; detail?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -14,21 +14,24 @@ export default async (req: Request, context: Context) => {
   }
 
   const code = String(body.code || "").trim().toUpperCase();
+  const deviceId = String(body.deviceId || "").trim();
   const module = String(body.module || "").trim();
   const event = String(body.event || "").trim();
 
-  // Basic validation: reject junk before it pollutes the dataset.
   if (!/^[A-Z0-9-]{3,30}$/.test(code)) return new Response("Bad code", { status: 400 });
   if (!module || !event) return new Response("Missing fields", { status: 400 });
 
-  const ts = new Date().toISOString(); // server-side timestamp
-  const record = { code, module, event, ts, detail: body.detail ?? null };
-
-  // One blob per event: events/{code}/{timestamp}-{random}
-  const key = `events/${code}/${ts.replace(/[:.]/g, "-")}-${Math.random().toString(36).slice(2, 8)}`;
+  const ts = new Date().toISOString();
+  const record = { code, deviceId: deviceId || null, module, event, ts, detail: body.detail ?? null };
 
   const store = getStore("bioskills-usage");
+
+  const key = `events/${code}/${ts.replace(/[:.]/g, "-")}-${Math.random().toString(36).slice(2, 8)}`;
   await store.setJSON(key, record);
+
+  if (/^[A-Za-z0-9-]{6,64}$/.test(deviceId)) {
+    await store.setJSON(`devices/${code}/${deviceId}`, { code, deviceId, lastSeen: ts });
+  }
 
   return new Response(JSON.stringify({ ok: true }), {
     headers: { "Content-Type": "application/json" }
